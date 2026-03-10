@@ -1,0 +1,42 @@
+<h3 class="mb-4">Approve Student</h3>
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Student Details</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Name:</strong> <%= student.userId.name %></p>
+                <p><strong>Username:</strong> <%= student.userId.username %></p>
+                <p><strong>Email:</strong> <%= student.userId.email %></p>
+                <p><strong>Father Name:</strong> <%= student.fatherName || 'N/A' %></p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Class:</strong> <%= student.classId ? student.classId.name : 'N/A' %></p>
+                <p><strong>Phone:</strong> <%= student.userId.phone || 'N/A' %></p>
+                <p><strong>Registered:</strong> <%= moment(student.createdAt).format('MMM DD, YYYY hh:mm A') %></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="/admin/students/<%= student._id %>/approve" method="POST">
+    <div class="card">
+        <div class="card-header">
+            <h5>Assign Roll Number</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Roll Number</label>
+                    <input name="rollNo" class="form-control" required>
+                    <small class="text-muted">Assign a unique roll number for this student</small>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-success" type="submit">Approve Student</button>
+            <a href="/admin/students" class="btn btn-secondary ms-2">Cancel</a>
+        </div>
+    </div>
+</form>

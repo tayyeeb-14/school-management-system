@@ -1,0 +1,51 @@
+<%- contentFor('body') %>
+
+<div class="container">
+    <h1 class="mb-4">My Results</h1>
+
+    <% for (const subject in marksBySubject) { %>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="mb-0"><%= subject %></h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Test/Exam</th>
+                                <th>Marks Obtained</th>
+                                <th>Total Marks</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% marksBySubject[subject].forEach(mark => { %>
+                                <tr>
+                                    <td><%= mark.examName %></td>
+                                    <td><%= mark.marksObtained %></td>
+                                    <td><%= mark.totalMarks %></td>
+                                    <td><%= ((mark.marksObtained / mark.totalMarks) * 100).toFixed(2) %>%</td>
+                                    <td>
+                                        <% 
+                                        const percentage = (mark.marksObtained / mark.totalMarks) * 100;
+                                        let grade;
+                                        if (percentage >= 90) grade = 'A+';
+                                        else if (percentage >= 80) grade = 'A';
+                                        else if (percentage >= 70) grade = 'B';
+                                        else if (percentage >= 60) grade = 'C';
+                                        else if (percentage >= 50) grade = 'D';
+                                        else grade = 'F';
+                                        %>
+                                        <%= grade %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>

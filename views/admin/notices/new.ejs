@@ -1,0 +1,25 @@
+<h3 class="mb-4">Add New Notice</h3>
+<form action="/admin/notices" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input name="title" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="5" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <input name="category" class="form-control" placeholder="e.g., general, exam, event">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">For Class (optional)</label>
+        <input name="forClass" class="form-control" placeholder="e.g., 6">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Attachment (optional)</label>
+        <input name="file" type="file" class="form-control">
+    </div>
+    <button class="btn btn-primary" type="submit">Create Notice</button>
+    <a href="/admin/notices" class="btn btn-secondary ms-2">Cancel</a>
+</form>

@@ -1,0 +1,185 @@
+<h3 class="mb-4">💰 Collect Overdue Payment - Class Wise</h3>
+
+<div class="mb-3">
+    <a href="/admin/classes/fees" class="btn btn-secondary">Back to Classes</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Class Info -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Class Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Class Name:</strong> <span class="badge bg-primary fs-6"><%= classDoc.name %></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total Students:</strong> <span class="badge bg-success fs-6"><%= students.length %></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form action="/admin/classes/<%= classDoc._id %>/fees/collect-payment" method="POST" id="collectPaymentForm">
+            <!-- Students Selection -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Select Students to Collect From</h5>
+                        <small>
+                            <input type="checkbox" id="selectAllStudents" class="form-check-input">
+                            <label class="form-check-label" for="selectAllStudents">Select All</label>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <% if (students.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" class="form-check-input" id="mainCheckbox">
+                                        </th>
+                                        <th>Roll No</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsTableBody">
+                                    <% students.forEach(student => { %>
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="selectedStudents" value="<%= student._id %>" class="form-check-input student-checkbox">
+                                            </td>
+                                            <td><strong><%= student.rollNo %></strong></td>
+                                            <td><%= student.userId.name %></td>
+                                            <td><small><%= student.userId.email %></small></td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-info mt-3 mb-0">
+                            <strong>Selected:</strong> <span id="selectedCount">0</span> / <%= students.length %> students
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-warning mb-0">No students in this class.</div>
+                    <% } %>
+                </div>
+            </div>
+    </div>
+
+    <!-- Payment Collection Form -->
+    <div class="col-md-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">💰 Collect Payment</h5>
+            </div>
+            <div class="card-body">
+                <% if (students.length > 0) { %>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Select Month</strong></label>
+                        <select name="month" class="form-select" required>
+                            <option value="">-- Choose Month --</option>
+                            <option value="January 2026">January 2026</option>
+                            <option value="February 2026">February 2026</option>
+                            <option value="March 2026">March 2026</option>
+                            <option value="April 2026">April 2026</option>
+                            <option value="May 2026">May 2026</option>
+                            <option value="June 2026">June 2026</option>
+                            <option value="July 2026">July 2026</option>
+                            <option value="August 2026">August 2026</option>
+                            <option value="September 2026">September 2026</option>
+                            <option value="October 2026">October 2026</option>
+                            <option value="November 2026">November 2026</option>
+                            <option value="December 2026">December 2026</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Amount Per Student</strong></label>
+                        <input type="number" step="0.01" name="amountPerStudent" class="form-control" placeholder="0.00" required id="amountInput">
+                        <small class="text-muted">Per student amount</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-check-label d-flex align-items-center">
+                            <input type="checkbox" class="form-check-input me-2" name="isOverdue">
+                            <span><strong>Mark as Overdue?</strong><br><small class="text-muted">Payment is unpaid/late</small></span>
+                        </label>
+                    </div>
+
+                    <div class="alert alert-info mb-3">
+                        <strong>📊 Calculation:</strong><br>
+                        Selected: <strong id="selectedStudentsCalc">0</strong> students<br>
+                        Amount/Student: <strong id="amountCalc">0.00</strong><br>
+                        <hr class="my-2">
+                        Total: <strong id="totalCalc">0.00</strong>
+                    </div>
+
+                    <div class="alert alert-warning mb-3">
+                        <i class="fas fa-info-circle"></i> Invoice will be auto-generated for each selected student
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100" id="collectBtn" disabled>
+                        <i class="fas fa-check-circle"></i> Collect Payment
+                    </button>
+                <% } else { %>
+                    <div class="alert alert-danger">Cannot collect payment - no students in this class.</div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Select all checkbox
+document.getElementById('selectAllStudents').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    updateCalculations();
+});
+
+// Individual checkbox changes
+document.querySelectorAll('.student-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        updateCalculations();
+        // Update select all checkbox
+        const allChecked = document.querySelectorAll('.student-checkbox:checked').length === 
+                          document.querySelectorAll('.student-checkbox').length;
+        document.getElementById('selectAllStudents').checked = allChecked;
+    });
+});
+
+// Update calculations when amount changes
+document.getElementById('amountInput').addEventListener('input', updateCalculations);
+
+function updateCalculations() {
+    const selectedCount = document.querySelectorAll('.student-checkbox:checked').length;
+    const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+    const total = selectedCount * amount;
+    
+    document.getElementById('selectedCount').textContent = selectedCount;
+    document.getElementById('selectedStudentsCalc').textContent = selectedCount;
+    document.getElementById('amountCalc').textContent = amount.toFixed(2);
+    document.getElementById('totalCalc').textContent = total.toFixed(2);
+    
+    // Enable/disable submit button
+    document.getElementById('collectBtn').disabled = selectedCount === 0 || amount === 0;
+}
+
+// Validate at least one student is selected before submit
+document.getElementById('collectPaymentForm').addEventListener('submit', function(e) {
+    const selectedCount = document.querySelectorAll('.student-checkbox:checked').length;
+    if (selectedCount === 0) {
+        e.preventDefault();
+        alert('Please select at least one student');
+        return false;
+    }
+});
+</script>
+

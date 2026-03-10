@@ -1,0 +1,787 @@
+:root {
+    --brand: #4f46e5;
+    --brand-600: #4338ca;
+    --bg-light: #f8f9fa;
+}
+
+/* Dashboard Layout */
+body {
+    background-color: #1a1f2c;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #1a1f2c;
+}
+
+.dashboard-sidebar {
+    width: 260px;
+    background-color: #1a1f2c;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1030;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.dashboard-sidebar-content {
+    height: 100%;
+}
+
+/* Profile Section in Sidebar */
+.profile-section {
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background-color: #151922;
+}
+
+.profile-section h5 {
+    color: #ffffff;
+    margin-top: 10px;
+}
+
+.profile-section p {
+    color: #8b92a5 !important;
+}
+
+/* Navigation Menu in Dark Theme */
+.nav-menu li a {
+    color: #8b92a5;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-menu li a:hover {
+    background-color: #232936;
+    color: #ffffff;
+    border-left-color: var(--brand);
+}
+
+.nav-menu li a.active {
+    background-color: #232936;
+    color: #ffffff;
+    border-left-color: #3699ff;
+}
+
+.nav-menu li a i {
+    color: #8b92a5;
+}
+
+.nav-menu li a:hover i,
+.nav-menu li a.active i {
+    color: var(--brand);
+}
+
+/* Main Content Area */
+.dashboard-main {
+    flex: 1;
+    margin-left: 260px;
+    padding: 20px;
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+/* Top Navigation Bar */
+.dashboard-nav {
+    background-color: #ffffff !important;
+    margin: -20px -20px 20px -20px;
+    padding: 15px 20px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Navigation Menu */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #172b4d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.nav-menu li a i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.nav-menu li a:hover {
+    background-color: var(--bg-light);
+    color: var(--brand);
+}
+
+.nav-menu li a.active {
+    background-color: #f0f7ff;
+    color: var(--brand);
+    border-left-color: var(--brand);
+}
+
+/* Stats Cards */
+.stat-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 24px;
+}
+
+.stat-card.primary { border-left: 4px solid var(--brand); }
+.stat-card.warning { border-left: 4px solid #ff9800; }
+.stat-card.success { border-left: 4px solid #28a745; }
+.stat-card.info { border-left: 4px solid #17a2b8; }
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+}
+
+.dashboard-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 15px 20px;
+}
+
+.dashboard-card .card-body {
+    padding: 20px;
+}
+
+/* Quick Actions */
+.btn-light {
+    background-color: #fff;
+    border: 1px solid #e0e4e8;
+    padding: 1.5rem;
+}
+
+.btn-light:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    margin: auto;
+}
+
+/* Progress Bars */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 8px;
+.stat-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 12px;
+}
+.stat-card h6 { margin: 0; color: #64748b; font-size: 0.85rem; font-weight: 600; }
+.stat-card h3 { margin: 0; font-size: 1.6rem; font-weight: 700; color: #0f172a; }
+.stat-card .stat-icon { width: 56px; height: 56px; font-size: 1.25rem; border-radius: 10px; }
+    height: 4px;
+    margin-top: 8px;
+.stat-card .stat-icon { background: linear-gradient(180deg, var(--brand), var(--brand-600)); color: #fff; box-shadow: 0 8px 20px rgba(79,70,229,0.12); }
+}
+
+.progress-bar {
+    background-color: var(--brand);
+    transition: width 1s ease;
+}
+
+/* Profile Section */
+.profile-section {
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.profile-section img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    object-fit: cover;
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        padding: 1.25rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .chart-container { min-height: 260px; }
+    .dashboard-sidebar.show {
+        transform: translateX(0);
+    }
+
+    .dashboard-main {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .offcanvas-body {
+        padding: 0;
+    }
+}
+
+/* List Group Customization */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 15px 20px;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+.dashboard-body {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.dashboard-sidebar {
+    width: 280px;
+    background-color: #ffffff;
+    border-right: 1px solid #dee2e6;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.dashboard-sidebar-content {
+    height: 100%;
+}
+
+/* Main Content Area */
+.dashboard-main {
+    flex: 1;
+    margin-left: 280px;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+/* Navigation Menu Styles */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li {
+    margin: 5px 0;
+}
+
+/* Sidebar menu modern look */
+.nav-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-radius: 8px;
+}
+
+.nav-menu .menu-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(79,70,229,0.12);
+    color: var(--brand);
+    flex-shrink: 0;
+}
+
+.nav-menu .menu-label {
+    flex: 1;
+    font-weight: 600;
+    color: #334155;
+}
+
+.nav-menu li a.active, .nav-menu li a:hover {
+    background: linear-gradient(90deg, rgba(79,70,229,0.08), rgba(67,56,202,0.06));
+    box-shadow: 0 2px 6px rgba(79,70,229,0.06);
+}
+
+/* Stat / dashboard card accents */
+.stat-card .stat-icon {
+    background: linear-gradient(180deg, var(--brand), var(--brand-600));
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(79,70,229,0.12);
+}
+
+.dashboard-card .card-header {
+    border-radius: 10px 10px 0 0;
+}
+
+.dashboard-card .card-body { padding: 1.25rem; }
+
+.nav-menu li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-menu li a:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+.nav-menu li a.active {
+    background-color: #e9ecef;
+    color: #007bff;
+    border-left: 4px solid #007bff;
+}
+
+.nav-menu li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Top Navigation */
+.dashboard-nav {
+    padding: 1rem;
+    background-color: #ffffff;
+}
+
+/* Profile Section */
+.profile-section {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.profile-section img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Quick Stats Cards */
+.stats-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-card .icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        width: 100%;
+        position: fixed;
+        z-index: 1045;
+    }
+
+    .dashboard-main {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .dashboard-body {
+        background-color: #1a1a1a;
+    }
+
+    .dashboard-sidebar,
+    .dashboard-nav,
+    .stats-card {
+        background-color: #2d2d2d;
+    }
+
+    .nav-menu li a {
+        color: #ffffff;
+    }
+
+    .nav-menu li a:hover {
+        background-color: #3d3d3d;
+    }
+
+    .nav-menu li a.active {
+        background-color: #4d4d4d;
+    }
+}
+.dashboard-body {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.dashboard-sidebar {
+    width: 280px;
+    background: #343a40;
+    color: #fff;
+    transition: all 0.3s ease;
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+}
+
+.dashboard-sidebar-content {
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Main Content Area */
+.dashboard-main {
+    flex: 1;
+    margin-left: 280px;
+    min-width: 0;
+    transition: all 0.3s ease;
+}
+
+/* Navigation */
+.dashboard-nav {
+    padding: 1rem;
+    background: #fff;
+}
+
+/* Cards and Widgets */
+.dashboard-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+/* Offcanvas and small-screen overrides, overlay, and contrast helpers */
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        transform: translateX(-100%) !important;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 1046 !important;
+        background: #2b2e3a;
+    }
+    .dashboard-sidebar.show { transform: translateX(0) !important; }
+    .dashboard-main { margin-left: 0 !important; width: 100% !important; }
+    /* removed floating toggle button display rule; toggle now lives in navbar */
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 58, 180, 0.45);
+    z-index: 1040;
+}
+
+/* Make quick-action icons brand-colored for clearer affordance */
+.btn-light.w-100 i { color: var(--brand); }
+
+/* Ensure progress bars use brand and are more visible */
+.progress { height: 8px; }
+.progress-bar { background-color: var(--brand) !important; }
+
+/* Sidebar label contrast when using dark sidebar */
+.dashboard-sidebar { color: #fff; }
+.dashboard-sidebar .menu-label { color: #ffffff; font-weight: 600; font-size: 0.95rem; }
+.dashboard-sidebar .menu-icon { background: rgba(79,70,229,0.35); color: #ffffff; font-size: 1.1rem; width: 44px; height: 44px; }
+/* Ensure sidebar links have good contrast on dark sidebar */
+.dashboard-sidebar .nav-menu li a { color: #ffffff; transition: all 0.2s ease; font-weight: 500; }
+.dashboard-sidebar .nav-menu li a:hover { background: rgba(79,70,229,0.2); color: #ffffff; }
+.dashboard-sidebar .nav-menu li a.active { background: linear-gradient(90deg, var(--brand), rgba(79,70,229,0.8)); color: #ffffff; border-left: 4px solid #ffffff; }
+.dashboard-sidebar .nav-menu li a.active .menu-icon { background: rgba(255,255,255,0.25); color: #ffffff; }
+.dashboard-sidebar .nav-menu li a .menu-label { color: #ffffff; }
+
+/* Top navbar hamburger visibility */
+/* removed floating toggle button positioning; toggle now lives in navbar */
+
+@media (max-width: 575.98px) {
+    /* Keep labels visible for clarity on small screens */
+    .nav-menu .menu-label { display: block; }
+    .btn-light.w-100 { min-height: 64px; }
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card {
+    border-left: 4px solid;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.stat-card.primary {
+    border-left-color: #007bff;
+}
+
+.stat-card.success {
+    border-left-color: #28a745;
+}
+
+.stat-card.warning {
+    border-left-color: #ffc107;
+}
+
+.stat-card.danger {
+    border-left-color: #dc3545;
+}
+
+/* Tables */
+.dashboard-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.dashboard-table th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Charts */
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 991.98px) {
+    .dashboard-sidebar {
+        margin-left: -280px;
+    }
+
+    .dashboard-main {
+        margin-left: 0;
+    }
+
+    /* When sidebar is shown on mobile */
+    .dashboard-sidebar.show {
+        margin-left: 0;
+    }
+
+    /* Overlay when sidebar is open */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+}
+
+/* Small screens and tablets */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive {
+        margin-bottom: 1rem;
+    }
+
+    /* Adjust padding for smaller screens */
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Make charts responsive */
+    .chart-container {
+        min-height: 300px;
+    }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+    .dashboard-nav {
+        padding: 0.5rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    /* Stack buttons vertically */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+        border-radius: 4px !important;
+    }
+
+    /* Adjust table display */
+    .table-responsive table {
+        font-size: 0.875rem;
+    }
+
+    /* Adjust form layouts */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .col-form-label {
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* Navigation Menu Styles */
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li {
+    margin: 4px 8px;
+}
+
+.nav-menu a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+}
+
+.nav-menu i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Profile Section */
+.profile-summary img {
+    border: 3px solid rgba(255,255,255,0.2);
+}
+
+/* Custom Scrollbar for Sidebar */
+.dashboard-sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-sidebar-content::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+.dashboard-sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+}
+
+/* Loading States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Animation for cards loading */
+@keyframes cardPulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+.card-loading {
+    animation: cardPulse 1.5s infinite;
+}

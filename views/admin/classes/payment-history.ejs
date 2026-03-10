@@ -1,0 +1,186 @@
+<h3 class="mb-4">Class Payment History - <%= classDoc.name %></h3>
+
+<div class="mb-3">
+    <a href="/admin/classes/fees" class="btn btn-secondary">Back to Classes</a>
+    <a href="/admin/classes/<%= classDoc._id %>/fees/collect-payment" class="btn btn-success">
+        <i class="fas fa-plus"></i> Collect New Payment
+    </a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <% 
+        const totalStudents = paymentHistory.length;
+        const totalCollected = paymentHistory.reduce((sum, ph) => sum + ph.totalCollected, 0);
+        const studentsWithPayment = paymentHistory.filter(ph => ph.classPayments.length > 0).length;
+    %>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h6>Total Students</h6>
+                <h3><%= totalStudents %></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h6>Total Collected</h6>
+                <h3><%= totalCollected %></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h6>With Payments</h6>
+                <h3><%= studentsWithPayment %></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body text-center">
+                <h6>Without Payments</h6>
+                <h3><%= totalStudents - studentsWithPayment %></h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment History Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Student Payment Details</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Payments</th>
+                        <th>Total Collected</th>
+                        <th>Last Payment</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% paymentHistory.forEach(ph => { %>
+                        <tr>
+                            <td><strong><%= ph.student.rollNo %></strong></td>
+                            <td><%= ph.student.userId.name %></td>
+                            <td><small><%= ph.student.userId.email %></small></td>
+                            <td>
+                                <% if (ph.classPayments.length > 0) { %>
+                                    <span class="badge bg-success"><%= ph.classPayments.length %></span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">0</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <strong><%= ph.totalCollected.toFixed(2) %></strong>
+                            </td>
+                            <td>
+                                <% if (ph.classPayments.length > 0) { %>
+                                    <small><%= new Date(ph.classPayments[ph.classPayments.length-1].date).toLocaleDateString() %></small>
+                                <% } else { %>
+                                    <span class="text-muted">-</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/admin/students/<%= ph.student._id %>/fees" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> Details
+                                </a>
+                            </td>
+                        </tr>
+                        <% if (ph.classPayments.length > 0) { %>
+                            <tr class="table-info">
+                                <td colspan="7">
+                                    <strong>Class Payments:</strong>
+                                    <div class="mt-2">
+                                        <table class="table table-sm table-borderless mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Month</th>
+                                                    <th>Amount</th>
+                                                    <th>Description</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% ph.classPayments.forEach(payment => { %>
+                                                    <tr>
+                                                        <td><%= payment.month %></td>
+                                                        <td><strong><%= payment.amount %></strong></td>
+                                                        <td><%= payment.description %></td>
+                                                        <td><small><%= new Date(payment.date).toLocaleDateString() %></small></td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } %>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6>Payment Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Students with payment</span>
+                        <strong><%= studentsWithPayment %> / <%= totalStudents %></strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" style="width: <%= (studentsWithPayment / totalStudents * 100) %>%"></div>
+                    </div>
+                </div>
+                <div>
+                    <small class="text-muted">
+                        <%= ((studentsWithPayment / totalStudents) * 100).toFixed(1) %>% of students have made class-wide payments
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h6>Collection Performance</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>Average per student:</strong> 
+                    <span class="badge bg-info fs-6">
+                        <%= (totalCollected / totalStudents).toFixed(2) %>
+                    </span>
+                </p>
+                <p class="mb-2">
+                    <strong>Highest collector:</strong>
+                    <% 
+                        let maxStudent = paymentHistory.reduce((max, ph) => 
+                            ph.totalCollected > max.totalCollected ? ph : max
+                        );
+                    %>
+                    <span class="badge bg-success fs-6">
+                        <%= maxStudent.student.userId.name %> (<%= maxStudent.totalCollected %>)
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

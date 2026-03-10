@@ -1,0 +1,266 @@
+<div class="row g-3 mb-4">
+    <!-- Statistics Cards -->
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Total Students</h6>
+                    <h3 class="mb-0"><%= stats.students %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Total Teachers</h6>
+                    <h3 class="mb-0"><%= stats.teachers %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Blog Posts</h6>
+                    <h3 class="mb-0"><%= stats.blogs %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-blog"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Active Notices</h6>
+                    <h3 class="mb-0"><%= stats.notices %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Notices -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Notices</h5>
+                <a href="/admin/notices" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <% if (notices && notices.length > 0) { %>
+                        <% notices.forEach(notice => { %>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1"><%= notice.title %></h6>
+                                    <small class="text-muted">
+                                        <span class="format-date" data-date="<%= notice.date %>">
+                                            <%= moment(notice.date).fromNow() %>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1 text-muted small"><%= notice.description %></p>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="list-group-item text-center text-muted">
+                            No notices found
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Blog Posts -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Blog Posts</h5>
+                <a href="/admin/blogs" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <% if (blogs && blogs.length > 0) { %>
+                        <% blogs.forEach(blog => { %>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1"><%= blog.title %></h6>
+                                    <small class="text-muted">
+                                        <span class="format-date" data-date="<%= blog.createdAt %>">
+                                            <%= moment(blog.createdAt).fromNow() %>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1 text-muted small">By <%= blog.author.name %></p>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="list-group-item text-center text-muted">
+                            No blog posts found
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card dashboard-card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/students/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-user-plus mb-2"></i>
+                    Add Student
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/teachers/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-chalkboard-teacher mb-2"></i>
+                    Add Teacher
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/classes/fees" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-money-bill-wave mb-2"></i>
+                    Class Fees
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/notices/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-bullhorn mb-2"></i>
+                    Post Notice
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/blogs/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-blog mb-2"></i>
+                    New Blog
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/timetable" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-calendar-alt mb-2"></i>
+                    Timetable
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/admin/settings" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-cog mb-2"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="card dashboard-card">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">System Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <!-- Attendance Chart -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Student Distribution -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <canvas id="studentDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialize charts when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Attendance Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                datasets: [{
+                label: 'Attendance Rate',
+                data: [95, 88, 92, 85, 90],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5',
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Attendance Rate (%)'
+                }
+            }
+        }
+    });
+
+    // Student Distribution Chart
+    const distributionCtx = document.getElementById('studentDistributionChart').getContext('2d');
+    new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'],
+                datasets: [{
+                data: [30, 25, 28, 32, 27],
+                backgroundColor: [
+                    getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5',
+                    '#10b981',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#06b6d4'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Students by Class'
+                }
+            }
+        }
+    });
+});
+</script>

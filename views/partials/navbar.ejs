@@ -1,0 +1,67 @@
+<!-- Navigation: modern rounded pill header -->
+<nav class="navbar navbar-expand-lg site-navbar" aria-label="Primary navigation">
+    <div class="container">
+        <div class="navbar-inner w-100 d-flex align-items-center">
+            <!-- Left: logo -->
+            <a class="navbar-brand d-flex align-items-center me-3" href="/">
+                <i class="fas fa-school me-2"></i>
+                <span class="brand-text">MySchool Portal</span>
+            </a>
+
+            <!-- Center: desktop links -->
+            <ul class="navbar-nav nav-primary mx-auto d-none d-lg-flex">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="/academics">Academics</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admissions">Admissions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/facilities">Facilities</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+            </ul>
+
+            <!-- Right: actions / mobile toggler -->
+            <div class="d-flex align-items-center ms-auto">
+                <% if (!user) { %>
+                    <a class="nav-link d-none d-lg-inline-block me-3 btn-outline-login" href="/auth/login">Login</a>
+                    <a class="btn btn-register d-none d-lg-inline-block" href="/auth/register">Register</a>
+                <% } else { %>
+                    <div class="nav-item dropdown d-none d-lg-block">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i><%= user.name %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUser">
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <button class="navbar-toggler ms-3 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile collapse: links + CTAs -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav d-lg-none px-2 py-2">
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/about">About</a></li>
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/academics">Academics</a></li>
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/admissions">Admissions</a></li>
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/facilities">Facilities</a></li>
+                <li class="nav-item"><a class="nav-link mobile-nav-link" href="/contact">Contact</a></li>
+            </ul>
+
+            <div class="d-lg-none px-3 pb-3">
+                <% if (!user) { %>
+                    <a class="btn btn-register w-100 mb-2" href="/auth/register">Register</a>
+                    <a class="btn btn-outline-secondary w-100" href="/auth/login">Login</a>
+                <% } else { %>
+                    <a class="btn btn-outline-secondary w-100 mb-2" href="/profile">Profile</a>
+                    <a class="btn btn-outline-secondary w-100" href="/auth/logout">Logout</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>

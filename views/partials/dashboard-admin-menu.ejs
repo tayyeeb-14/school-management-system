@@ -1,0 +1,62 @@
+<ul class="nav-menu">
+    <li>
+        <a href="/admin/dashboard" class="<%= path === '/admin/dashboard' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+            <span class="menu-label">Dashboard</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/students" class="<%= path.startsWith('/admin/students') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-user-graduate"></i></span>
+            <span class="menu-label">Students</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/teachers" class="<%= path.startsWith('/admin/teachers') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-chalkboard-teacher"></i></span>
+            <span class="menu-label">Teachers</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/classes" class="<%= path.startsWith('/admin/classes') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-school"></i></span>
+            <span class="menu-label">Classes</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/subjects" class="<%= path.startsWith('/admin/subjects') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-book"></i></span>
+            <span class="menu-label">Subjects</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/attendance" class="<%= path.startsWith('/admin/attendance') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="menu-label">Attendance</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/timetable" class="<%= path.startsWith('/admin/timetable') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+            <span class="menu-label">Timetable</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/notices" class="<%= path.startsWith('/admin/notices') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-bullhorn"></i></span>
+            <span class="menu-label">Notices</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/blogs" class="<%= path.startsWith('/admin/blogs') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-blog"></i></span>
+            <span class="menu-label">Blog Posts</span>
+        </a>
+    </li>
+    <li>
+        <a href="/admin/settings" class="<%= path === '/admin/settings' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-cog"></i></span>
+            <span class="menu-label">Settings</span>
+        </a>
+    </li>
+</ul>

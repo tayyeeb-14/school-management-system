@@ -1,0 +1,43 @@
+<h3 class="mb-4">Add New Teacher</h3>
+<form action="/admin/teachers" method="POST" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Username</label>
+            <input name="username" class="form-control" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Password</label>
+            <input name="password" type="password" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Full Name</label>
+            <input name="name" class="form-control" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input name="email" type="email" class="form-control" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Subject</label>
+            <input name="subject" class="form-control" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Qualifications</label>
+            <input name="qualifications" class="form-control">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Profile Photo</label>
+        <input name="photo" type="file" accept="image/*" class="form-control">
+    </div>
+
+    <button class="btn btn-primary" type="submit">Create Teacher</button>
+    <a href="/admin/teachers" class="btn btn-secondary ms-2">Cancel</a>
+</form>

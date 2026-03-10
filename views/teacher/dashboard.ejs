@@ -1,0 +1,301 @@
+<div class="row g-3 mb-4">
+    <!-- Statistics Cards -->
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">My Classes</h6>
+                    <h3 class="mb-0"><%= teacher.classes.length %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Active Assignments</h6>
+                    <h3 class="mb-0"><%= stats.assignments %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Pending Submissions</h6>
+                    <h3 class="mb-0"><%= stats.pendingSubmissions %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Today's Classes</h6>
+                    <h3 class="mb-0" id="todayClasses">...</h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Schedule -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Today's Schedule</h5>
+                <a href="/teacher/timetable" class="btn btn-sm btn-primary">Full Timetable</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Class</th>
+                                <th>Subject</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todaySchedule">
+                            <% const today = new Date().getDay(); %>
+                            <% const scheduleToday = teacher.timetable.filter(t => t.day.toLowerCase() === ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][today].toLowerCase()); %>
+                            
+                            <% if (scheduleToday.length > 0) { %>
+                                <% scheduleToday.sort((a, b) => a.period - b.period).forEach(schedule => { %>
+                                    <tr>
+                                        <td><%= schedule.time %></td>
+                                        <td>Class <%= schedule.class %></td>
+                                        <td><%= schedule.subject %></td>
+                                        <td class="text-center">
+                                            <a href="/teacher/attendance/<%= schedule.class %>" class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-user-check"></i>
+                                            </a>
+                                            <a href="/teacher/assignments/new?class=<%= schedule.class %>" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No classes scheduled for today</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Recent Assignments</h5>
+                <a href="/teacher/assignments" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <% if (assignments && assignments.length > 0) { %>
+                        <% assignments.forEach(assignment => { %>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1"><%= assignment.title %></h6>
+                                    <small class="text-danger">
+                                        Due: <span class="format-date" data-date="<%= assignment.dueDate %>">
+                                            <%= moment(assignment.dueDate).format('MMM DD') %>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1 text-muted small">Class <%= assignment.class %> | <%= assignment.subject %></p>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted">
+                                        Submissions: <%= assignment.submissions.length %>
+                                    </small>
+                                    <a href="/teacher/assignments/<%= assignment._id %>/submissions" class="btn btn-sm btn-outline-primary">
+                                        View Submissions
+                                    </a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="list-group-item text-center text-muted">
+                            No recent assignments
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card dashboard-card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/attendance" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-user-check mb-2"></i>
+                    Mark Attendance
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/assignments/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-tasks mb-2"></i>
+                    New Assignment
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/materials/upload" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-upload mb-2"></i>
+                    Upload Material
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/blogs/new" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-blog mb-2"></i>
+                    Write Blog
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/students" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-user-graduate mb-2"></i>
+                    View Students
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/teacher/profile" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-user-cog mb-2"></i>
+                    Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics -->
+<div class="row">
+    <!-- Assignment Completion Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Assignment Completion Rate</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="assignmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Overview -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Class Attendance Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Count today's classes
+    const scheduleRows = document.querySelectorAll('#todaySchedule tr:not(.text-muted)');
+    document.getElementById('todayClasses').textContent = scheduleRows.length;
+
+    // Assignment Completion Chart
+    const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
+    new Chart(assignmentCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10'],
+            datasets: [{
+                label: 'Submitted',
+                data: [85, 92, 78, 88, 95],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5'
+            }, {
+                label: 'Pending',
+                data: [15, 8, 22, 12, 5],
+                backgroundColor: '#ef4444'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true, max: 100 }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Assignment Submission Rate by Class (%)'
+                }
+            }
+        }
+    });
+
+    // Attendance Overview Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                datasets: [{
+                label: 'Average Attendance',
+                data: [92, 88, 95, 85, 90],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5',
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Attendance Rate (%)'
+                }
+            }
+        }
+    });
+});
+</script>

@@ -1,0 +1,46 @@
+<div class="py-5">
+  <div class="container">
+    <h1 class="display-4 mb-3"><%= title %></h1>
+
+    <% if (success_msg) { %>
+      <div class="alert alert-success"><%= success_msg %></div>
+    <% } %>
+    <% if (error_msg) { %>
+      <div class="alert alert-danger"><%= error_msg %></div>
+    <% } %>
+
+    <div class="row">
+      <div class="col-md-8">
+        <form action="/contact" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane me-1"></i> Send Message
+          </button>
+        </form>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Contact Info</h5>
+            <p class="mb-1"><strong>Email:</strong> info@myschool.edu</p>
+            <p class="mb-1"><strong>Phone:</strong> +1 (555) 123-4567</p>
+            <p class="mb-0"><strong>Address:</strong> 123 Education Lane, City, Country</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<ul class="nav-menu">
+    <li>
+        <a href="/student/dashboard" class="<%= path === '/student/dashboard' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+            <span class="menu-label">Dashboard</span>
+        </a>
+    </li>
+    <li>
+        <a href="/student/assignments" class="<%= path.startsWith('/student/assignments') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-tasks"></i></span>
+            <span class="menu-label">Assignments</span>
+        </a>
+    </li>
+    <li>
+        <a href="/student/attendance" class="<%= path === '/student/attendance' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="menu-label">My Attendance</span>
+        </a>
+    </li>
+    <li>
+        <a href="/student/timetable" class="<%= path === '/student/timetable' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+            <span class="menu-label">Class Timetable</span>
+        </a>
+    </li>
+    <li>
+        <a href="/student/materials" class="<%= path.startsWith('/student/materials') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-book"></i></span>
+            <span class="menu-label">Study Materials</span>
+        </a>
+    </li>
+    <li>
+        <a href="/student/results" class="<%= path === '/student/results' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+            <span class="menu-label">My Results</span>
+        </a>
+    </li>
+    <li>
+        <a href="/blog" class="<%= path === '/blog' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-blog"></i></span>
+            <span class="menu-label">School Blog</span>
+        </a>
+    </li>
+</ul>

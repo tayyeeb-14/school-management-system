@@ -1,0 +1,333 @@
+<div class="row g-3 mb-4">
+    <!-- Statistics Cards -->
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Attendance</h6>
+                    <h3 class="mb-0"><%= attendancePercentage + '%' %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+            </div>
+                <div class="progress mt-2" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" data-percent="<%= attendancePercentage %>"></div>
+                </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Pending Assignments</h6>
+                    <h3 class="mb-0"><%= pendingAssignments.length %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Subjects</h6>
+                    <h3 class="mb-0"><%= student.subjects.length %></h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Today's Classes</h6>
+                    <h3 class="mb-0" id="todayClasses">...</h3>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Today's Schedule -->
+    <div class="col-lg-8">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Today's Schedule</h5>
+                <a href="/student/timetable" class="btn btn-sm btn-primary">Full Timetable</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Subject</th>
+                                <th>Teacher</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayClasses">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Assignments -->
+    <div class="col-lg-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Pending Assignments</h5>
+                <a href="/student/assignments" class="btn btn-sm btn-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <% if (pendingAssignments && pendingAssignments.length > 0) { %>
+                        <% pendingAssignments.forEach(assignment => { %>
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1"><%= assignment.title %></h6>
+                                    <small class="text-danger">
+                                        Due: <span class="format-date" data-date="<%= assignment.dueDate %>">
+                                            <%= moment(assignment.dueDate).format('MMM DD') %>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1 text-muted small"><%= assignment.subject %></p>
+                                <a href="/student/assignments/<%= assignment._id %>" class="btn btn-sm btn-outline-primary mt-2">
+                                    Submit Now
+                                </a>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="list-group-item text-center text-muted">
+                            No pending assignments
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card dashboard-card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/assignments" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-tasks mb-2"></i>
+                    Assignments
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/materials" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-book mb-2"></i>
+                    Study Materials
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/attendance" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-calendar-check mb-2"></i>
+                    Attendance
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/results" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-chart-line mb-2"></i>
+                    Results
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/fees" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-money-bill-wave mb-2"></i>
+                    Fees
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/blog" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-blog mb-2"></i>
+                    Blog
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="/student/profile" class="btn btn-light w-100 h-100 p-3 d-flex flex-column align-items-center">
+                    <i class="fas fa-user-cog mb-2"></i>
+                    Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Overview -->
+<div class="row">
+    <!-- Academic Progress -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Academic Progress</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="academicChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Trend -->
+    <div class="col-md-6 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Monthly Attendance</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="card dashboard-card">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Recent Activity</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+                <% recentSubmissions.forEach(submission => { %>
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <% if (submission.marks) { %>
+                                    <span class="badge bg-success rounded-circle p-2">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                <% } else { %>
+                                    <span class="badge bg-warning rounded-circle p-2">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                                <% } %>
+                            </div>
+                            <div class="ms-3 flex-grow-1">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Submitted: <%= submission.title %></h6>
+                                    <small class="text-muted">
+                                        <span class="format-date" data-date="<%= submission.submittedAt %>">
+                                            <%= moment(submission.submittedAt).fromNow() %>
+                                        </span>
+                                    </small>
+                                </div>
+                                <p class="mb-1 text-muted small">
+                                    <%= submission.marks ? `Marks: ${submission.marks}` : 'Pending evaluation' %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="list-group-item text-center text-muted">
+                    No recent activity
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set progress-bar widths from data-percent attributes
+    document.querySelectorAll('.progress-bar[data-percent]').forEach(el => {
+        const p = el.getAttribute('data-percent') || 0;
+        el.style.width = p + '%';
+    });
+
+    // Academic Progress Chart
+    const academicCtx = document.getElementById('academicChart').getContext('2d');
+    new Chart(academicCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mathematics', 'Science', 'English', 'History', 'Geography'],
+                datasets: [{
+                label: 'Your Score',
+                data: [85, 92, 78, 88, 95],
+                backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5'
+            }, {
+                label: 'Class Average',
+                data: [75, 80, 76, 82, 85],
+                backgroundColor: '#6b7280'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Subject-wise Performance'
+                }
+            }
+        }
+    });
+
+    // Attendance Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                label: 'Attendance Rate',
+                data: [95, 92, 88, 95, 90, 92],
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#4f46e5',
+                tension: 0.1,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Attendance Rate (%)'
+                }
+            }
+        }
+    });
+});
+</script>

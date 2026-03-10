@@ -1,0 +1,50 @@
+<%- contentFor('body') %>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Attendance</h1>
+        <div>
+            <span class="badge bg-primary fs-5">
+                <i class="fas fa-calendar-check me-2"></i>
+                <%= attendancePercentage %>%
+            </span>
+        </div>
+    </div>
+
+    <% if (attendance && attendance.length > 0) { %>
+        <div class="card mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% attendance.forEach(record => { %>
+                                <tr>
+                                    <td><%= moment(record.date).format('MMM DD, YYYY') %></td>
+                                    <td>
+                                        <% if (record.present) { %>
+                                            <span class="text-success">Present</span>
+                                        <% } else { %>
+                                            <span class="text-danger">Absent</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= record.note || '-' %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="alert alert-info">No attendance records found for the selected period.</div>
+    <% } %>
+
+    <a href="/student/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+</div>

@@ -1,0 +1,44 @@
+<ul class="nav-menu">
+    <li>
+        <a href="/teacher/dashboard" class="<%= path === '/teacher/dashboard' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
+            <span class="menu-label">Dashboard</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/attendance" class="<%= path.startsWith('/teacher/attendance') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="menu-label">Mark Attendance</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/assignments" class="<%= path.startsWith('/teacher/assignments') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-tasks"></i></span>
+            <span class="menu-label">Assignments</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/materials" class="<%= path.startsWith('/teacher/materials') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-book"></i></span>
+            <span class="menu-label">Study Materials</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/timetable" class="<%= path === '/teacher/timetable' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-alt"></i></span>
+            <span class="menu-label">My Timetable</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/students" class="<%= path.startsWith('/teacher/students') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-user-graduate"></i></span>
+            <span class="menu-label">My Students</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/blogs" class="<%= path.startsWith('/teacher/blogs') ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-blog"></i></span>
+            <span class="menu-label">My Blog Posts</span>
+        </a>
+    </li>
+</ul>

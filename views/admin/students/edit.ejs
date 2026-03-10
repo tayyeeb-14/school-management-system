@@ -1,0 +1,59 @@
+<h3 class="mb-4">Edit Student</h3>
+<form action="/admin/students/<%= student._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Username</label>
+            <input name="username" class="form-control" value="<%= student.userId.username %>" readonly>
+            <small class="text-muted">Username cannot be changed</small>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Password</label>
+            <input name="password" type="password" class="form-control" placeholder="Leave blank to keep current password">
+            <small class="text-muted">Leave blank to keep current password</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Full Name</label>
+            <input name="name" class="form-control" value="<%= student.userId.name %>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input name="email" type="email" class="form-control" value="<%= student.userId.email %>" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input name="phone" type="tel" class="form-control" value="<%= student.userId.phone || '' %>">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Class</label>
+            <input name="class" class="form-control" value="<%= student.classId ? student.classId.name : '' %>" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Roll Number</label>
+            <input name="rollNo" class="form-control" value="<%= student.rollNo %>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Father Name</label>
+            <input name="fatherName" class="form-control" value="<%= student.fatherName || '' %>">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Profile Photo</label>
+        <input name="photo" type="file" accept="image/*" class="form-control">
+        <% if (student.userId.photo && student.userId.photo !== 'default.jpg') { %>
+            <small class="text-muted">Leave blank to keep current photo</small>
+        <% } %>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Update Student</button>
+    <a href="/admin/students" class="btn btn-secondary ms-2">Cancel</a>
+</form>

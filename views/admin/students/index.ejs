@@ -1,0 +1,101 @@
+<h3 class="mb-4">Manage Students</h3>
+<div class="mb-3">
+    <a href="/admin/students/new" class="btn btn-primary">Add New Student</a>
+</div>
+
+<% if (pendingStudents && pendingStudents.length > 0) { %>
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">Pending Student Approvals</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Class</th>
+                            <th>Registered Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% pendingStudents.forEach((s, i) => { %>
+                            <tr>
+                                <td><%= i + 1 %></td>
+                                <td><%= s.userId?.name || '—' %></td>
+                                <td><%= s.userId?.username || '—' %></td>
+                                <td><%= s.userId?.email || '—' %></td>
+                                <td><%= s.classId ? s.classId.name : 'N/A' %></td>
+                                <td><%= moment(s.createdAt).format('MMM DD, YYYY') %></td>
+                                <td>
+                                    <a href="/admin/students/<%= s._id %>/approve" class="btn btn-sm btn-success">Approve</a>
+                                    <form action="/admin/students/<%= s._id %>?_method=DELETE" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to reject this student?')">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<% 
+const classMap = {};
+students.forEach(s => {
+    const className = s.classId ? s.classId.name : 'No Class Assigned';
+    if (!classMap[className]) classMap[className] = [];
+    classMap[className].push(s);
+});
+%>
+<% Object.keys(classMap).sort().forEach(className => { %>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Class: <%= className %></h5>
+        </div>
+        <div class="card-body">
+            <% if (classMap[className].length > 0) { %>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Roll No</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% classMap[className].forEach((s, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td><%= s.userId?.name || '—' %></td>
+                                    <td><%= s.userId?.username || '—' %></td>
+                                    <td><%= s.userId?.email || '—' %></td>
+                                    <td><%= s.rollNo %></td>
+                                    <td>
+                                        <a href="/admin/students/<%= s._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <a href="/admin/students/<%= s._id %>/fees" class="btn btn-sm btn-info">Fees</a>
+                                        <form action="/admin/students/<%= s._id %>?_method=DELETE" method="POST" class="d-inline">
+                                            <button class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <p class="text-muted">No students in this class.</p>
+            <% } %>
+        </div>
+    </div>
+<% }); %>

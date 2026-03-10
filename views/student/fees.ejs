@@ -1,0 +1,99 @@
+<h3 class="mb-5">My Fees</h3>
+
+<!-- Quick Summary Cards -->
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title mb-3">Total Paid</h6>
+                <h2><%= totalPaid || 0 %></h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <h6 class="card-title mb-3">Overdue Amount</h6>
+                <h2><%= overdues.reduce((sum, d) => sum + (d.dueAmount - d.paidAmount), 0) %></h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment History -->
+<div class="card mb-5">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">📋 Payment History</h5>
+    </div>
+    <div class="card-body">
+        <% if (fee.payments && fee.payments.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Month</th>
+                            <th>Amount Paid</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% fee.payments.forEach((payment, index) => { %>
+                            <tr>
+                                <td><strong><%= payment.month %></strong></td>
+                                <td><strong class="text-success"><%= payment.amount %></strong></td>
+                                <td><small><%= moment(payment.date).format('DD MMM, YYYY') %></small></td>
+                                <td>
+                                    <% if (payment.collectedFromClass) { %>
+                                        <span class="badge bg-success">Class</span>
+                                    <% } else { %>
+                                        <span class="badge bg-info">Manual</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle"></i> No payment history yet.
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Overdue Details (if any) -->
+<% if (overdues && overdues.length > 0) { %>
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">⚠️ Overdue Dues</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Month</th>
+                            <th>Due Amount</th>
+                            <th>Paid</th>
+                            <th>Pending</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% overdues.forEach(due => { %>
+                            <tr class="table-danger">
+                                <td><strong><%= due.month %></strong></td>
+                                <td><%= due.dueAmount %></td>
+                                <td><span class="text-success"><%= due.paidAmount %></span></td>
+                                <td><strong><%= due.dueAmount - due.paidAmount %></strong></td>
+                                <td><small><%= moment(due.dueDate).format('DD MMM, YYYY') %></small></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } %>
