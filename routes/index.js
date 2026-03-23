@@ -91,6 +91,11 @@ router.get('/about', (req, res) => {
     res.render('about', { title: 'About Us' });
 });
 
+// Admissions page
+router.get('/admissions', (req, res) => {
+    res.render('admissions', { title: 'Admissions' });
+});
+
 // Contact page
 router.get('/contact', (req, res) => {
     res.render('contact', { title: 'Contact Us' });

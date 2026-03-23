@@ -205,7 +205,7 @@ function checkPasswordStrength(password) {
 /* Auto-close bootstrap collapse when a mobile nav link is clicked */
 (function navbarAutoClose() {
     try {
-        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link[href], .mobile-submenu-link');
         if (!mobileLinks.length) return;
 
         mobileLinks.forEach(link => {
@@ -223,6 +223,89 @@ function checkPasswordStrength(password) {
         });
     } catch (err) {
         console.error('navbarAutoClose error:', err);
+    }
+})();
+
+/* Academics desktop submenu toggle */
+(function navbarDesktopSubmenu() {
+    try {
+        const submenuItems = document.querySelectorAll('[data-desktop-submenu]');
+        if (!submenuItems.length) return;
+
+        const closeAll = () => {
+            submenuItems.forEach(item => {
+                item.classList.remove('is-open');
+                const trigger = item.querySelector('.nav-link--submenu');
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        submenuItems.forEach(item => {
+            const trigger = item.querySelector('.nav-link--submenu');
+            if (!trigger) return;
+
+            trigger.addEventListener('click', (event) => {
+                event.preventDefault();
+                const shouldOpen = !item.classList.contains('is-open');
+                closeAll();
+                item.classList.toggle('is-open', shouldOpen);
+                trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if ([...submenuItems].some(item => item.contains(event.target))) return;
+            closeAll();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeAll();
+            }
+        });
+    } catch (err) {
+        console.error('navbarDesktopSubmenu error:', err);
+    }
+})();
+
+/* Academics mobile submenu toggle */
+(function navbarMobileSubmenu() {
+    try {
+        const mobileItems = document.querySelectorAll('[data-mobile-submenu]');
+        if (!mobileItems.length) return;
+
+        const resetAll = () => {
+            mobileItems.forEach(item => {
+                const trigger = item.querySelector('.mobile-nav-link--toggle');
+                const panel = item.querySelector('.mobile-submenu-panel');
+                if (!trigger || !panel) return;
+
+                item.classList.remove('is-open');
+                trigger.setAttribute('aria-expanded', 'false');
+                panel.hidden = true;
+            });
+        };
+
+        mobileItems.forEach(item => {
+            const trigger = item.querySelector('.mobile-nav-link--toggle');
+            const panel = item.querySelector('.mobile-submenu-panel');
+            if (!trigger || !panel) return;
+
+            trigger.addEventListener('click', () => {
+                const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+                const nextState = !isExpanded;
+                item.classList.toggle('is-open', nextState);
+                trigger.setAttribute('aria-expanded', nextState ? 'true' : 'false');
+                panel.hidden = !nextState;
+            });
+        });
+
+        const collapseEl = document.getElementById('navbarNav');
+        if (collapseEl) {
+            collapseEl.addEventListener('hide.bs.collapse', resetAll);
+        }
+    } catch (err) {
+        console.error('navbarMobileSubmenu error:', err);
     }
 })();
 

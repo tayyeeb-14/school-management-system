@@ -1,21 +1,611 @@
-<div class="py-5"></div>
-    <div class="container">
-        <h1 class="display-4 mb-3"><%= title %></h1>
-        <p class="lead mb-4">Our mission is to provide quality education through modern tools and a supportive community. We offer a range of academic programs, extracurricular activities, and a nurturing environment for students to thrive.</p>
+<%
+const values = [
+    {
+        icon: 'fa-bullseye',
+        title: 'Our mission',
+        copy: 'To provide quality education that develops strong academics, confident character, and lifelong curiosity.'
+    },
+    {
+        icon: 'fa-gem',
+        title: 'Our values',
+        copy: 'We lead with discipline, respect, integrity, and care so students grow in a positive and purposeful environment.'
+    },
+    {
+        icon: 'fa-rocket',
+        title: 'Our commitment',
+        copy: 'We continuously raise standards in teaching, student support, and school culture to deliver meaningful quality.'
+    }
+];
 
-        <div class="row g-4">
-            <div class="col-md-4">
-                <h5>Our Vision</h5>
-                <p>To empower every student to reach their full potential.</p>
-            </div>
-            <div class="col-md-4">
-                <h5>Our Values</h5>
-                <p>Integrity, Excellence, Inclusion, and Innovation.</p>
-            </div>
-            <div class="col-md-4">
-                <h5>Contact</h5>
-                <p>Email: info@myschool.edu<br>Phone: +1 (555) 123-4567</p>
-            </div>
+const features = [
+    {
+        icon: 'fa-medal',
+        title: 'Experience',
+        copy: 'A trusted foundation built on years of consistent teaching, structured systems, and dependable school leadership.'
+    },
+    {
+        icon: 'fa-chart-line',
+        title: 'Student Growth',
+        copy: 'We focus on steady academic progress, confidence building, and the all-round development of every learner.'
+    },
+    {
+        icon: 'fa-chalkboard-user',
+        title: 'Faculty',
+        copy: 'Qualified and caring teachers who combine subject expertise with attention, mentorship, and genuine support.'
+    },
+    {
+        icon: 'fa-shield-halved',
+        title: 'Safety',
+        copy: 'A safe and disciplined environment that gives parents confidence and gives students the freedom to learn well.'
+    }
+];
+%>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+  .about-page {
+    --about-ink: #10263f;
+    --about-muted: #5f738d;
+    --about-accent: #0d6e9c;
+    --about-accent-deep: #0a4f73;
+    --about-gold: #caa45c;
+    --about-surface: rgba(255, 255, 255, 0.9);
+    --about-surface-soft: #f4f8fb;
+    --about-border: rgba(16, 38, 63, 0.1);
+    --about-shadow: 0 24px 60px rgba(7, 16, 29, 0.08);
+    --about-shadow-deep: 0 30px 80px rgba(6, 14, 24, 0.18);
+    margin-top: -1.5rem;
+    color: var(--about-ink);
+    font-family: 'Manrope', 'Segoe UI', sans-serif;
+  }
+
+  .about-page *,
+  .about-page *::before,
+  .about-page *::after {
+    box-sizing: border-box;
+  }
+
+  .about-page img {
+    display: block;
+    max-width: 100%;
+  }
+
+  .about-page .container {
+    max-width: 1220px;
+  }
+
+  .about-hero {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    min-height: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--navbar-height, 70px) + 4rem) 1.5rem 4.5rem;
+    text-align: center;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(6, 15, 26, 0.44) 0%, rgba(6, 15, 26, 0.72) 100%),
+      linear-gradient(120deg, rgba(13, 110, 156, 0.42) 0%, rgba(6, 15, 26, 0.2) 58%, rgba(202, 164, 92, 0.18) 100%),
+      url('/img/5.jpg') center center / cover no-repeat;
+  }
+
+  .about-hero::before,
+  .about-hero::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .about-hero::before {
+    width: 18rem;
+    height: 18rem;
+    top: 4rem;
+    right: -5rem;
+    background: radial-gradient(circle, rgba(13, 110, 156, 0.24), rgba(13, 110, 156, 0));
+  }
+
+  .about-hero::after {
+    width: 16rem;
+    height: 16rem;
+    bottom: 2rem;
+    left: -4rem;
+    background: radial-gradient(circle, rgba(202, 164, 92, 0.22), rgba(202, 164, 92, 0));
+  }
+
+  .about-hero-panel {
+    position: relative;
+    z-index: 1;
+    width: min(860px, 100%);
+    padding: clamp(1.8rem, 4vw, 3rem);
+    border-radius: 34px;
+    background: rgba(8, 20, 34, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: var(--about-shadow-deep);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    animation: aboutFadeUp 800ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  }
+
+  .about-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #f8fbff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-hero-title {
+    margin: 1rem 0 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(3.2rem, 7vw, 5.8rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: #ffffff;
+    text-wrap: balance;
+  }
+
+  .about-hero-subtitle {
+    margin: 1.15rem auto 0;
+    max-width: 43rem;
+    font-size: 1.08rem;
+    line-height: 1.9;
+    color: rgba(240, 247, 252, 0.84);
+  }
+
+  .about-hero-chips {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.7rem;
+  }
+
+  .about-hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #f8fbff;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .about-hero-chip i {
+    color: #dcefff;
+  }
+
+  .about-section {
+    padding: clamp(4.25rem, 7vw, 6.5rem) 0;
+  }
+
+  .about-section--soft {
+    background:
+      radial-gradient(circle at top right, rgba(13, 110, 156, 0.08), transparent 24rem),
+      linear-gradient(180deg, #f9fbfd 0%, #f3f7fb 100%);
+  }
+
+  .about-split-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .about-visual-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 560px;
+    border-radius: 30px;
+    box-shadow: var(--about-shadow-deep);
+    animation: aboutFadeUp 800ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation-delay: 0.08s;
+  }
+
+  .about-visual-card img {
+    width: 100%;
+    height: 100%;
+    min-height: 560px;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 700ms ease;
+  }
+
+  .about-visual-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 20, 34, 0.02) 40%, rgba(8, 20, 34, 0.58) 100%);
+  }
+
+  .about-visual-card:hover img {
+    transform: scale(1.04);
+  }
+
+  .about-visual-badge {
+    position: absolute;
+    left: 1.4rem;
+    bottom: 1.4rem;
+    z-index: 1;
+    max-width: 260px;
+    padding: 1rem 1.15rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    box-shadow: var(--about-shadow);
+    backdrop-filter: blur(14px);
+  }
+
+  .about-visual-badge span,
+  .about-visual-badge strong {
+    display: block;
+  }
+
+  .about-visual-badge span {
+    color: var(--about-accent-deep);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-visual-badge strong {
+    margin-top: 0.45rem;
+    color: var(--about-ink);
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+
+  .about-copy-block {
+    animation: aboutFadeUp 800ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation-delay: 0.16s;
+  }
+
+  .about-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(13, 110, 156, 0.08);
+    color: var(--about-accent-deep);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .about-heading {
+    margin: 1rem 0 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    color: var(--about-ink);
+  }
+
+  .about-copy {
+    margin: 1rem 0 0;
+    color: var(--about-muted);
+    line-height: 1.9;
+    font-size: 1rem;
+  }
+
+  .about-values-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.8rem;
+  }
+
+  .about-value-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.15rem 1.2rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(16, 38, 63, 0.08);
+    box-shadow: var(--about-shadow);
+    backdrop-filter: blur(12px);
+    transition: transform 240ms ease, box-shadow 240ms ease;
+  }
+
+  .about-value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 60px rgba(7, 16, 29, 0.1);
+  }
+
+  .about-value-icon {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(13, 110, 156, 0.12) 0%, rgba(202, 164, 92, 0.18) 100%);
+    color: var(--about-accent-deep);
+    font-size: 1.1rem;
+  }
+
+  .about-value-card h3 {
+    margin: 0;
+    font-size: 1.04rem;
+    line-height: 1.25;
+    color: var(--about-ink);
+  }
+
+  .about-value-card p {
+    margin: 0.35rem 0 0;
+    color: var(--about-muted);
+    line-height: 1.75;
+    font-size: 0.95rem;
+  }
+
+  .about-features-head {
+    max-width: 44rem;
+    margin: 0 auto 2.6rem;
+    text-align: center;
+    animation: aboutFadeUp 800ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation-delay: 0.06s;
+  }
+
+  .about-features-head h2 {
+    margin: 1rem 0 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 3.7rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    color: var(--about-ink);
+  }
+
+  .about-features-head p {
+    margin: 1rem auto 0;
+    max-width: 38rem;
+    color: var(--about-muted);
+    line-height: 1.85;
+  }
+
+  .about-features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .about-feature-card {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    padding: 1.55rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(16, 38, 63, 0.08);
+    box-shadow: var(--about-shadow);
+    backdrop-filter: blur(16px);
+    transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+    animation: aboutFadeUp 800ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation-delay: var(--feature-delay, 0s);
+  }
+
+  .about-feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--about-accent), var(--about-gold));
+  }
+
+  .about-feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 72px rgba(7, 16, 29, 0.14);
+    border-color: rgba(13, 110, 156, 0.18);
+  }
+
+  .about-feature-icon {
+    width: 58px;
+    height: 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(13, 110, 156, 0.12) 0%, rgba(202, 164, 92, 0.18) 100%);
+    color: var(--about-accent-deep);
+    font-size: 1.18rem;
+  }
+
+  .about-feature-card h3 {
+    margin: 1rem 0 0.55rem;
+    color: var(--about-ink);
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+
+  .about-feature-card p {
+    margin: 0;
+    color: var(--about-muted);
+    line-height: 1.78;
+    font-size: 0.95rem;
+  }
+
+  @keyframes aboutFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 1199.98px) {
+    .about-split-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-features-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .about-page {
+      margin-top: -0.8rem;
+    }
+
+    .about-hero {
+      min-height: 620px;
+      padding: calc(var(--navbar-height, 60px) + 2.6rem) 1rem 3rem;
+    }
+
+    .about-hero-panel {
+      padding: 1.5rem;
+      border-radius: 26px;
+    }
+
+    .about-hero-subtitle {
+      font-size: 0.98rem;
+    }
+
+    .about-hero-chips {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .about-hero-chip {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .about-visual-card,
+    .about-visual-card img {
+      min-height: 380px;
+    }
+
+    .about-visual-badge {
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: none;
+    }
+
+    .about-features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .about-value-card,
+    .about-feature-card {
+      padding: 1.25rem;
+    }
+  }
+</style>
+
+<div class="about-page">
+  <section class="about-hero">
+    <div class="about-hero-panel">
+      <span class="about-hero-kicker">About our school</span>
+      <h1 class="about-hero-title">About Our School</h1>
+      <p class="about-hero-subtitle">
+        We create a premium, future-ready learning experience where quality education, strong values, and a caring
+        school environment come together to help every student thrive.
+      </p>
+
+      <div class="about-hero-chips">
+        <div class="about-hero-chip">
+          <i class="fas fa-award"></i>
+          <span>Quality-led education</span>
         </div>
+        <div class="about-hero-chip">
+          <i class="fas fa-users"></i>
+          <span>Trusted by families</span>
+        </div>
+        <div class="about-hero-chip">
+          <i class="fas fa-shield-heart"></i>
+          <span>Safe and disciplined campus</span>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <section class="about-section about-section--soft">
+    <div class="container">
+      <div class="about-split-grid">
+        <div class="about-visual-card">
+          <img src="/img/1.jpg" alt="Students learning in a modern classroom">
+          <div class="about-visual-badge">
+            <span>Student-first learning</span>
+            <strong>A school culture shaped by academic focus, values, and personal growth.</strong>
+          </div>
+        </div>
+
+        <div class="about-copy-block">
+          <span class="about-label">Mission and values</span>
+          <h2 class="about-heading">We combine meaningful education with care, discipline, and long-term student development.</h2>
+          <p class="about-copy">
+            Our mission is to provide quality education that empowers students to achieve academically while growing
+            into responsible, confident, and capable individuals. We believe the best schools build knowledge and
+            character together.
+          </p>
+          <p class="about-copy">
+            Through strong teaching, clear expectations, and a supportive environment, we help students develop the
+            mindset, habits, and confidence they need for success in school and beyond.
+          </p>
+
+          <div class="about-values-grid">
+            <% values.forEach((value) => { %>
+              <article class="about-value-card">
+                <div class="about-value-icon">
+                  <i class="fas <%= value.icon %>"></i>
+                </div>
+                <div>
+                  <h3><%= value.title %></h3>
+                  <p><%= value.copy %></p>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="container">
+      <div class="about-features-head">
+        <span class="about-label">Why families trust us</span>
+        <h2>The foundations of a school experience that feels modern, professional, and dependable.</h2>
+        <p>
+          These four focus areas reflect what matters most to parents and students when choosing a school community.
+        </p>
+      </div>
+
+      <div class="about-features-grid">
+        <% features.forEach((feature, index) => { %>
+          <article class="about-feature-card" style="--feature-delay: <%= 0.08 * (index + 1) %>s;">
+            <div class="about-feature-icon">
+              <i class="fas <%= feature.icon %>"></i>
+            </div>
+            <h3><%= feature.title %></h3>
+            <p><%= feature.copy %></p>
+          </article>
+        <% }); %>
+      </div>
+    </div>
+  </section>
 </div>

@@ -1,661 +1,502 @@
-<!-- Cinematic hero: full-width slider, fixed text overlay -->
-<section class="home-hero home-hero-bleed" aria-label="Homepage hero">
-    <div id="homeHeroCarousel" class="carousel slide home-hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active"
-                aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1"
-                aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2"
-                aria-label="Slide 3"></button>
-            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="3"
-                aria-label="Slide 4"></button>
-            <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="4"
-                aria-label="Slide 5"></button>
-        </div>
+<%
+const heroSlides = [
+    { src: '/img/1.jpg', alt: 'Students learning in a bright classroom' },
+    { src: '/img/2.jpg', alt: 'School campus and student life' },
+    { src: '/img/3.jpg', alt: 'Safe and welcoming campus environment' },
+    { src: '/img/4.jpg', alt: 'Students building confidence through activities' },
+    { src: '/img/5.jpg', alt: 'Admissions and future-ready learning spaces' }
+];
 
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="/img/1.jpg" class="d-block w-100 home-hero-img" alt="Inspiring Excellence">
-            </div>
-            <!-- <div class="carousel-item">
-                <img src="/img/2.jpg" class="d-block w-100 home-hero-img" alt="Learning Meets Opportunity">
-            </div> -->
-            <div class="carousel-item">
-                <img src="/img/3.jpg" class="d-block w-100 home-hero-img" alt="Safe Campus">
-            </div>
-            <div class="carousel-item">
-                <img src="/img/4.jpg" class="d-block w-100 home-hero-img" alt="Building Future Leaders">
-            </div>
-            <div class="carousel-item">
-                <img src="/img/5.jpg" class="d-block w-100 home-hero-img" alt="Admissions Open">
-            </div>
-        </div>
+const programCards = [
+    {
+        icon: 'fa-seedling',
+        title: 'Primary',
+        detail: 'Classes I to V',
+        copy: 'Strong foundations in literacy, numeracy, confidence, and curiosity through joyful structured learning.'
+    },
+    {
+        icon: 'fa-book-open-reader',
+        title: 'Secondary',
+        detail: 'Classes VI to X',
+        copy: 'Deeper subject mastery, critical thinking, and disciplined preparation for exams and future opportunities.'
+    },
+    {
+        icon: 'fa-microscope',
+        title: 'Senior Secondary',
+        detail: 'Classes XI to XII',
+        copy: 'Advanced academics, stream-focused mentoring, and career guidance built around ambition and clarity.'
+    },
+    {
+        icon: 'fa-trophy',
+        title: 'Co-curricular',
+        detail: 'Sports, arts, clubs',
+        copy: 'Leadership, creativity, teamwork, and self-expression that support the whole child beyond academics.'
+    }
+];
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+const schoolHighlights = [
+    {
+        icon: 'fa-chalkboard-user',
+        title: 'Experienced Faculty',
+        copy: 'Dedicated, qualified teachers who focus on personalised learning and student growth.'
+    },
+    {
+        icon: 'fa-laptop-code',
+        title: 'Smart Classrooms',
+        copy: 'Technology-enabled spaces with interactive teaching aids that keep lessons engaging and effective.'
+    },
+    {
+        icon: 'fa-shield-halved',
+        title: 'Safe Campus Culture',
+        copy: 'A structured, secure environment that prioritises wellbeing, discipline, and confidence every day.'
+    },
+    {
+        icon: 'fa-people-group',
+        title: 'Holistic Development',
+        copy: 'Sports, clubs, performances, and leadership opportunities that nurture balanced, capable students.'
+    }
+];
 
-        <!-- Fixed overlay (does NOT change with slides) -->
-        <div class="home-hero-overlay" aria-hidden="true"></div>
-        <div class="home-hero-content">
-            <div class="home-hero-content-inner">
-                <h1 class="home-hero-title">
-                    Inspiring <span class="brand-gradient">Excellence</span> in Education
-                </h1>
-                <p class="home-hero-subtitle">
-                    A modern, values‑driven school community focused on strong academics, character building, and holistic growth.
-                </p>
-                <div class="home-hero-cta">
-                    <a href="/academics" class="btn btn-primary btn-lg">Explore Programs</a>
-                    <a href="/contact" class="btn btn-outline-light btn-lg">Book a Campus Visit</a>
-                </div>
-                <div class="trust-badges mt-3">
-                    <div class="badge-item">
-                        <span class="trust-icon"><i class="fas fa-school"></i></span>
-                        <span class="badge-text">Affiliated school • Nursery – XII</span>
-                    </div>
-                    <div class="badge-item">
-                        <span class="trust-icon"><i class="fas fa-user-friends"></i></span>
-                        <span class="badge-text"><%= stats.students %>+ students • <%= stats.teachers %> teachers</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+const platformBenefits = [
+    {
+        icon: 'fa-graduation-cap',
+        title: 'Educator-centric design',
+        copy: 'Developed around real school workflows so administrators and teachers can focus on impact, not friction.'
+    },
+    {
+        icon: 'fa-mobile-screen-button',
+        title: 'Mobile-first experience',
+        copy: 'Parents, teachers, and students stay connected across phones, tablets, and desktops with ease.'
+    },
+    {
+        icon: 'fa-headset',
+        title: 'Dedicated support',
+        copy: 'Implementation guidance, onboarding help, and day-to-day support that keeps adoption smooth.'
+    },
+    {
+        icon: 'fa-gears',
+        title: 'Easy integration',
+        copy: 'Flexible processes and practical migration paths that fit the way schools already operate.'
+    },
+    {
+        icon: 'fa-chart-line',
+        title: 'Proven results',
+        copy: 'Better communication, stronger accountability, and less administrative overhead across the campus.'
+    },
+    {
+        icon: 'fa-sack-dollar',
+        title: 'Transparent value',
+        copy: 'Clear outcomes, sensible cost efficiency, and visible returns through better school operations.'
+    }
+];
 
-<!-- Hero overlapping features (three callout cards) -->
-<!-- Quick Highlights: Why Choose Us -->
-<section class="hero-features hero-features-overlap hero-features-bleed">
-    <div class="container">
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-3 col-md-6">
-                <div class="hero-feature-card reveal delay-1">
-                    <div class="hf-icon" style="background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);"><i
-                            class="fas fa-graduation-cap"></i></div>
-                    <h5>Experienced Faculty</h5>
-                    <p class="mb-0">Smart classrooms & trained educators delivering excellence.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="hero-feature-card reveal delay-2">
-                    <div class="hf-icon" style="background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);"><i
-                            class="fas fa-building"></i></div>
-                    <h5>Modern Infrastructure</h5>
-                    <p class="mb-0">Labs, library, sports & technology for holistic growth.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="hero-feature-card reveal delay-3">
-                    <div class="hf-icon" style="background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%);"><i
-                            class="fas fa-chart-line"></i></div>
-                    <h5>Academic Excellence</h5>
-                    <p class="mb-0">Strong results & competitive success for every student.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="hero-feature-card reveal delay-4">
-                    <div class="hf-icon" style="background: linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);"><i
-                            class="fas fa-shield-alt"></i></div>
-                    <h5>Safe Environment</h5>
-                    <p class="mb-0">Disciplined, monitored campus prioritising student wellbeing.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+const successStories = [
+    {
+        initials: 'DR',
+        name: 'Dr. Rajesh Kumar',
+        role: 'Principal, City High School',
+        quote: 'This platform has revolutionized how we communicate with parents. Attendance tracking and fee management alone saved us 15 hours per week.'
+    },
+    {
+        initials: 'MP',
+        name: 'Ms. Priya Sharma',
+        role: 'Teacher, Delhi Public School',
+        quote: 'Students love the digital classroom experience. Assignment submission and faster feedback have improved engagement and performance.'
+    },
+    {
+        initials: 'AP',
+        name: 'Amit Patel',
+        role: 'Parent, Mumbai Academy',
+        quote: 'We receive timely updates about progress and behaviour. The transparency and communication have been a real advantage for our family.'
+    }
+];
 
-<!-- ABOUT SCHOOL SECTION - Simple, full-viewport and responsive -->
-<section class="about-section">
-    <div class="container">
-        <div class="about-row">
-            <div class="about-text-col">
-                <h2 class="about-heading">About our school</h2>
-                <p class="about-subheading">Ready to Transform Your School?</p>
-                <p class="about-text">We provide a safe, nurturing and high-quality learning environment where every child
-                    is encouraged to grow academically, socially and emotionally. Our focus is on character,
-                    critical thinking and real-world skills.</p>
-                <a href="/about" class="btn btn-primary mt-3">Learn More</a>
-            </div>
-            <div class="about-img-col">
-                <div class="about-gallery">
-                    <div class="campus-card">
-                        <div class="campus-card-img">
-                            <img src="/img/2.jpg" alt="Campus Grounds">
-                        </div>
-                        <div class="campus-card-caption">Campus Grounds</div>
-                    </div>
-                    <div class="campus-card">
-                        <div class="campus-card-img">
-                            <img src="/img/3.jpg" alt="Library & Learning">
-                        </div>
-                        <div class="campus-card-caption">Library & Learning</div>
-                    </div>
-                    <div class="campus-card">
-                        <div class="campus-card-img">
-                            <img src="/img/4.jpg" alt="Sports Arena">
-                        </div>
-                        <div class="campus-card-caption">Sports Arena</div>
-                    </div>
-                    <div class="campus-card">
-                        <div class="campus-card-img">
-                            <img src="/img/5.jpg" alt="Science & Labs">
-                        </div>
-                        <div class="campus-card-caption">Science & Labs</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+const trustMetrics = [
+    {
+        value: parseInt(stats.students || 1200, 10),
+        suffix: '+',
+        label: 'Students thriving',
+        copy: 'A vibrant learning community shaped by strong academics and personal growth.'
+    },
+    {
+        value: parseInt(stats.teachers || 85, 10),
+        suffix: '',
+        label: 'Qualified teachers',
+        copy: 'Experienced educators bringing consistency, care, and subject depth to every classroom.'
+    },
+    {
+        value: parseInt(stats.classes || 45, 10),
+        suffix: '',
+        label: 'Active classes',
+        copy: 'Structured teaching groups designed to support focus, progression, and student attention.'
+    },
+    {
+        value: parseInt(stats.activities || 25, 10),
+        suffix: '+',
+        label: 'Clubs and activities',
+        copy: 'A richer school life through sports, arts, leadership, and co-curricular experiences.'
+    }
+];
 
-<!-- PROGRAMS / ACADEMICS SECTION -->
-<section class="programs-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Our Programs</h2>
-            <p class="section-subtitle">Comprehensive curricula designed for every stage of a student's educational
-                journey.</p>
-        </div>
-        <div class="row g-4">
-            <!-- Primary -->
-            <div class="col-lg-6 col-md-6 reveal delay-1">
-                <div class="program-card">
-                    <div class="program-icon" style="background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h4>Primary</h4>
-                    <p>Classes I–V: Foundation in academics, values, and social skills with play-based learning.</p>
-                </div>
-            </div>
-            <!-- Secondary -->
-            <div class="col-lg-6 col-md-6 reveal delay-2">
-                <div class="program-card">
-                    <div class="program-icon" style="background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <h4>Secondary</h4>
-                    <p>Classes VI–X: Subject specialization, critical thinking, and competitive exam preparation.</p>
-                </div>
-            </div>
-            <!-- Senior Secondary -->
-            <div class="col-lg-6 col-md-6 reveal delay-3">
-                <div class="program-card">
-                    <div class="program-icon" style="background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%);">
-                        <i class="fas fa-microscope"></i>
-                    </div>
-                    <h4>Senior Secondary</h4>
-                    <p>Classes XI–XII: Advanced curricula, career guidance, and entrance exam coaching.</p>
-                </div>
-            </div>
-            <!-- Co-curricular -->
-            <div class="col-lg-6 col-md-6 reveal delay-4">
-                <div class="program-card">
-                    <div class="program-icon" style="background: linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h4>Co-curricular</h4>
-                    <p>Sports, arts, clubs, and activities fostering holistic development and leadership.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+const latestNotices = Array.isArray(notices) ? notices.slice(0, 3) : [];
+const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
+%>
 
-<!-- CAMPUS LIFE / GALLERY SECTION -->
-<section class="campus-gallery-section py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Campus Life</h2>
-            <p class="section-subtitle">A glimpse into the vibrant, engaging environment where learning and growth
-                happen every day.</p>
-        </div>
-        <div class="row g-3 gallery-grid">
-            <!-- Events -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="gallery-item reveal delay-1">
-                    <img src="/img/1.jpg" alt="School Events" class="gallery-img">
-                    <div class="gallery-overlay">
-                        <h5>Events</h5>
-                    </div>
-                </div>
+<div class="home-page">
+    <section class="home-page__hero home-bleed" aria-label="Homepage hero">
+        <div id="homeHeroCarousel" class="carousel slide home-carousel" data-bs-ride="carousel" data-bs-interval="5600">
+            <div class="carousel-indicators home-carousel-indicators">
+                <% heroSlides.forEach((slide, index) => { %>
+                    <button
+                        type="button"
+                        data-bs-target="#homeHeroCarousel"
+                        data-bs-slide-to="<%= index %>"
+                        class="<%= index === 0 ? 'active' : '' %>"
+                        aria-current="<%= index === 0 ? 'true' : 'false' %>"
+                        aria-label="Slide <%= index + 1 %>"></button>
+                <% }); %>
             </div>
-            <!-- Sports -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="gallery-item reveal delay-2">
-                    <img src="/img/2.jpg" alt="Sports" class="gallery-img">
-                    <div class="gallery-overlay">
-                        <h5>Sports</h5>
-                    </div>
-                </div>
-            </div>
-            <!-- Cultural Programs -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="gallery-item reveal delay-3">
-                    <img src="/img/3.jpg" alt="Cultural Programs" class="gallery-img">
-                    <div class="gallery-overlay">
-                        <h5>Cultural Programs</h5>
-                    </div>
-                </div>
-            </div>
-            <!-- Classrooms -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="gallery-item reveal delay-4">
-                    <img src="/img/4.jpg" alt="Smart Classrooms" class="gallery-img">
-                    <div class="gallery-overlay">
-                        <h5>Smart Classrooms</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- ACHIEVEMENTS / NUMBERS SECTION (Credibility Booster) -->
-<section class="achievements-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Our Achievements</h2>
-            <p class="section-subtitle">Proven excellence and dedicated commitment to student success.</p>
-        </div>
-        <div class="row g-4">
-            <!-- Board Results -->
-            <div class="col-lg-3 col-md-6 reveal delay-1">
-                <div class="achievement-card">
-                    <div class="achievement-number"><%= stats.boardResults || '100%' %></div>
-                    <div class="achievement-label">Board Results</div>
-                </div>
+            <div class="carousel-inner">
+                <% heroSlides.forEach((slide, index) => { %>
+                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <img src="<%= slide.src %>" class="home-carousel-image" alt="<%= slide.alt %>">
+                    </div>
+                <% }); %>
             </div>
-            <!-- Qualified Teachers -->
-            <div class="col-lg-3 col-md-6 reveal delay-2">
-                <div class="achievement-card">
-                    <div class="achievement-number"><%= stats.teachers %></div>
-                    <div class="achievement-label">Qualified Teachers</div>
-                </div>
-            </div>
-            <!-- Activities -->
-            <div class="col-lg-3 col-md-6 reveal delay-3">
-                <div class="achievement-card">
-                    <div class="achievement-number"><%= stats.activities %></div>
-                    <div class="achievement-label">Co-curricular Activities</div>
-                </div>
-            </div>
-            <!-- Awards -->
-            <div class="col-lg-3 col-md-6 reveal delay-4">
-                <div class="achievement-card">
-                    <div class="achievement-number"><%= stats.awards || '10+' %></div>
-                    <div class="achievement-label">National Awards</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- TESTIMONIALS SECTION (Trust Builder) -->
-<section class="testimonials-highlight-section py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">What Parents & Students Say</h2>
-            <p class="section-subtitle">Real stories from families who trust us with their child's education.</p>
-        </div>
-        <div class="row g-5">
-            <!-- Parent Testimonial -->
-            <div class="col-lg-6 reveal delay-1">
-                <div class="testimonial-box">
-                    <div class="testimonial-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"The all-round development my child has experienced is exceptional. From
-                        academics to sports to values, everything is prioritised. The teachers genuinely care!"</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar" style="background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
-                            RP</div>
-                        <div>
-                            <div class="author-name">Rajesh Patel</div>
-                            <div class="author-role">Parent</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Student Testimonial -->
-            <div class="col-lg-6 reveal delay-2">
-                <div class="testimonial-box">
-                    <div class="testimonial-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"Learning here is fun and engaging. Teachers explain concepts clearly,
-                        and the campus life is amazing. I've found my passion through the various activities offered
-                        here!"</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar" style="background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%);">
-                            AS</div>
-                        <div>
-                            <div class="author-name">Anika Sharma</div>
-                            <div class="author-role">Student, Grade XI</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            <button class="carousel-control-prev home-carousel-control" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next home-carousel-control" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
 
-<!-- Admission CTA Section -->
-<section class="admission-cta-section py-5">
-    <div class="container">
-        <div class="admission-cta-content text-center">
-            <h2 class="admission-cta-title">Admissions Open for 2026–27</h2>
-            <p class="admission-cta-subtitle">Limited seats available.</p>
-            <a href="/apply" class="admission-btn">Apply Now</a>
-        </div>
-    </div>
-</section>
+            <div class="home-hero-overlay" aria-hidden="true"></div>
+            <div class="home-hero-glow home-hero-glow--one" aria-hidden="true"></div>
+            <div class="home-hero-glow home-hero-glow--two" aria-hidden="true"></div>
 
-<!-- Impact & Credibility Section -->
-<section class="impact-section py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Trusted by Hundreds of Parents</h2>
-            <p class="section-subtitle">Excellence in education you can rely on — nurturing students in a safe, caring
-                environment.</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-3 col-sm-6">
-                <div class="impact-card">
-                    <div class="impact-number"><%= stats.years || '10+' %></div>
-                    <div class="impact-label">Years of Excellence</div>
-                    <p class="impact-desc">Proven track record delivering quality education and consistent results.</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="impact-card">
-                    <div class="impact-number"><%= stats.students %>+</div>
-                    <div class="impact-label">Happy Students</div>
-                    <p class="impact-desc">Engaged learners thriving academically and socially across our programmes.
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="impact-card">
-                    <div class="impact-number"><%= stats.teachers %></div>
-                    <div class="impact-label">Qualified & Caring Teachers</div>
-                    <p class="impact-desc">Experienced educators with a student-first approach and continuous
-                        professional development.</p>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="impact-card">
-                    <div class="impact-number"><%= stats.safety || 'Safe' %></div>
-                    <div class="impact-label">& Disciplined Campus</div>
-                    <p class="impact-desc">A secure, well-structured environment that prioritises wellbeing and
-                        discipline.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+            <div class="home-hero-shell">
+                <div class="container">
+                    <div class="home-hero-grid">
+                        <div class="home-hero-copy home-reveal">
+                            <span class="section-eyebrow section-eyebrow--light">Modern learning, strong values, and confident futures</span>
+                            <h1 class="home-hero-title">Inspiring excellence in education with a campus experience families trust.</h1>
+                            <p class="home-hero-text">
+                                A premium school experience focused on strong academics, character building, safety,
+                                and all-round development from the early years through senior secondary.
+                            </p>
 
-<!-- Why Choose Our School -->
-<section id="features" class="features-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Why Choose Our School</h2>
-            <p class="section-subtitle">A student-first approach with proven teaching, safe facilities, and a vibrant
-                campus life.</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <h4>Experienced Faculty</h4>
-                    <p>Dedicated, qualified teachers who focus on personalised learning and student growth.</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <h4>Smart Classrooms</h4>
-                    <p>Technology-enabled learning spaces with interactive lessons and modern teaching aids.</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);">
-                        <i class="fas fa-bus"></i>
-                    </div>
-                    <h4>Transport Facility</h4>
-                    <p>Safe, GPS-tracked transport with trained staff and reliable routes for student commutes.</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="feature-card">
-                    <div class="feature-icon" style="background: linear-gradient(135deg,#fa709a 0%,#f093fb 100%);">
-                        <i class="fas fa-basketball-ball"></i>
-                    </div>
-                    <h4>Sports &amp; Activities</h4>
-                    <p>Comprehensive co-curricular program including sports, arts, and clubs for holistic development.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Why Choose Us Section -->
-<section class="why-choose-us py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Why Schools Trust Us</h2>
-            <p class="section-subtitle">Built by educators, for educators—with a focus on what matters most</p>
-        </div>
-        <div class="row g-4 align-items-center">
-            <div class="col-lg-6">
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <h5>Educator-Centric Design</h5>
-                    <p>Developed in collaboration with school administrators and teachers to solve real classroom
-                        challenges.</p>
-                </div>
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-mobile-alt"></i></div>
-                    <h5>Mobile-First Experience</h5>
-                    <p>Responsive design works seamlessly on smartphones, tablets, and desktops—because life happens on
-                        mobile.</p>
-                </div>
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-headset"></i></div>
-                    <h5>Dedicated Support</h5>
-                    <p>24/7 customer success team ready to help with implementation, training, and ongoing optimization.
-                    </p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-cogs"></i></div>
-                    <h5>Easy Integration</h5>
-                    <p>Seamlessly sync with existing systems. Set up takes hours, not months. Migration support
-                        included.</p>
-                </div>
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-chart-line"></i></div>
-                    <h5>Proven Results</h5>
-                    <p>Schools see 40% improvement in communication, 35% reduction in administrative overhead, and
-                        higher engagement.</p>
-                </div>
-                <div class="why-choose-item">
-                    <div class="why-icon"><i class="fas fa-dollar-sign"></i></div>
-                    <h5>Affordable Pricing</h5>
-                    <p>Transparent, school-size pricing with no hidden fees. ROI achieved within the first semester.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Testimonials & Success Stories Section -->
-<section class="testimonials-section py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Success Stories from Our Schools</h2>
-            <p class="section-subtitle">Hear from administrators, teachers, and parents about their experience</p>
-        </div>
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"This platform has revolutionized how we communicate with parents. The
-                        attendance tracking and fee management alone saved us 15 hours per week."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar"
-                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">DR</div>
-                        <div>
-                            <div class="author-name">Dr. Rajesh Kumar</div>
-                            <div class="author-role">Principal, City High School</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"Students love the digital classroom feature. Assignment submission and
-                        instant feedback have significantly improved engagement and performance."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar"
-                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">MP</div>
-                        <div>
-                            <div class="author-name">Ms. Priya Sharma</div>
-                            <div class="author-role">Teacher, Delhi Public School</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">"We receive real-time updates about our child's progress and behaviour.
-                        The transparency and communication have been a game-changer for our family."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar"
-                            style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">AP</div>
-                        <div>
-                            <div class="author-name">Amit Patel</div>
-                            <div class="author-role">Parent, Mumbai Academy</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Latest Blog Posts & Resources -->
-<section class="blog-resources-section py-5 bg-white">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="section-title">Latest Insights & Resources</h2>
-            <p class="section-subtitle">Discover best practices, tips, and trends in modern education management</p>
-        </div>
-        <div class="row g-4">
-            <% if (typeof blogs !=='undefined' && blogs.length> 0) { %>
-                <% blogs.slice(0, 3).forEach(blog=> { %>
-                    <div class="col-md-4">
-                        <div class="blog-card">
-                            <div class="blog-image-wrapper">
-                                <% if (blog.image) { %>
-                                    <img src="/uploads/images/<%= blog.image %>" class="blog-image"
-                                        alt="<%= blog.title %>">
-                                    <% } else { %>
-                                        <div class="blog-image-placeholder"
-                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                        </div>
-                                        <% } %>
+                            <div class="home-hero-actions">
+                                <a href="/auth/register" class="home-btn home-btn--primary">Start Registration</a>
+                                <a href="#programs" class="home-btn home-btn--ghost">Explore Programs</a>
                             </div>
-                            <div class="blog-card-body">
-                                <h5 class="blog-title">
-                                    <%= blog.title %>
-                                </h5>
-                                <p class="blog-excerpt">
-                                    <%= blog.content.substring(0, 100) %>...
-                                </p>
-                                <div class="blog-footer">
-                                    <small class="blog-author"><i class="fas fa-user me-1"></i>
-                                        <%= blog.author.name %>
-                                    </small>
-                                    <small class="blog-date"><i class="fas fa-calendar me-1"></i>
-                                        <%= moment(blog.date).format('MMM D, YYYY') %>
-                                    </small>
+
+                            <div class="home-proof-chips" aria-label="School highlights">
+                                <span class="home-proof-chip">Affiliated school</span>
+                                <span class="home-proof-chip">Nursery to Grade XII</span>
+                                <span class="home-proof-chip">Parent-friendly communication</span>
+                            </div>
+                        </div>
+
+                        <div class="home-hero-stack">
+                            <aside class="home-panel home-panel--glass home-reveal" style="--delay: 0.12s;">
+                                <div class="home-panel-head">
+                                    <span class="home-panel-kicker">Admissions 2026-27</span>
+                                    <h2>Limited seats open for the upcoming academic session.</h2>
                                 </div>
-                                <a href="/blog/<%= blog._id %>" class="btn btn-sm btn-premium w-100 mt-3">Read Full
-                                    Article</a>
-                            </div>
+                                <p>
+                                    Schedule a campus visit, speak with admissions, and explore the right programme
+                                    for your child with clarity and confidence.
+                                </p>
+
+                                <div class="home-mini-metrics">
+                                    <div>
+                                        <strong><%= stats.classes %></strong>
+                                        <span>Classes</span>
+                                    </div>
+                                    <div>
+                                        <strong><%= stats.activities %>+</strong>
+                                        <span>Activities</span>
+                                    </div>
+                                    <div>
+                                        <strong><%= stats.teachers %></strong>
+                                        <span>Teachers</span>
+                                    </div>
+                                </div>
+
+                                <a href="/contact" class="home-inline-link">
+                                    Book a campus visit
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </aside>
+
+                            <aside class="home-panel home-panel--solid home-reveal" style="--delay: 0.24s;">
+                                <div class="home-panel-head">
+                                    <span class="home-panel-kicker">Latest notices</span>
+                                    <h2>Stay updated with what matters this week.</h2>
+                                </div>
+
+                                <% if (latestNotices.length) { %>
+                                    <ul class="home-notice-list">
+                                        <% latestNotices.forEach((noticeItem) => { %>
+                                            <li>
+                                                <div class="home-notice-meta">
+                                                    <span class="home-notice-tag"><%= noticeItem.category || 'general' %></span>
+                                                    <span><%= moment(noticeItem.date).format('DD MMM YYYY') %></span>
+                                                </div>
+                                                <strong><%= noticeItem.title %></strong>
+                                                <p><%= noticeItem.description ? noticeItem.description.substring(0, 96) : 'Important school update for students and parents.' %></p>
+                                            </li>
+                                        <% }); %>
+                                    </ul>
+                                <% } else { %>
+                                    <div class="home-empty-state">
+                                        <strong>Fresh announcements will appear here.</strong>
+                                        <p>Once notices are published, families can quickly review key dates and updates from the homepage.</p>
+                                    </div>
+                                <% } %>
+                            </aside>
                         </div>
                     </div>
-                    <% }); %>
-                        <% } else { %>
-                            <div class="col-12 text-center">
-                                <p class="text-muted">Check back soon for insights and resources.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-metrics home-bleed" aria-label="School metrics">
+        <div class="container">
+            <div class="home-metric-grid">
+                <% trustMetrics.forEach((metric, index) => { %>
+                    <article class="home-metric-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
+                        <div class="home-metric-value">
+                            <span class="home-counter" data-counter="<%= metric.value %>">0</span><span><%= metric.suffix %></span>
+                        </div>
+                        <h3><%= metric.label %></h3>
+                        <p><%= metric.copy %></p>
+                    </article>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <section id="programs" class="home-section home-section--soft home-bleed">
+        <div class="container">
+            <div class="home-section-head">
+                <span class="section-eyebrow">Academic pathways</span>
+                <h2 class="section-heading">Comprehensive programmes designed for every stage of the student journey.</h2>
+                <p class="section-copy">
+                    From foundational learning to advanced subject preparation, each programme is structured to build
+                    confidence, curiosity, and long-term success.
+                </p>
+            </div>
+
+            <div class="home-program-grid">
+                <% programCards.forEach((program, index) => { %>
+                    <article class="home-program-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
+                        <div class="home-program-icon">
+                            <i class="fas <%= program.icon %>"></i>
+                        </div>
+                        <div class="home-program-detail"><%= program.detail %></div>
+                        <h3><%= program.title %></h3>
+                        <p><%= program.copy %></p>
+                    </article>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-admission-band home-bleed" aria-label="Admission call to action">
+        <div class="container">
+            <div class="home-admission-card home-reveal">
+                <div>
+                    <span class="section-eyebrow section-eyebrow--light">Admissions open</span>
+                    <h2>Ready to give your child a confident, future-ready school experience?</h2>
+                    <p>Connect with our team to understand programmes, campus culture, and the admissions process.</p>
+                </div>
+                <div class="home-admission-actions">
+                    <a href="/auth/register" class="home-btn home-btn--light">Apply now</a>
+                    <a href="/contact" class="home-btn home-btn--ghost-light">Speak to admissions</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section home-bleed">
+        <div class="container">
+            <div class="home-story-grid">
+                <div class="home-story-copy">
+                    <span class="section-eyebrow">Why choose our school</span>
+                    <h2 class="section-heading">A school environment that balances academic ambition with care, structure, and opportunity.</h2>
+                    <p class="section-copy section-copy--left">
+                        Families look for more than marks alone. They want strong teaching, safe systems, inspiring
+                        spaces, and a campus culture that helps children grow with confidence.
+                    </p>
+
+                    <div class="home-highlight-grid">
+                        <% schoolHighlights.forEach((item, index) => { %>
+                            <article class="home-highlight-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
+                                <div class="home-highlight-icon">
+                                    <i class="fas <%= item.icon %>"></i>
+                                </div>
+                                <div>
+                                    <h3><%= item.title %></h3>
+                                    <p><%= item.copy %></p>
+                                </div>
+                            </article>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <div class="home-media-collage home-reveal" style="--delay: 0.18s;">
+                    <figure class="home-media-card home-media-card--tall">
+                        <img src="/img/1.jpg" alt="Learning environment inside the school">
+                        <figcaption>Focused classrooms with a student-first learning atmosphere.</figcaption>
+                    </figure>
+                    <figure class="home-media-card">
+                        <img src="/img/3.jpg" alt="Safe campus setting">
+                        <figcaption>Safe, welcoming, and well-managed campus spaces.</figcaption>
+                    </figure>
+                    <figure class="home-media-card">
+                        <img src="/img/4.jpg" alt="Students developing through activities">
+                        <figcaption>Co-curricular experiences that build confidence and leadership.</figcaption>
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section home-section--navy home-bleed">
+        <div class="container">
+            <div class="home-section-head home-section-head--light">
+                <span class="section-eyebrow section-eyebrow--light">Operational confidence</span>
+                <h2 class="section-heading section-heading--light">Built for modern school communities that value communication, clarity, and consistency.</h2>
+                <p class="section-copy section-copy--light">
+                    These advantages make the experience smoother for administrators, teachers, students, and parents.
+                </p>
+            </div>
+
+            <div class="home-benefit-grid">
+                <% platformBenefits.forEach((benefit, index) => { %>
+                    <article class="home-benefit-card home-reveal" style="--delay: <%= 0.06 * (index + 1) %>s;">
+                        <div class="home-benefit-icon">
+                            <i class="fas <%= benefit.icon %>"></i>
+                        </div>
+                        <h3><%= benefit.title %></h3>
+                        <p><%= benefit.copy %></p>
+                    </article>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-section home-section--soft home-bleed">
+        <div class="container">
+            <div class="home-section-head">
+                <span class="section-eyebrow">Success stories</span>
+                <h2 class="section-heading">Trusted by administrators, teachers, and parents who value a better school experience.</h2>
+                <p class="section-copy">
+                    Real feedback from school communities who have seen the difference better communication and better systems can make.
+                </p>
+            </div>
+
+            <div class="home-testimonial-grid">
+                <% successStories.forEach((story, index) => { %>
+                    <article class="home-testimonial-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
+                        <div class="home-stars" aria-hidden="true">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="home-testimonial-quote">"<%= story.quote %>"</p>
+                        <div class="home-testimonial-meta">
+                            <div class="home-avatar"><%= story.initials %></div>
+                            <div>
+                                <strong><%= story.name %></strong>
+                                <span><%= story.role %></span>
                             </div>
-                            <% } %>
+                        </div>
+                    </article>
+                <% }); %>
+            </div>
         </div>
-        <div class="text-center mt-5">
-            <a href="/blog" class="btn btn-outline-primary btn-lg">View All Articles</a>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- Final CTA Section -->
-<section class="final-cta py-5"
-    style="background: linear-gradient(135deg, rgba(79,70,229,0.95) 0%, rgba(67,56,202,0.95) 100%), url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=600&fit=crop') center/cover; color: white;">
-    <div class="container text-center">
-        <h2 class="cta-title mb-3">Ready to Transform Your School?</h2>
-        <p class="cta-subtitle mb-5">Join hundreds of schools that have already modernized their management systems.</p>
-        <div class="cta-buttons">
-            <a href="/auth/register" class="btn btn-premium btn-lg me-3">
-                <i class="fas fa-rocket me-2"></i>Start Your Free Trial
-            </a>
-            <a href="/contact" class="btn btn-outline-light btn-lg">
-                <i class="fas fa-calendar-alt me-2"></i>Schedule a Demo
-            </a>
-        </div>
-        <p class="mt-4 cta-footnote">✓ 14-day free trial • ✓ No credit card required • ✓ Instant setup</p>
-    </div>
-</section>
+    <section class="home-section home-bleed">
+        <div class="container">
+            <div class="home-section-head">
+                <span class="section-eyebrow">Insights and resources</span>
+                <h2 class="section-heading">Latest updates, stories, and ideas from the school community.</h2>
+                <p class="section-copy">
+                    Keep parents and visitors engaged with helpful articles, campus updates, and timely resources.
+                </p>
+            </div>
 
-<script src="/js/landing.js"></script>
+            <% if (featuredBlogs.length) { %>
+                <div class="home-blog-grid">
+                    <% featuredBlogs.forEach((blog, index) => { %>
+                        <article class="home-blog-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
+                            <div class="home-blog-media">
+                                <% if (blog.image) { %>
+                                    <img src="/uploads/images/<%= blog.image %>" alt="<%= blog.title %>">
+                                <% } else { %>
+                                    <div class="home-blog-placeholder">
+                                        <span>School insights</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="home-blog-body">
+                                <div class="home-blog-meta">
+                                    <span><i class="fas fa-user"></i> <%= blog.author && blog.author.name ? blog.author.name : 'School Team' %></span>
+                                    <span><i class="fas fa-calendar"></i> <%= moment(blog.createdAt || blog.date).format('MMM D, YYYY') %></span>
+                                </div>
+                                <h3><%= blog.title %></h3>
+                                <p><%= blog.content.substring(0, 130) %>...</p>
+                                <a href="/blog/<%= blog._id %>" class="home-inline-link">
+                                    Read article
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="home-empty-panel home-reveal">
+                    <strong>No articles published yet.</strong>
+                    <p>As blog posts are added, this section will become a polished content hub for families and visitors.</p>
+                    <a href="/blog" class="home-inline-link">
+                        Visit the blog
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            <% } %>
+
+            <div class="home-blog-actions">
+                <a href="/blog" class="home-btn home-btn--secondary">View all articles</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-final-cta home-bleed">
+        <div class="container">
+            <div class="home-final-cta-card home-reveal">
+                <div class="home-final-copy">
+                    <span class="section-eyebrow section-eyebrow--light">Premium, clean, and conversion-focused</span>
+                    <h2>Ready to present your school with more confidence and clarity?</h2>
+                    <p>
+                        Create a stronger first impression, guide families toward the next step, and turn the homepage
+                        into a more effective admissions and engagement tool.
+                    </p>
+                </div>
+                <div class="home-final-actions">
+                    <a href="/auth/register" class="home-btn home-btn--light">Get started</a>
+                    <a href="/contact" class="home-btn home-btn--ghost-light">Schedule a conversation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,566 @@
+<%
+const eligibility = [
+    'Age-appropriate admission as per the class level applied for.',
+    'Previous academic record or progress report from the current/last school.',
+    'Student interaction or assessment may be required for selected classes.',
+    'Admission is confirmed subject to seat availability and document verification.'
+];
+
+const documents = [
+    'Birth certificate of the student',
+    'Passport-size photographs',
+    'Previous school report card / marksheet',
+    'Transfer certificate, if applicable',
+    'Identity and address proof of parent or guardian'
+];
+
+const processSteps = [
+    {
+        title: 'Submit Enquiry',
+        copy: 'Share your interest online or contact the admissions office to begin the process.'
+    },
+    {
+        title: 'Collect Application Form',
+        copy: 'Complete the registration or application form with student and parent details.'
+    },
+    {
+        title: 'Document Review',
+        copy: 'Submit the required documents for verification by the school admissions team.'
+    },
+    {
+        title: 'Interaction / Assessment',
+        copy: 'For selected classes, the school may schedule a student interaction or basic assessment.'
+    },
+    {
+        title: 'Admission Decision',
+        copy: 'The school confirms availability, eligibility, and the next steps for admission.'
+    },
+    {
+        title: 'Fee Payment & Confirmation',
+        copy: 'Complete the admission fee formalities to secure the seat for the session.'
+    }
+];
+
+const dates = [
+    {
+        label: 'Applications',
+        value: 'Open now for the new academic session'
+    },
+    {
+        label: 'Document verification',
+        value: 'Scheduled after form submission'
+    },
+    {
+        label: 'Interaction / assessment',
+        value: 'Shared by the admissions office if required'
+    },
+    {
+        label: 'Final confirmation',
+        value: 'Issued after verification and fee completion'
+    }
+];
+%>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+  .admissions-page {
+    --admissions-ink: #17324b;
+    --admissions-muted: #5e738d;
+    --admissions-accent: #6daed8;
+    --admissions-accent-deep: #4d93c1;
+    --admissions-surface: #ffffff;
+    --admissions-surface-soft: #f5f9fc;
+    --admissions-border: rgba(23, 50, 75, 0.1);
+    --admissions-shadow: 0 16px 36px rgba(17, 35, 58, 0.08);
+    color: var(--admissions-ink);
+    font-family: 'Manrope', 'Segoe UI', sans-serif;
+  }
+
+  .admissions-page *,
+  .admissions-page *::before,
+  .admissions-page *::after {
+    box-sizing: border-box;
+  }
+
+  .admissions-page .container {
+    max-width: 1180px;
+  }
+
+  .admissions-hero {
+    padding: calc(var(--navbar-height, 64px) + 3.25rem) 0 3rem;
+    background: linear-gradient(180deg, rgba(109, 174, 216, 0.12) 0%, rgba(109, 174, 216, 0.04) 100%);
+  }
+
+  .admissions-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .admissions-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(109, 174, 216, 0.18);
+    color: var(--admissions-accent-deep);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .admissions-title {
+    margin: 1rem 0 0;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .admissions-copy {
+    margin: 1rem 0 0;
+    max-width: 42rem;
+    color: var(--admissions-muted);
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+
+  .admissions-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 1.6rem;
+  }
+
+  .admissions-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 0.85rem 1.35rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  }
+
+  .admissions-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .admissions-btn--primary {
+    background: var(--admissions-accent);
+    color: #ffffff;
+  }
+
+  .admissions-btn--secondary {
+    border: 1px solid var(--admissions-border);
+    background: #ffffff;
+    color: var(--admissions-ink);
+  }
+
+  .admissions-summary {
+    padding: 1.5rem;
+    border-radius: 24px;
+    background: var(--admissions-surface);
+    border: 1px solid var(--admissions-border);
+    box-shadow: var(--admissions-shadow);
+  }
+
+  .admissions-summary h2 {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .admissions-summary p {
+    margin: 0.7rem 0 0;
+    color: var(--admissions-muted);
+    line-height: 1.75;
+  }
+
+  .admissions-summary-list {
+    display: grid;
+    gap: 0.9rem;
+    margin: 1.2rem 0 0;
+  }
+
+  .admissions-summary-item {
+    padding: 0.95rem 1rem;
+    border-radius: 18px;
+    background: var(--admissions-surface-soft);
+  }
+
+  .admissions-summary-item span,
+  .admissions-summary-item strong {
+    display: block;
+  }
+
+  .admissions-summary-item span {
+    color: var(--admissions-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .admissions-summary-item strong {
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .admissions-section {
+    padding: 3.25rem 0;
+  }
+
+  .admissions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.2rem;
+  }
+
+  .admissions-card {
+    padding: 1.5rem;
+    border-radius: 22px;
+    background: var(--admissions-surface);
+    border: 1px solid var(--admissions-border);
+    box-shadow: var(--admissions-shadow);
+  }
+
+  .admissions-card h3 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .admissions-card p {
+    margin: 0.8rem 0 0;
+    color: var(--admissions-muted);
+    line-height: 1.8;
+  }
+
+  .admissions-list {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .admissions-list li {
+    position: relative;
+    padding-left: 1.1rem;
+    color: var(--admissions-muted);
+    line-height: 1.75;
+  }
+
+  .admissions-list li::before {
+    content: '';
+    position: absolute;
+    top: 0.75rem;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--admissions-accent);
+  }
+
+  .admissions-process {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .admissions-step {
+    padding: 1.4rem;
+    border-radius: 22px;
+    background: var(--admissions-surface);
+    border: 1px solid var(--admissions-border);
+    box-shadow: var(--admissions-shadow);
+  }
+
+  .admissions-step-number {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(109, 174, 216, 0.16);
+    color: var(--admissions-accent-deep);
+    font-weight: 800;
+  }
+
+  .admissions-step h4 {
+    margin: 1rem 0 0;
+    font-size: 1.05rem;
+  }
+
+  .admissions-step p {
+    margin: 0.65rem 0 0;
+    color: var(--admissions-muted);
+    line-height: 1.75;
+  }
+
+  .admissions-dates {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .admissions-date {
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: var(--admissions-surface-soft);
+    border: 1px solid var(--admissions-border);
+  }
+
+  .admissions-date span,
+  .admissions-date strong {
+    display: block;
+  }
+
+  .admissions-date span {
+    color: var(--admissions-muted);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .admissions-date strong {
+    margin-top: 0.35rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .admissions-contact {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 1rem;
+  }
+
+  .admissions-contact strong {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 0.95rem;
+  }
+
+  .admissions-contact span,
+  .admissions-contact a {
+    color: var(--admissions-muted);
+    text-decoration: none;
+  }
+
+  .admissions-footer {
+    padding: 0 0 4rem;
+  }
+
+  .admissions-footer-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 24px;
+    background: var(--admissions-surface-soft);
+    border: 1px solid var(--admissions-border);
+  }
+
+  .admissions-footer-card h3 {
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  .admissions-footer-card p {
+    margin: 0.6rem 0 0;
+    color: var(--admissions-muted);
+    line-height: 1.75;
+  }
+
+  @media (max-width: 991.98px) {
+    .admissions-hero-grid,
+    .admissions-grid,
+    .admissions-process,
+    .admissions-dates {
+      grid-template-columns: 1fr;
+    }
+
+    .admissions-footer-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .admissions-hero {
+      padding: calc(var(--navbar-height, 60px) + 2.3rem) 0 2.4rem;
+    }
+
+    .admissions-section {
+      padding: 2.6rem 0;
+    }
+
+    .admissions-card,
+    .admissions-summary,
+    .admissions-step,
+    .admissions-footer-card {
+      padding: 1.2rem;
+      border-radius: 18px;
+    }
+
+    .admissions-actions {
+      flex-direction: column;
+    }
+
+    .admissions-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="admissions-page">
+  <section class="admissions-hero">
+    <div class="container">
+      <div class="admissions-hero-grid">
+        <div>
+          <span class="admissions-kicker">Admissions Open</span>
+          <h1 class="admissions-title">Simple admission guidance for the upcoming academic session.</h1>
+          <p class="admissions-copy">
+            Explore eligibility, required documents, the application process, and the next steps in one clear place.
+            This page is designed to help parents understand admissions quickly and confidently.
+          </p>
+
+          <div class="admissions-actions">
+            <a href="/auth/register" class="admissions-btn admissions-btn--primary">Apply Now</a>
+            <a href="/contact" class="admissions-btn admissions-btn--secondary">Contact Admissions</a>
+          </div>
+        </div>
+
+        <aside class="admissions-summary">
+          <h2>Admission Overview</h2>
+          <p>
+            Admissions are open for the new academic session. Applications are reviewed in order, and final
+            confirmation depends on eligibility, document verification, and seat availability.
+          </p>
+
+          <div class="admissions-summary-list">
+            <div class="admissions-summary-item">
+              <span>Session</span>
+              <strong>Academic Session 2026-27</strong>
+            </div>
+            <div class="admissions-summary-item">
+              <span>Classes</span>
+              <strong>Nursery to Senior Secondary</strong>
+            </div>
+            <div class="admissions-summary-item">
+              <span>Mode</span>
+              <strong>Application, review, and admission confirmation</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="admissions-section">
+    <div class="container">
+      <div class="admissions-grid">
+        <article class="admissions-card">
+          <h3>Eligibility Criteria</h3>
+          <ul class="admissions-list">
+            <% eligibility.forEach((item) => { %>
+              <li><%= item %></li>
+            <% }) %>
+          </ul>
+        </article>
+
+        <article class="admissions-card">
+          <h3>Required Documents</h3>
+          <ul class="admissions-list">
+            <% documents.forEach((item) => { %>
+              <li><%= item %></li>
+            <% }) %>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="admissions-section">
+    <div class="container">
+      <article class="admissions-card">
+        <h3>Admission Process</h3>
+        <p>Follow these simple steps to complete the admission journey smoothly.</p>
+
+        <div class="admissions-process">
+          <% processSteps.forEach((step, index) => { %>
+            <div class="admissions-step">
+              <span class="admissions-step-number"><%= index + 1 %></span>
+              <h4><%= step.title %></h4>
+              <p><%= step.copy %></p>
+            </div>
+          <% }) %>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="admissions-section">
+    <div class="container">
+      <div class="admissions-grid">
+        <article class="admissions-card">
+          <h3>Important Dates</h3>
+          <p>Below is the general admissions timeline. Specific updates are shared directly by the school office.</p>
+
+          <div class="admissions-dates">
+            <% dates.forEach((item) => { %>
+              <div class="admissions-date">
+                <span><%= item.label %></span>
+                <strong><%= item.value %></strong>
+              </div>
+            <% }) %>
+          </div>
+        </article>
+
+        <article class="admissions-card">
+          <h3>Contact Details</h3>
+          <p>For assistance with forms, eligibility, or admissions support, contact the school office.</p>
+
+          <div class="admissions-contact">
+            <div>
+              <strong>Email</strong>
+              <a href="mailto:info@myschool.edu">info@myschool.edu</a>
+            </div>
+            <div>
+              <strong>Phone</strong>
+              <a href="tel:+15551234567">+1 (555) 123-4567</a>
+            </div>
+            <div>
+              <strong>Office Address</strong>
+              <span>123 Education Lane, City, Country</span>
+            </div>
+            <div>
+              <strong>Office Hours</strong>
+              <span>Monday to Saturday, 9:00 AM to 4:00 PM</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="admissions-footer">
+    <div class="container">
+      <div class="admissions-footer-card">
+        <div>
+          <h3>Ready to begin the admission process?</h3>
+          <p>Start your application today or contact the admissions team for support before submitting.</p>
+        </div>
+        <a href="/auth/register" class="admissions-btn admissions-btn--primary">Apply Now</a>
+      </div>
+    </div>
+  </section>
+</div>
