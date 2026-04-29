@@ -1,183 +1,206 @@
-<h3 class="mb-4">Class Payment History - <%= classDoc.name %></h3>
+<%
+const resolvedPaymentHistory = (typeof paymentHistory !== 'undefined' && Array.isArray(paymentHistory) ? paymentHistory : []).map((item) => ({
+    ...item,
+    classPayments: Array.isArray(item?.classPayments) ? item.classPayments : [],
+    dueEntries: Array.isArray(item?.dueEntries) ? item.dueEntries : [],
+    summary: item?.summary || {
+        outstandingBalance: 0,
+        overdueAmount: 0
+    }
+}));
+const resolvedStandardMonthlyFee = typeof standardMonthlyFee !== 'undefined' ? Number(standardMonthlyFee || 0) : 0;
+const totalStudents = resolvedPaymentHistory.length;
+const totalCollected = resolvedPaymentHistory.reduce((sum, item) => sum + Number(item.totalCollected || 0), 0);
+const studentsWithPayment = resolvedPaymentHistory.filter((item) => item.classPayments.length > 0).length;
+const studentsWithOutstanding = resolvedPaymentHistory.filter((item) => Number(item.summary.outstandingBalance || 0) > 0).length;
+%>
 
-<div class="mb-3">
-    <a href="/admin/classes/fees" class="btn btn-secondary">Back to Classes</a>
-    <a href="/admin/classes/<%= classDoc._id %>/fees/collect-payment" class="btn btn-success">
-        <i class="fas fa-plus"></i> Collect New Payment
-    </a>
-</div>
-
-<!-- Summary Cards -->
-<div class="row mb-4">
-    <% 
-        const totalStudents = paymentHistory.length;
-        const totalCollected = paymentHistory.reduce((sum, ph) => sum + ph.totalCollected, 0);
-        const studentsWithPayment = paymentHistory.filter(ph => ph.classPayments.length > 0).length;
-    %>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
-            <div class="card-body text-center">
-                <h6>Total Students</h6>
-                <h3><%= totalStudents %></h3>
-            </div>
-        </div>
+<div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Class Fee Activity - <%= classDoc.name %></h3>
+        <p class="text-muted mb-0">Review class collections, student-level outstanding balance, and open monthly dues.</p>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body text-center">
-                <h6>Total Collected</h6>
-                <h3><%= totalCollected %></h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-dark">
-            <div class="card-body text-center">
-                <h6>With Payments</h6>
-                <h3><%= studentsWithPayment %></h3>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-secondary text-white">
-            <div class="card-body text-center">
-                <h6>Without Payments</h6>
-                <h3><%= totalStudents - studentsWithPayment %></h3>
-            </div>
-        </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="/admin/classes/fees" class="btn btn-secondary">Back to Classes</a>
+        <a href="/admin/classes/<%= classDoc._id %>/fees/collect-payment" class="btn btn-success">
+            <i class="fas fa-plus me-1"></i> New Class Action
+        </a>
     </div>
 </div>
 
-<!-- Payment History Table -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-2">Students</small>
+                <h4 class="mb-0"><%= totalStudents %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-2">Collected</small>
+                <h4 class="mb-0"><%= totalCollected.toFixed(2) %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-2">Standard Monthly Fee</small>
+                <h4 class="mb-0"><%= resolvedStandardMonthlyFee.toFixed(2) %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-2">Students With Outstanding</small>
+                <h4 class="mb-0"><%= studentsWithOutstanding %></h4>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Student Payment Details</h5>
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Student Ledger Summary</h5>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>Roll No</th>
-                        <th>Student Name</th>
-                        <th>Email</th>
-                        <th>Payments</th>
-                        <th>Total Collected</th>
-                        <th>Last Payment</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% paymentHistory.forEach(ph => { %>
+        <% if (resolvedPaymentHistory.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td><strong><%= ph.student.rollNo %></strong></td>
-                            <td><%= ph.student.userId.name %></td>
-                            <td><small><%= ph.student.userId.email %></small></td>
-                            <td>
-                                <% if (ph.classPayments.length > 0) { %>
-                                    <span class="badge bg-success"><%= ph.classPayments.length %></span>
-                                <% } else { %>
-                                    <span class="badge bg-secondary">0</span>
-                                <% } %>
-                            </td>
-                            <td>
-                                <strong><%= ph.totalCollected.toFixed(2) %></strong>
-                            </td>
-                            <td>
-                                <% if (ph.classPayments.length > 0) { %>
-                                    <small><%= new Date(ph.classPayments[ph.classPayments.length-1].date).toLocaleDateString() %></small>
-                                <% } else { %>
-                                    <span class="text-muted">-</span>
-                                <% } %>
-                            </td>
-                            <td>
-                                <a href="/admin/students/<%= ph.student._id %>/fees" class="btn btn-sm btn-info">
-                                    <i class="fas fa-eye"></i> Details
-                                </a>
-                            </td>
+                            <th>Roll No</th>
+                            <th>Student</th>
+                            <th>Payments</th>
+                            <th>Collected</th>
+                            <th>Outstanding</th>
+                            <th>Overdue</th>
+                            <th class="text-end">Action</th>
                         </tr>
-                        <% if (ph.classPayments.length > 0) { %>
-                            <tr class="table-info">
-                                <td colspan="7">
-                                    <strong>Class Payments:</strong>
-                                    <div class="mt-2">
-                                        <table class="table table-sm table-borderless mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Month</th>
-                                                    <th>Amount</th>
-                                                    <th>Description</th>
-                                                    <th>Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% ph.classPayments.forEach(payment => { %>
-                                                    <tr>
-                                                        <td><%= payment.month %></td>
-                                                        <td><strong><%= payment.amount %></strong></td>
-                                                        <td><%= payment.description %></td>
-                                                        <td><small><%= new Date(payment.date).toLocaleDateString() %></small></td>
-                                                    </tr>
-                                                <% }); %>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                    </thead>
+                    <tbody>
+                        <% resolvedPaymentHistory.forEach((item) => { %>
+                            <tr>
+                                <td><strong><%= item.student.rollNo %></strong></td>
+                                <td>
+                                    <div><%= item.student.userId.name %></div>
+                                    <small class="text-muted"><%= item.student.userId.email %></small>
+                                </td>
+                                <td><span class="badge bg-primary"><%= item.classPayments.length %></span></td>
+                                <td><strong><%= Number(item.totalCollected || 0).toFixed(2) %></strong></td>
+                                <td>
+                                    <% if (Number(item.summary.outstandingBalance || 0) > 0) { %>
+                                        <span class="badge bg-danger"><%= Number(item.summary.outstandingBalance || 0).toFixed(2) %></span>
+                                    <% } else { %>
+                                        <span class="badge bg-success">0.00</span>
+                                    <% } %>
+                                </td>
+                                <td><%= Number(item.summary.overdueAmount || 0).toFixed(2) %></td>
+                                <td class="text-end">
+                                    <a href="/admin/students/<%= item.student._id %>/fees" class="btn btn-sm btn-outline-primary">
+                                        View Detail
+                                    </a>
                                 </td>
                             </tr>
-                        <% } %>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
+
+                            <% if (item.classPayments.length > 0 || item.dueEntries.length > 0) { %>
+                                <tr class="table-light">
+                                    <td colspan="7">
+                                        <% if (item.classPayments.length > 0) { %>
+                                            <div class="mb-3">
+                                                <strong class="d-block mb-2">Recent Class Payments</strong>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-borderless mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Month</th>
+                                                                <th>Amount</th>
+                                                                <th>Date</th>
+                                                                <th>Description</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% item.classPayments.slice(0, 5).forEach((payment) => { %>
+                                                                <tr>
+                                                                    <td><%= payment.month %></td>
+                                                                    <td><strong><%= Number(payment.amount || 0).toFixed(2) %></strong></td>
+                                                                    <td><%= moment(payment.date).format('DD MMM, YYYY') %></td>
+                                                                    <td><%= payment.description || '-' %></td>
+                                                                </tr>
+                                                            <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        <% } %>
+
+                                        <% if (item.dueEntries.length > 0) { %>
+                                            <div>
+                                                <strong class="d-block mb-2">Monthly Dues</strong>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    <% item.dueEntries.slice(0, 6).forEach((entry) => { %>
+                                                        <span class="badge <%= entry.isPaid ? 'bg-success' : (entry.isOverdue ? 'bg-danger' : 'bg-warning text-dark') %>">
+                                                            <%= entry.due.month %>:
+                                                            <%= entry.pendingAmount.toFixed(2) %> pending
+                                                        </span>
+                                                    <% }) %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="alert alert-info mb-0">No students found for this class yet.</div>
+        <% } %>
     </div>
 </div>
 
-<!-- Statistics -->
-<div class="row mt-4">
+<div class="row g-3 mt-1">
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h6>Payment Status</h6>
+                <h6 class="mb-0">Collection Coverage</h6>
             </div>
             <div class="card-body">
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Students with payment</span>
-                        <strong><%= studentsWithPayment %> / <%= totalStudents %></strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" style="width: <%= (studentsWithPayment / totalStudents * 100) %>%"></div>
-                    </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Students with class payments</span>
+                    <strong><%= studentsWithPayment %> / <%= totalStudents %></strong>
                 </div>
-                <div>
-                    <small class="text-muted">
-                        <%= ((studentsWithPayment / totalStudents) * 100).toFixed(1) %>% of students have made class-wide payments
-                    </small>
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" style="width: <%= totalStudents ? ((studentsWithPayment / totalStudents) * 100) : 0 %>%"></div>
                 </div>
+                <small class="text-muted">
+                    <%= totalStudents ? (((studentsWithPayment / totalStudents) * 100).toFixed(1)) : '0.0' %>% of students have at least one class payment entry.
+                </small>
             </div>
         </div>
     </div>
+
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h6>Collection Performance</h6>
+                <h6 class="mb-0">Outstanding Snapshot</h6>
             </div>
             <div class="card-body">
                 <p class="mb-2">
-                    <strong>Average per student:</strong> 
-                    <span class="badge bg-info fs-6">
-                        <%= (totalCollected / totalStudents).toFixed(2) %>
+                    <strong>Total outstanding:</strong>
+                    <span class="badge bg-danger">
+                        <%= resolvedPaymentHistory.reduce((sum, item) => sum + Number(item.summary.outstandingBalance || 0), 0).toFixed(2) %>
                     </span>
                 </p>
-                <p class="mb-2">
-                    <strong>Highest collector:</strong>
-                    <% 
-                        let maxStudent = paymentHistory.reduce((max, ph) => 
-                            ph.totalCollected > max.totalCollected ? ph : max
-                        );
-                    %>
-                    <span class="badge bg-success fs-6">
-                        <%= maxStudent.student.userId.name %> (<%= maxStudent.totalCollected %>)
+                <p class="mb-0">
+                    <strong>Total overdue:</strong>
+                    <span class="badge bg-warning text-dark">
+                        <%= resolvedPaymentHistory.reduce((sum, item) => sum + Number(item.summary.overdueAmount || 0), 0).toFixed(2) %>
                     </span>
                 </p>
             </div>

@@ -1,99 +1,202 @@
-<h3 class="mb-5">My Fees</h3>
+<%
+const resolvedClassFee = typeof classFee !== 'undefined' ? classFee : null;
+const resolvedStandardMonthlyFee = typeof standardMonthlyFee !== 'undefined' ? Number(standardMonthlyFee || 0) : 0;
+const resolvedSummary = (typeof summary !== 'undefined' && summary) ? summary : {
+    standardMonthlyFee: resolvedStandardMonthlyFee,
+    totalPaid: 0,
+    outstandingBalance: 0,
+    overdueAmount: 0,
+    unpaidDuesCount: 0,
+    paidDuesCount: 0,
+    creditAmount: 0
+};
+const resolvedOverdues = (typeof overdues !== 'undefined' && Array.isArray(overdues)) ? overdues : [];
+const resolvedUpcomingDues = (typeof upcomingDues !== 'undefined' && Array.isArray(upcomingDues)) ? upcomingDues : [];
+const resolvedSortedPayments = (typeof sortedPayments !== 'undefined' && Array.isArray(sortedPayments)) ? sortedPayments : [];
+const feeBreakdown = resolvedClassFee && resolvedClassFee.fees ? resolvedClassFee.fees : [];
+%>
 
-<!-- Quick Summary Cards -->
-<div class="row mb-5">
-    <div class="col-md-6">
-        <div class="card bg-success text-white">
+<div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">My Fees</h3>
+        <p class="text-muted mb-0">Track payments, open dues, and download invoices for each fee record.</p>
+    </div>
+    <div class="text-muted small">
+        Standard monthly fee: <strong><%= resolvedStandardMonthlyFee.toFixed(2) %></strong>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-primary text-white h-100">
             <div class="card-body text-center">
-                <h6 class="card-title mb-3">Total Paid</h6>
-                <h2><%= totalPaid || 0 %></h2>
+                <small class="text-white-50 d-block mb-2">Monthly Fee</small>
+                <h4 class="mb-0"><%= Number(resolvedSummary.standardMonthlyFee || 0).toFixed(2) %></h4>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card bg-danger text-white">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-success text-white h-100">
             <div class="card-body text-center">
-                <h6 class="card-title mb-3">Overdue Amount</h6>
-                <h2><%= overdues.reduce((sum, d) => sum + (d.dueAmount - d.paidAmount), 0) %></h2>
+                <small class="text-white-50 d-block mb-2">Total Paid</small>
+                <h4 class="mb-0"><%= Number(resolvedSummary.totalPaid || 0).toFixed(2) %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-2">Outstanding</small>
+                <h4 class="mb-0"><%= Number(resolvedSummary.outstandingBalance || 0).toFixed(2) %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body text-center">
+                <small class="text-muted d-block mb-2">Overdue</small>
+                <h4 class="mb-0"><%= Number(resolvedSummary.overdueAmount || 0).toFixed(2) %></h4>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Payment History -->
-<div class="card mb-5">
-    <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">📋 Payment History</h5>
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Open Dues</h5>
+            </div>
+            <div class="card-body">
+                <% if (resolvedOverdues.length > 0 || resolvedUpcomingDues.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Due Amount</th>
+                                    <th>Paid</th>
+                                    <th>Pending</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% resolvedOverdues.concat(resolvedUpcomingDues).forEach((entry) => { %>
+                                    <tr class="<%= entry.isOverdue ? 'table-danger' : '' %>">
+                                        <td><strong><%= entry.due.month %></strong></td>
+                                        <td><%= Number(entry.due.dueAmount || 0).toFixed(2) %></td>
+                                        <td><%= Number(entry.due.paidAmount || 0).toFixed(2) %></td>
+                                        <td><strong><%= entry.pendingAmount.toFixed(2) %></strong></td>
+                                        <td><%= entry.due.dueDate ? moment(entry.due.dueDate).format('DD MMM, YYYY') : '-' %></td>
+                                        <td>
+                                            <% if (entry.isOverdue) { %>
+                                                <span class="badge bg-danger">Overdue</span>
+                                            <% } else { %>
+                                                <span class="badge bg-warning text-dark">Upcoming</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-success mb-0">
+                        <i class="fas fa-check-circle me-1"></i> No unpaid dues are pending right now.
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Fee Structure</h5>
+            </div>
+            <div class="card-body">
+                <% if (feeBreakdown.length > 0) { %>
+                    <div class="list-group list-group-flush">
+                        <% feeBreakdown.forEach((item) => { %>
+                            <div class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong><%= item.name %></strong>
+                                    <div class="small text-muted text-capitalize"><%= item.frequency %></div>
+                                </div>
+                                <span class="badge bg-light text-dark border"><%= Number(item.amount || 0).toFixed(2) %></span>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="text-muted mb-0">Your class fee structure has not been shared yet. Please contact the school office for more information.</p>
+                <% } %>
+
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Open due entries</span>
+                    <strong><%= Number(resolvedSummary.unpaidDuesCount || 0) %></strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Paid due entries</span>
+                    <strong><%= Number(resolvedSummary.paidDuesCount || 0) %></strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Credit / advance</span>
+                    <strong><%= Number(resolvedSummary.creditAmount || 0).toFixed(2) %></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Payment History</h5>
+        <span class="badge bg-light text-dark"><%= resolvedSortedPayments.length %> payments</span>
     </div>
     <div class="card-body">
-        <% if (fee.payments && fee.payments.length > 0) { %>
+        <% if (resolvedSortedPayments.length > 0) { %>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped table-hover align-middle">
                     <thead class="table-light">
                         <tr>
                             <th>Month</th>
                             <th>Amount Paid</th>
                             <th>Date</th>
                             <th>Type</th>
+                            <th>Description</th>
+                            <th class="text-end">Invoice</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% fee.payments.forEach((payment, index) => { %>
+                        <% resolvedSortedPayments.forEach((payment) => { %>
                             <tr>
                                 <td><strong><%= payment.month %></strong></td>
-                                <td><strong class="text-success"><%= payment.amount %></strong></td>
+                                <td><strong class="text-success"><%= Number(payment.amount || 0).toFixed(2) %></strong></td>
                                 <td><small><%= moment(payment.date).format('DD MMM, YYYY') %></small></td>
                                 <td>
                                     <% if (payment.collectedFromClass) { %>
-                                        <span class="badge bg-success">Class</span>
+                                        <span class="badge bg-primary">Class</span>
                                     <% } else { %>
-                                        <span class="badge bg-info">Manual</span>
+                                        <span class="badge bg-info text-dark">Manual</span>
                                     <% } %>
                                 </td>
+                                <td><%= payment.description || '-' %></td>
+                                <td class="text-end">
+                                    <a href="/student/fees/invoice/<%= payment._id %>" class="btn btn-sm btn-outline-primary">
+                                        Download
+                                    </a>
+                                </td>
                             </tr>
-                        <% }); %>
+                        <% }) %>
                     </tbody>
                 </table>
             </div>
         <% } else { %>
             <div class="alert alert-info mb-0">
-                <i class="fas fa-info-circle"></i> No payment history yet.
+                <i class="fas fa-info-circle me-1"></i> No payment history is available yet.
             </div>
         <% } %>
     </div>
 </div>
-
-<!-- Overdue Details (if any) -->
-<% if (overdues && overdues.length > 0) { %>
-    <div class="card">
-        <div class="card-header bg-danger text-white">
-            <h5 class="mb-0">⚠️ Overdue Dues</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Month</th>
-                            <th>Due Amount</th>
-                            <th>Paid</th>
-                            <th>Pending</th>
-                            <th>Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% overdues.forEach(due => { %>
-                            <tr class="table-danger">
-                                <td><strong><%= due.month %></strong></td>
-                                <td><%= due.dueAmount %></td>
-                                <td><span class="text-success"><%= due.paidAmount %></span></td>
-                                <td><strong><%= due.dueAmount - due.paidAmount %></strong></td>
-                                <td><small><%= moment(due.dueDate).format('DD MMM, YYYY') %></small></td>
-                            </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-<% } %>

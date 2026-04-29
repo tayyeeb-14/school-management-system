@@ -10,6 +10,18 @@ const ClassFee = require('../models/ClassFee');
 const Blog = require('../models/Blog');
 const Notice = require('../models/Notice');
 const upload = require('../config/multer');
+const {
+    applyPaymentRecord,
+    buildDueEntries,
+    buildFeeSummary,
+    ensureMonthlyDue,
+    getDefaultDueDate,
+    getMonthOptions,
+    normaliseDue,
+    rebuildDueLedger,
+    sortPaymentsByDateDesc,
+    toAmount
+} = require('../utils/fee');
 
 // Protect all admin routes
 router.use(isLoggedIn, isAdmin);
@@ -20,6 +32,15 @@ router.use((req, res, next) => {
     res.locals.path = req.path;  // Add this line to set path for all routes
     next();
 });
+
+function resolveStandardMonthlyFee(fee, classFee, fallbackAmount = 0) {
+    return toAmount(
+        fee?.monthlyFee ||
+        classFee?.totalMonthlyFee ||
+        fee?.totalDue ||
+        fallbackAmount
+    );
+}
 
 // Admin Dashboard
 router.get('/dashboard', async (req, res) => {
@@ -466,30 +487,45 @@ router.get('/students/:id/fees', async (req, res) => {
             return res.redirect('/admin/students');
         }
 
+        const classFee = student.classId ? await ClassFee.findOne({ classId: student.classId._id }) : null;
         let fee = await Fee.findOne({ studentId: req.params.id });
         if (!fee) {
             fee = await Fee.create({ studentId: req.params.id });
         }
 
-        // Auto-calculate totalDue from class fees if not set
-        if ((!fee.totalDue || fee.totalDue === 0) && student.classId) {
-            const classFee = await ClassFee.findOne({ classId: student.classId._id });
-            if (classFee && classFee.totalMonthlyFee) {
-                fee.totalDue = classFee.totalMonthlyFee;
-                await fee.save();
-            }
+        const standardMonthlyFee = resolveStandardMonthlyFee(fee, classFee);
+        let shouldSave = false;
+
+        if ((!fee.totalDue || fee.totalDue === 0) && standardMonthlyFee > 0) {
+            fee.totalDue = standardMonthlyFee;
+            shouldSave = true;
         }
 
-        // Calculate totals
-        const totalPaid = fee.payments ? fee.payments.reduce((sum, p) => sum + p.amount, 0) : 0;
-        const balance = (fee.totalDue || 0) - totalPaid;
+        if ((!fee.monthlyFee || fee.monthlyFee === 0) && standardMonthlyFee > 0) {
+            fee.monthlyFee = standardMonthlyFee;
+            shouldSave = true;
+        }
+
+        if (shouldSave) {
+            await fee.save();
+        }
+
+        const summary = buildFeeSummary(fee, { standardMonthlyFee });
+        const dueEntries = buildDueEntries(fee.monthlyDues, new Date());
+        const sortedPayments = sortPaymentsByDateDesc(fee.payments);
 
         res.render('admin/students/fees', {
             title: 'Student Fee Management',
             student,
             fee,
-            totalPaid,
-            balance
+            classFee,
+            standardMonthlyFee,
+            summary,
+            totalPaid: summary.totalPaid,
+            balance: summary.outstandingBalance,
+            dueEntries,
+            sortedPayments,
+            monthOptions: getMonthOptions({ monthsBack: 12, monthsForward: 12 })
         });
     } catch (error) {
         console.error(error);
@@ -502,17 +538,20 @@ router.get('/students/:id/fees', async (req, res) => {
 router.post('/students/:id/fees/update-monthly', async (req, res) => {
     try {
         const { monthlyFee, totalDue } = req.body;
-        
+
         let fee = await Fee.findOne({ studentId: req.params.id });
         if (!fee) {
             fee = await Fee.create({ studentId: req.params.id });
         }
 
-        fee.monthlyFee = monthlyFee || 0;
-        fee.totalDue = totalDue || 0;
+        const resolvedMonthlyFee = toAmount(monthlyFee);
+        const resolvedTotalDue = toAmount(totalDue) || resolvedMonthlyFee;
+
+        fee.monthlyFee = resolvedMonthlyFee;
+        fee.totalDue = resolvedTotalDue;
         await fee.save();
 
-        req.flash('success_msg', 'Fee details updated successfully');
+        req.flash('success_msg', 'Student fee settings updated successfully');
         res.redirect(`/admin/students/${req.params.id}/fees`);
     } catch (error) {
         console.error(error);
@@ -525,49 +564,45 @@ router.post('/students/:id/fees/update-monthly', async (req, res) => {
 router.post('/students/:id/fees/add-payment', async (req, res) => {
     try {
         const { amount, month, description, monthlyDueId } = req.body;
-        
+
+        const resolvedAmount = toAmount(amount);
+        if (!resolvedAmount || !month) {
+            req.flash('error_msg', 'Please provide both month and payment amount');
+            return res.redirect(`/admin/students/${req.params.id}/fees`);
+        }
+
         const student = await Student.findById(req.params.id).populate('classId');
+        if (!student) {
+            req.flash('error_msg', 'Student not found');
+            return res.redirect('/admin/students');
+        }
+        const classFee = student?.classId ? await ClassFee.findOne({ classId: student.classId._id }) : null;
         let fee = await Fee.findOne({ studentId: req.params.id });
         if (!fee) {
             fee = await Fee.create({ studentId: req.params.id });
         }
 
-        // Add payment with timestamp
-        const newPayment = {
-            amount: parseFloat(amount),
+        const standardMonthlyFee = resolveStandardMonthlyFee(fee, classFee, resolvedAmount);
+        if ((!fee.totalDue || fee.totalDue === 0) && standardMonthlyFee > 0) {
+            fee.totalDue = standardMonthlyFee;
+        }
+        if ((!fee.monthlyFee || fee.monthlyFee === 0) && standardMonthlyFee > 0) {
+            fee.monthlyFee = standardMonthlyFee;
+        }
+
+        const { payment } = applyPaymentRecord(fee, {
+            amount: resolvedAmount,
             month,
             description,
-            date: new Date(),
+            monthlyDueId: monthlyDueId || null,
+            standardMonthlyFee,
             collectedFromClass: false
-        };
-        fee.payments.push(newPayment);
-
-        // Ensure totalDue is set - try to get from class fees first
-        if ((!fee.totalDue || fee.totalDue === 0) && student && student.classId) {
-            const classFee = await ClassFee.findOne({ classId: student.classId._id });
-            if (classFee && classFee.totalMonthlyFee) {
-                fee.totalDue = classFee.totalMonthlyFee;
-            }
-        }
-
-        // Mark monthly due as paid if selected
-        if (monthlyDueId) {
-            const monthlyDue = fee.monthlyDues.id(monthlyDueId);
-            if (monthlyDue) {
-                monthlyDue.isPaid = true;
-                monthlyDue.paidAmount = parseFloat(amount);
-                monthlyDue.paymentDate = new Date();
-            }
-        }
+        });
 
         await fee.save();
 
-        // Store payment details in session for invoice generation
-        req.session.lastPaymentIndex = fee.payments.length - 1;
-        req.session.studentId = req.params.id;
-        
-        req.flash('success_msg', 'Payment recorded successfully! Invoice generated.');
-        res.redirect(`/admin/students/${req.params.id}/fees/invoice`);
+        req.flash('success_msg', `Payment of ${resolvedAmount.toFixed(2)} recorded for ${month}`);
+        res.redirect(`/admin/students/${req.params.id}/fees/invoice?paymentId=${payment._id}`);
     } catch (error) {
         console.error(error);
         req.flash('error_msg', 'Error recording payment');
@@ -593,7 +628,11 @@ router.get('/students/:id/fees/invoice', async (req, res) => {
             return res.redirect(`/admin/students/${req.params.id}/fees`);
         }
 
-        const lastPayment = fee.payments[fee.payments.length - 1];
+        const requestedPaymentId = req.query.paymentId;
+        const selectedPayment = requestedPaymentId && typeof fee.payments.id === 'function'
+            ? fee.payments.id(requestedPaymentId)
+            : null;
+        const lastPayment = selectedPayment || fee.payments[fee.payments.length - 1];
         const invoiceNumber = `INV-${Date.now()}-${req.params.id.slice(-6)}`;
 
         res.render('admin/students/invoice', {
@@ -615,23 +654,38 @@ router.get('/students/:id/fees/invoice', async (req, res) => {
 router.post('/students/:id/fees/add-monthly-due', async (req, res) => {
     try {
         const { month, dueAmount, dueDate } = req.body;
-        
+
+        const resolvedDueAmount = toAmount(dueAmount);
+        if (!month || !resolvedDueAmount) {
+            req.flash('error_msg', 'Please provide a valid month and due amount');
+            return res.redirect(`/admin/students/${req.params.id}/fees`);
+        }
+
         let fee = await Fee.findOne({ studentId: req.params.id });
         if (!fee) {
             fee = await Fee.create({ studentId: req.params.id });
         }
 
-        fee.monthlyDues.push({
+        const existingDue = fee.monthlyDues.find((entry) => String(entry.month).toLowerCase() === String(month).toLowerCase());
+        const monthlyDue = ensureMonthlyDue(fee, {
             month,
-            dueAmount: parseFloat(dueAmount),
-            dueDate: new Date(dueDate),
-            isPaid: false,
-            paidAmount: 0
+            dueAmount: resolvedDueAmount,
+            dueDate: dueDate ? new Date(dueDate) : getDefaultDueDate(month)
         });
-        
+
+        if ((!fee.totalDue || fee.totalDue === 0) && resolvedDueAmount > 0) {
+            fee.totalDue = resolvedDueAmount;
+        }
+        if ((!fee.monthlyFee || fee.monthlyFee === 0) && resolvedDueAmount > 0) {
+            fee.monthlyFee = resolvedDueAmount;
+        }
+
+        monthlyDue.dueAmount = resolvedDueAmount;
+        monthlyDue.dueDate = dueDate ? new Date(dueDate) : monthlyDue.dueDate || getDefaultDueDate(month);
+        normaliseDue(monthlyDue);
         await fee.save();
 
-        req.flash('success_msg', 'Monthly due added successfully');
+        req.flash('success_msg', existingDue ? 'Monthly due updated successfully' : 'Monthly due added successfully');
         res.redirect(`/admin/students/${req.params.id}/fees`);
     } catch (error) {
         console.error(error);
@@ -649,7 +703,19 @@ router.delete('/students/:id/fees/monthly-due/:dueId', async (req, res) => {
             return res.redirect(`/admin/students/${req.params.id}/fees`);
         }
 
-        fee.monthlyDues.id(req.params.dueId).remove();
+        const due = fee.monthlyDues.id(req.params.dueId);
+        if (!due) {
+            req.flash('error_msg', 'Monthly due not found');
+            return res.redirect(`/admin/students/${req.params.id}/fees`);
+        }
+
+        const linkedPayments = fee.payments.filter((payment) => String(payment.month).toLowerCase() === String(due.month).toLowerCase());
+        if (linkedPayments.length > 0) {
+            req.flash('error_msg', 'Delete the linked payment(s) for this month before removing the due');
+            return res.redirect(`/admin/students/${req.params.id}/fees`);
+        }
+
+        due.deleteOne();
         await fee.save();
 
         req.flash('success_msg', 'Monthly due deleted successfully');
@@ -664,13 +730,24 @@ router.delete('/students/:id/fees/monthly-due/:dueId', async (req, res) => {
 // Delete Payment
 router.delete('/students/:id/fees/payment/:paymentId', async (req, res) => {
     try {
+        const student = await Student.findById(req.params.id).populate('classId');
+        const classFee = student?.classId ? await ClassFee.findOne({ classId: student.classId._id }) : null;
         const fee = await Fee.findOne({ studentId: req.params.id });
         if (!fee) {
             req.flash('error_msg', 'Fee record not found');
             return res.redirect(`/admin/students/${req.params.id}/fees`);
         }
 
-        fee.payments.id(req.params.paymentId).remove();
+        const payment = fee.payments.id(req.params.paymentId);
+        if (!payment) {
+            req.flash('error_msg', 'Payment record not found');
+            return res.redirect(`/admin/students/${req.params.id}/fees`);
+        }
+
+        payment.deleteOne();
+        rebuildDueLedger(fee, {
+            standardMonthlyFee: resolveStandardMonthlyFee(fee, classFee)
+        });
         await fee.save();
 
         req.flash('success_msg', 'Payment deleted successfully');
@@ -885,7 +962,9 @@ router.get('/classes/:id/fees/collect-payment', async (req, res) => {
             title: `Collect Payment - ${classDoc.name}`,
             classDoc,
             classFee,
-            students
+            students,
+            monthOptions: getMonthOptions({ monthsBack: 12, monthsForward: 12 }),
+            suggestedAmount: resolveStandardMonthlyFee(null, classFee)
         });
     } catch (error) {
         console.error(error);
@@ -898,7 +977,7 @@ router.get('/classes/:id/fees/collect-payment', async (req, res) => {
 router.post('/classes/:id/fees/collect-payment', async (req, res) => {
     try {
         const { amountPerStudent, month, isOverdue, selectedStudents } = req.body;
-        
+
         // Get class
         const classDoc = await Class.findById(req.params.id);
         if (!classDoc) {
@@ -906,17 +985,34 @@ router.post('/classes/:id/fees/collect-payment', async (req, res) => {
             return res.redirect('/admin/classes/fees');
         }
 
+        const classFee = await ClassFee.findOne({ classId: req.params.id });
+        const standardMonthlyFee = resolveStandardMonthlyFee(null, classFee, amountPerStudent);
+
         // Ensure selectedStudents is array
-        const studentIds = Array.isArray(selectedStudents) ? selectedStudents : [selectedStudents];
-        
+        const studentIds = Array.isArray(selectedStudents)
+            ? selectedStudents.filter(Boolean)
+            : [selectedStudents].filter(Boolean);
+
         if (!studentIds || studentIds.length === 0) {
             req.flash('error_msg', 'Please select at least one student');
             return res.redirect(`/admin/classes/${req.params.id}/fees/collect-payment`);
         }
 
-        const amount = parseFloat(amountPerStudent);
+        if (!month) {
+            req.flash('error_msg', 'Please choose a fee month');
+            return res.redirect(`/admin/classes/${req.params.id}/fees/collect-payment`);
+        }
+
+        const createDueOnly = Boolean(isOverdue);
+        const amount = toAmount(amountPerStudent);
+
+        if (!(createDueOnly ? standardMonthlyFee : amount)) {
+            req.flash('error_msg', createDueOnly ? 'Set a valid due amount before creating dues' : 'Please enter a valid amount per student');
+            return res.redirect(`/admin/classes/${req.params.id}/fees/collect-payment`);
+        }
+
         const updatedStudents = [];
-        
+
         // Process only selected students
         for (const studentId of studentIds) {
             const student = await Student.findById(studentId).populate('userId');
@@ -927,54 +1023,48 @@ router.post('/classes/:id/fees/collect-payment', async (req, res) => {
                 fee = await Fee.create({ studentId });
             }
 
-            // Add payment
-            const payment = {
-                amount,
-                month,
-                description: month,
-                date: new Date(),
-                collectedFromClass: true,
-                classId: req.params.id
-            };
-            fee.payments.push(payment);
-
-            // If marked as overdue, create monthlyDue record
-            if (isOverdue) {
-                const existingDue = fee.monthlyDues.find(d => d.month === month);
-                if (!existingDue) {
-                    fee.monthlyDues.push({
-                        month,
-                        dueAmount: amount,
-                        dueDate: new Date(),
-                        isPaid: false,
-                        paidAmount: 0
-                    });
-                } else {
-                    // Update existing due
-                    existingDue.isPaid = false;
-                    existingDue.paidAmount = 0;
-                }
+            if ((!fee.totalDue || fee.totalDue === 0) && standardMonthlyFee > 0) {
+                fee.totalDue = standardMonthlyFee;
+            }
+            if ((!fee.monthlyFee || fee.monthlyFee === 0) && standardMonthlyFee > 0) {
+                fee.monthlyFee = standardMonthlyFee;
             }
 
-            // Update total due if not set
-            if (!fee.totalDue || fee.totalDue === 0) {
-                const classFee = await ClassFee.findOne({ classId: req.params.id });
-                if (classFee) {
-                    fee.totalDue = classFee.totalMonthlyFee;
-                }
+            if (createDueOnly) {
+                const monthlyDue = ensureMonthlyDue(fee, {
+                    month,
+                    dueAmount: standardMonthlyFee,
+                    dueDate: getDefaultDueDate(month)
+                });
+                monthlyDue.dueAmount = standardMonthlyFee;
+                monthlyDue.dueDate = monthlyDue.dueDate || getDefaultDueDate(month);
+                normaliseDue(monthlyDue);
+            } else {
+                applyPaymentRecord(fee, {
+                    amount,
+                    month,
+                    description: `Class fee collection for ${month}`,
+                    collectedFromClass: true,
+                    classId: req.params.id,
+                    standardMonthlyFee
+                });
             }
 
             await fee.save();
             updatedStudents.push({
                 studentId,
                 studentName: student.userId.name,
-                amount,
-                month,
-                paymentId: payment._id
+                amount: createDueOnly ? standardMonthlyFee : amount,
+                month
             });
         }
 
-        req.flash('success_msg', `Payment collected from ${updatedStudents.length} students in ${classDoc.name} for ${month}. Invoices generated.`);
+        if (createDueOnly) {
+            req.flash('success_msg', `Monthly due created for ${updatedStudents.length} students in ${classDoc.name} for ${month}.`);
+        } else {
+            req.flash('success_msg', `Payment collected from ${updatedStudents.length} students in ${classDoc.name} for ${month}.`);
+        }
+
         res.redirect(`/admin/classes/${req.params.id}/fees/payment-history`);
     } catch (error) {
         console.error(error);
@@ -993,6 +1083,8 @@ router.get('/classes/:id/fees/payment-history', async (req, res) => {
         }
 
         const students = await Student.find({ classId: req.params.id }).populate('userId');
+        const classFee = await ClassFee.findOne({ classId: req.params.id });
+        const standardMonthlyFee = resolveStandardMonthlyFee(null, classFee);
         
         // Get all payments for students in this class
         const classFees = await Fee.find({
@@ -1002,18 +1094,23 @@ router.get('/classes/:id/fees/payment-history', async (req, res) => {
         // Group payments by student and extract class payments
         const paymentHistory = students.map(student => {
             const fee = classFees.find(f => f.studentId._id.toString() === student._id.toString());
-            const classPayments = fee ? fee.payments.filter(p => p.collectedFromClass) : [];
+            const classPayments = fee ? sortPaymentsByDateDesc(fee.payments.filter(p => p.collectedFromClass)) : [];
+            const summary = buildFeeSummary(fee || { payments: [], monthlyDues: [] }, { standardMonthlyFee });
             return {
                 student,
                 fee,
                 classPayments,
-                totalCollected: classPayments.reduce((sum, p) => sum + p.amount, 0)
+                dueEntries: fee ? buildDueEntries(fee.monthlyDues, new Date()) : [],
+                summary,
+                totalCollected: toAmount(classPayments.reduce((sum, p) => sum + p.amount, 0))
             };
         });
 
         res.render('admin/classes/payment-history', {
             title: `Payment History - ${classDoc.name}`,
             classDoc,
+            classFee,
+            standardMonthlyFee,
             paymentHistory
         });
     } catch (error) {

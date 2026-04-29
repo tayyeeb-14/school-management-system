@@ -1,5 +1,19 @@
 const mongoose = require('mongoose');
 
+function toAmount(value) {
+    const numericValue = Number(value);
+
+    if (!Number.isFinite(numericValue)) {
+        return 0;
+    }
+
+    return Math.round(numericValue * 100) / 100;
+}
+
+function getPendingAmount(due) {
+    return toAmount(Math.max(0, toAmount(due?.dueAmount) - toAmount(due?.paidAmount)));
+}
+
 const feeSchema = new mongoose.Schema({
     studentId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -38,6 +52,10 @@ const feeSchema = new mongoose.Schema({
         paidAmount: {
             type: Number,
             default: 0
+        },
+        paymentDate: {
+            type: Date,
+            default: null
         }
     }],
     totalDue: {
@@ -52,20 +70,34 @@ const feeSchema = new mongoose.Schema({
 
 // Virtual for total paid
 feeSchema.virtual('totalPaid').get(function() {
-    return this.payments.reduce((sum, payment) => sum + payment.amount, 0);
+    return toAmount(this.payments.reduce((sum, payment) => sum + toAmount(payment.amount), 0));
+});
+
+// Virtual for total assigned due amount
+feeSchema.virtual('totalAssigned').get(function() {
+    return toAmount(this.monthlyDues.reduce((sum, due) => sum + toAmount(due.dueAmount), 0));
 });
 
 // Virtual for balance
 feeSchema.virtual('balance').get(function() {
-    return this.totalDue - this.totalPaid;
+    if (this.monthlyDues.length > 0) {
+        return toAmount(this.monthlyDues.reduce((sum, due) => sum + getPendingAmount(due), 0));
+    }
+
+    return toAmount(Math.max(0, toAmount(this.totalDue) - this.totalPaid));
+});
+
+// Virtual for overpayment / advance amount
+feeSchema.virtual('creditAmount').get(function() {
+    return toAmount(Math.max(0, this.totalPaid - this.totalAssigned));
 });
 
 // Virtual for overdue amount
 feeSchema.virtual('overdueAmount').get(function() {
     const now = new Date();
     return this.monthlyDues.reduce((sum, due) => {
-        if (!due.isPaid && new Date(due.dueDate) < now) {
-            return sum + (due.dueAmount - due.paidAmount);
+        if (getPendingAmount(due) > 0 && due.dueDate && new Date(due.dueDate) < now) {
+            return toAmount(sum + getPendingAmount(due));
         }
         return sum;
     }, 0);

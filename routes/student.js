@@ -7,9 +7,24 @@ const Assignment = require('../models/Assignment');
 const Fee = require('../models/Fee');
 const Blog = require('../models/Blog');
 const upload = require('../config/multer');
+const {
+    buildDueEntries,
+    buildFeeSummary,
+    sortPaymentsByDateDesc,
+    toAmount
+} = require('../utils/fee');
 
 // Protect all student routes
 router.use(isLoggedIn, isStudent);
+
+function resolveStandardMonthlyFee(fee, classFee, fallbackAmount = 0) {
+    return toAmount(
+        fee?.monthlyFee ||
+        classFee?.totalMonthlyFee ||
+        fee?.totalDue ||
+        fallbackAmount
+    );
+}
 
 // View Payment Invoice (BEFORE layout middleware so layout: false works)
 router.get('/fees/invoice/:paymentIndex', async (req, res) => {
@@ -29,8 +44,9 @@ router.get('/fees/invoice/:paymentIndex', async (req, res) => {
             return res.redirect('/student/fees');
         }
 
-        const paymentIndex = parseInt(req.params.paymentIndex);
-        const payment = fee.payments[paymentIndex];
+        const paymentIndex = parseInt(req.params.paymentIndex, 10);
+        const payment = (typeof fee.payments.id === 'function' ? fee.payments.id(req.params.paymentIndex) : null)
+            || fee.payments[paymentIndex];
         
         if (!payment) {
             req.flash('error_msg', 'Payment not found');
@@ -315,33 +331,40 @@ router.get('/fees', async (req, res) => {
             fee = await Fee.create({ studentId: student._id });
         }
 
-        // Auto-calculate totalDue from class fees if not set
-        if ((!fee.totalDue || fee.totalDue === 0) && student.classId) {
-            const ClassFee = require('../models/ClassFee');
-            const classFee = await ClassFee.findOne({ classId: student.classId._id });
-            if (classFee && classFee.totalMonthlyFee) {
-                fee.totalDue = classFee.totalMonthlyFee;
-                await fee.save();
-            }
+        const ClassFee = require('../models/ClassFee');
+        const classFee = student.classId ? await ClassFee.findOne({ classId: student.classId._id }) : null;
+        const standardMonthlyFee = resolveStandardMonthlyFee(fee, classFee);
+
+        let shouldSave = false;
+        if ((!fee.totalDue || fee.totalDue === 0) && standardMonthlyFee > 0) {
+            fee.totalDue = standardMonthlyFee;
+            shouldSave = true;
+        }
+        if ((!fee.monthlyFee || fee.monthlyFee === 0) && standardMonthlyFee > 0) {
+            fee.monthlyFee = standardMonthlyFee;
+            shouldSave = true;
+        }
+        if (shouldSave) {
+            await fee.save();
         }
 
-        // Calculate total paid from all payments
-        const totalPaid = fee.payments ? fee.payments.reduce((sum, p) => sum + p.amount, 0) : 0;
-        
-        // Calculate balance
-        const balance = (fee.totalDue || 0) - totalPaid;
-
-        // Calculate overdue and upcoming dues
-        const now = new Date();
-        const overdues = fee.monthlyDues ? fee.monthlyDues.filter(d => !d.isPaid && new Date(d.dueDate) < now) : [];
-        const upcomingDues = fee.monthlyDues ? fee.monthlyDues.filter(d => !d.isPaid && new Date(d.dueDate) >= now) : [];
+        const summary = buildFeeSummary(fee, { standardMonthlyFee });
+        const dueEntries = buildDueEntries(fee.monthlyDues, new Date());
+        const overdues = dueEntries.filter((entry) => entry.isOverdue);
+        const upcomingDues = dueEntries.filter((entry) => !entry.isOverdue && !entry.isPaid);
+        const sortedPayments = sortPaymentsByDateDesc(fee.payments);
 
         res.render('student/fees', {
             title: 'My Fees',
             student,
             fee,
-            totalPaid,
-            balance,
+            classFee,
+            standardMonthlyFee,
+            summary,
+            totalPaid: summary.totalPaid,
+            balance: summary.outstandingBalance,
+            dueEntries,
+            sortedPayments,
             overdues,
             upcomingDues,
             path: req.path
