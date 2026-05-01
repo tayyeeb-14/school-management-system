@@ -16,7 +16,11 @@ connectDB();
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// Support method override via form body `_method` and query parameter `?_method=` for compatibility
 app.use(methodOverride("_method"));
+app.use(methodOverride(function (req, res) {
+  if (req.query && req.query._method) return req.query._method;
+}));
 app.use(express.static(path.join(__dirname, "public")));
 
 // EJS setup
