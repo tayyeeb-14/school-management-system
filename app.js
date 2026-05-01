@@ -21,6 +21,13 @@ app.use(methodOverride("_method"));
 app.use(methodOverride(function (req, res) {
   if (req.query && req.query._method) return req.query._method;
 }));
+// Temporary request logger to help debug routing issues (remove after testing)
+app.use((req, res, next) => {
+  try {
+    console.log('[REQ]', req.method, req.originalUrl);
+  } catch (e) {}
+  next();
+});
 app.use(express.static(path.join(__dirname, "public")));
 
 // EJS setup
