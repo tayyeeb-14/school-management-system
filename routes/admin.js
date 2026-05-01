@@ -854,13 +854,20 @@ router.delete('/classes/:id/fees/:feeId', async (req, res) => {
             return res.redirect('/admin/classes/fees');
         }
 
-        classFee.fees.id(req.params.feeId).remove();
-        
+        const feeSub = classFee.fees.id(req.params.feeId);
+        if (!feeSub) {
+            console.warn('Attempt to delete non-existent fee subdoc', { classId: req.params.id, feeId: req.params.feeId });
+            req.flash('error_msg', 'Requested fee type was not found');
+            return res.redirect(`/admin/classes/${req.params.id}/fees/edit`);
+        }
+
+        feeSub.remove();
+
         // Update total monthly fee
         classFee.totalMonthlyFee = classFee.fees
             .filter(f => f.frequency === 'monthly')
             .reduce((sum, f) => sum + f.amount, 0);
-        
+
         await classFee.save();
 
         req.flash('success_msg', 'Fee type deleted successfully');

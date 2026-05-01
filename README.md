@@ -1,2 +1,1 @@
-Hello school managment
-system
+This is an School Managment System 
