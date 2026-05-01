@@ -35,9 +35,10 @@ router.use((req, res, next) => {
 
 function resolveStandardMonthlyFee(fee, classFee, fallbackAmount = 0) {
     return toAmount(
+        // prefer explicit student monthlyFee, then class-calculated monthly total,
+        // avoid using `totalDue` (a lump-sum) as a per-month fallback
         fee?.monthlyFee ||
-        classFee?.totalMonthlyFee ||
-        fee?.totalDue ||
+        classFee?.calculatedMonthlyFee ||
         fallbackAmount
     );
 }
@@ -976,7 +977,10 @@ router.get('/classes/:id/fees/collect-payment', async (req, res) => {
 // Collect class-wise payment and distribute to all students
 router.post('/classes/:id/fees/collect-payment', async (req, res) => {
     try {
-        const { amountPerStudent, month, isOverdue, selectedStudents } = req.body;
+        const { amountPerStudent, month, isOverdue } = req.body;
+        // Support both 'selectedStudents' and 'selectedStudents[]' naming; log payload for debugging
+        let selectedStudents = req.body.selectedStudents || req.body['selectedStudents[]'];
+        console.log('Collect-payment payload:', { amountPerStudent, month, isOverdue, selectedStudents });
 
         // Get class
         const classDoc = await Class.findById(req.params.id);

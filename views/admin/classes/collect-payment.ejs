@@ -14,6 +14,12 @@ const resolvedStudents = (typeof students !== 'undefined' && Array.isArray(stude
 
 <div class="row g-4">
     <div class="col-lg-8">
+        <!-- Visible debug badge for script status -->
+        <div id="collectDebugBadge" style="position:fixed;top:80px;right:24px;z-index:1050;background:#0d6efd;color:#fff;padding:6px 10px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-size:13px;">
+            Fees Script: <span id="collectDebugStatus">loading...</span>
+            <div style="font-size:11px;margin-top:4px">Selected: <span id="collectDebugCount">0</span></div>
+            <div id="collectDebugError" style="display:none;background:#fff;color:#900;padding:6px;border-radius:4px;margin-top:6px;font-size:11px;"></div>
+        </div>
         <div class="card mb-4">
             <div class="card-header bg-info text-white">
                 <h5 class="mb-0">Class Overview</h5>
@@ -41,7 +47,7 @@ const resolvedStudents = (typeof students !== 'undefined' && Array.isArray(stude
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Select Students</h5>
                     <div class="form-check form-check-inline mb-0">
-                        <input type="checkbox" id="selectAllStudents" class="form-check-input">
+                        <input type="checkbox" id="selectAllStudents" class="form-check-input" onchange="(function(cb){const all=document.querySelectorAll('.student-checkbox');all.forEach(i=>i.checked=cb.checked);const selectedCount=document.querySelectorAll('.student-checkbox:checked').length;var sc=document.getElementById('selectedCount');if(sc)sc.textContent=selectedCount;var ssc=document.getElementById('selectedStudentsCalc');if(ssc)ssc.textContent=selectedCount;var amountEl=document.getElementById('amountInput');var amount=parseFloat(amountEl?amountEl.value||0:0)||0;var ac=document.getElementById('amountCalc');if(ac)ac.textContent=amount.toFixed(2);var tc=document.getElementById('totalCalc');if(tc)tc.textContent=(selectedCount*amount).toFixed(2);var cbn=document.getElementById('collectBtn');if(cbn)cbn.disabled=(selectedCount===0||amount===0);})(this)">
                         <label class="form-check-label text-white" for="selectAllStudents">Select All</label>
                     </div>
                 </div>
@@ -61,7 +67,7 @@ const resolvedStudents = (typeof students !== 'undefined' && Array.isArray(stude
                                     <% resolvedStudents.forEach((student) => { %>
                                         <tr>
                                             <td>
-                                                <input type="checkbox" name="selectedStudents" value="<%= student._id %>" class="form-check-input student-checkbox">
+                                                <input type="checkbox" name="selectedStudents[]" value="<%= student._id %>" class="form-check-input student-checkbox" onchange="(function(cb){const selectedCount=document.querySelectorAll('.student-checkbox:checked').length;const amountEl=document.getElementById('amountInput');const amount=parseFloat(amountEl?amountEl.value||0:0)||0;const total=(selectedCount*amount).toFixed(2);var sc=document.getElementById('selectedCount');if(sc)sc.textContent=selectedCount;var ssc=document.getElementById('selectedStudentsCalc');if(ssc)ssc.textContent=selectedCount;var ac=document.getElementById('amountCalc');if(ac)ac.textContent=amount.toFixed(2);var tc=document.getElementById('totalCalc');if(tc)tc.textContent=total;var cbn=document.getElementById('collectBtn');if(cbn)cbn.disabled=(selectedCount===0||amount===0);})(this)">
                                             </td>
                                             <td><strong><%= student.rollNo %></strong></td>
                                             <td><%= student.userId.name %></td>
@@ -113,6 +119,7 @@ const resolvedStudents = (typeof students !== 'undefined' && Array.isArray(stude
                             value="<%= resolvedSuggestedAmount.toFixed(2) %>"
                             placeholder="0.00"
                             required
+                            onchange="(function(){const selectedCount=document.querySelectorAll('.student-checkbox:checked').length;var amount=parseFloat(this.value||0)||0;var ac=document.getElementById('amountCalc');if(ac)ac.textContent=amount.toFixed(2);var tc=document.getElementById('totalCalc');if(tc)tc.textContent=(selectedCount*amount).toFixed(2);var cbn=document.getElementById('collectBtn');if(cbn)cbn.disabled=(selectedCount===0||amount===0);var ssc=document.getElementById('selectedStudentsCalc');if(ssc)ssc.textContent=selectedCount;var sc=document.getElementById('selectedCount');if(sc)sc.textContent=selectedCount;})()"
                         >
                         <small class="text-muted">Used as payment amount, or as due amount when creating unpaid dues only.</small>
                     </div>
@@ -148,77 +155,4 @@ const resolvedStudents = (typeof students !== 'undefined' && Array.isArray(stude
     </div>
 </div>
 
-<script>
-const selectAllStudents = document.getElementById('selectAllStudents');
-const studentCheckboxes = document.querySelectorAll('.student-checkbox');
-const amountInput = document.getElementById('amountInput');
-const collectBtn = document.getElementById('collectBtn');
-const createDueOnly = document.getElementById('createDueOnly');
-const modeHelp = document.getElementById('modeHelp');
-const selectedCountLabel = document.getElementById('selectedCount');
-const selectedStudentsCalc = document.getElementById('selectedStudentsCalc');
-const amountCalc = document.getElementById('amountCalc');
-const totalCalc = document.getElementById('totalCalc');
-
-function updateCalculations() {
-    const selectedCount = document.querySelectorAll('.student-checkbox:checked').length;
-    const amount = parseFloat(amountInput?.value || '0') || 0;
-    const total = selectedCount * amount;
-    const dueOnly = createDueOnly?.checked;
-
-    if (selectedCountLabel) selectedCountLabel.textContent = selectedCount;
-    if (selectedStudentsCalc) selectedStudentsCalc.textContent = selectedCount;
-    if (amountCalc) amountCalc.textContent = amount.toFixed(2);
-    if (totalCalc) totalCalc.textContent = total.toFixed(2);
-
-    if (modeHelp) {
-        modeHelp.innerHTML = dueOnly
-            ? '<strong>Mode:</strong> Due creation only.<br>Selected students will get an unpaid monthly due for the chosen month.'
-            : '<strong>Mode:</strong> Payment collection.<br>Selected students will receive a payment entry for the chosen month.';
-    }
-
-    if (collectBtn) {
-        collectBtn.disabled = selectedCount === 0 || amount === 0;
-        collectBtn.innerHTML = dueOnly
-            ? '<i class="fas fa-calendar-plus me-1"></i> Create Monthly Due'
-            : '<i class="fas fa-check-circle me-1"></i> Save Class Action';
-    }
-}
-
-if (selectAllStudents) {
-    selectAllStudents.addEventListener('change', function() {
-        studentCheckboxes.forEach((checkbox) => {
-            checkbox.checked = this.checked;
-        });
-        updateCalculations();
-    });
-}
-
-studentCheckboxes.forEach((checkbox) => {
-    checkbox.addEventListener('change', function() {
-        const allChecked = document.querySelectorAll('.student-checkbox:checked').length === studentCheckboxes.length;
-        if (selectAllStudents) {
-            selectAllStudents.checked = allChecked;
-        }
-        updateCalculations();
-    });
-});
-
-if (amountInput) {
-    amountInput.addEventListener('input', updateCalculations);
-}
-
-if (createDueOnly) {
-    createDueOnly.addEventListener('change', updateCalculations);
-}
-
-document.getElementById('collectPaymentForm').addEventListener('submit', function(event) {
-    const selectedCount = document.querySelectorAll('.student-checkbox:checked').length;
-    if (selectedCount === 0) {
-        event.preventDefault();
-        alert('Please select at least one student');
-    }
-});
-
-updateCalculations();
-</script>
+<script src="/js/collect-payment.js"></script>

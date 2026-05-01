@@ -42,4 +42,17 @@ classFeeSchema.virtual('calculatedMonthlyFee').get(function() {
     }, 0);
 });
 
+// Keep `totalMonthlyFee` in sync for existing code that reads it.
+classFeeSchema.pre('save', function(next) {
+    try {
+        const total = Array.isArray(this.fees)
+            ? this.fees.reduce((sum, f) => (f && f.frequency === 'monthly' ? sum + Number(f.amount || 0) : sum), 0)
+            : 0;
+        this.totalMonthlyFee = Math.round(total * 100) / 100;
+    } catch (e) {
+        // ignore and continue
+    }
+    next();
+});
+
 module.exports = mongoose.model('ClassFee', classFeeSchema);

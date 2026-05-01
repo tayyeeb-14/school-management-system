@@ -8,6 +8,8 @@ function toAmount(value) {
     return Math.round(numericValue * 100) / 100;
 }
 
+const mongoose = require('mongoose');
+
 function normaliseMonthKey(monthLabel) {
     return String(monthLabel || '').trim().toLowerCase();
 }
@@ -165,9 +167,12 @@ function applyPaymentRecord(
 
     const resolvedAmount = toAmount(amount);
     const resolvedMonth = month || formatMonthLabel(paymentDate);
-    const resolvedStandardFee = toAmount(standardMonthlyFee || feeRecord.totalDue || feeRecord.monthlyFee || resolvedAmount);
+    // Prefer explicit `standardMonthlyFee`, then student's `monthlyFee`.
+    // Do NOT treat `totalDue` (a lump-sum) as a per-month fallback — that caused incorrect month amounts.
+    const resolvedStandardFee = toAmount(standardMonthlyFee || feeRecord.monthlyFee || resolvedAmount);
 
     const payment = {
+        _id: new mongoose.Types.ObjectId(),
         amount: resolvedAmount,
         month: resolvedMonth,
         description: description || `Fee payment for ${resolvedMonth}`,
