@@ -7,6 +7,7 @@ const Assignment = require('../models/Assignment');
 const Fee = require('../models/Fee');
 const Blog = require('../models/Blog');
 const upload = require('../config/multer');
+const { DOCUMENT_TYPES } = require('../utils/documentTypes');
 const {
     buildDueEntries,
     buildFeeSummary,
@@ -111,6 +112,31 @@ router.get('/dashboard', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Student Documents
+router.get('/documents', async (req, res) => {
+    try {
+        const student = await Student.findOne({ userId: req.session.user.id })
+            .populate('userId')
+            .populate('classId');
+
+        if (!student) {
+            req.flash('error_msg', 'Student record not found');
+            return res.redirect('/student/dashboard');
+        }
+
+        res.render('student/documents', {
+            title: 'My Documents',
+            student,
+            documentTypes: DOCUMENT_TYPES,
+            path: req.path
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading documents');
+        res.redirect('/student/dashboard');
     }
 });
 

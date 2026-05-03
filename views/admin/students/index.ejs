@@ -83,8 +83,36 @@ students.forEach(s => {
                                     <td><%= s.userId?.email || '—' %></td>
                                     <td><%= s.rollNo %></td>
                                     <td>
-                                        <a href="/admin/students/<%= s._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        <a href="/admin/students/<%= s._id %>/fees" class="btn btn-sm btn-info">Fees</a>
+                                        <a href="/admin/students/<%= s._id %>/edit" class="btn btn-sm btn-outline-secondary mb-1">Edit</a>
+                                        <a href="/admin/students/<%= s._id %>/fees" class="btn btn-sm btn-info mb-1">Fees</a>
+                                        <div class="btn-group btn-group-sm mb-1" role="group">
+                                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Documents
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 280px;">
+                                                <% documentTypes.forEach((doc) => { %>
+                                                    <li class="d-flex justify-content-between align-items-center gap-2 py-1">
+                                                        <span class="small fw-semibold"><%= doc.label %></span>
+                                                        <span class="btn-group btn-group-sm" role="group">
+                                                            <a
+                                                                href="/documents/<%= doc.key %>/preview?studentId=<%= s._id %>"
+                                                                target="_blank"
+                                                                rel="noopener"
+                                                                class="btn btn-outline-secondary"
+                                                            >
+                                                                Preview
+                                                            </a>
+                                                            <a
+                                                                href="/documents/<%= doc.key %>/download?studentId=<%= s._id %>"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                Download
+                                                            </a>
+                                                        </span>
+                                                    </li>
+                                                <% }); %>
+                                            </ul>
+                                        </div>
                                         <form action="/admin/students/<%= s._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this student?')">
                                             <input type="hidden" name="_method" value="DELETE">
                                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>

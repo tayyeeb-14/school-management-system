@@ -9,7 +9,11 @@ const Fee = require('../models/Fee');
 const ClassFee = require('../models/ClassFee');
 const Blog = require('../models/Blog');
 const Notice = require('../models/Notice');
+const Attendance = require('../models/Attendance');
+const Salary = require('../models/Salary');
 const upload = require('../config/multer');
+const { documentTypes } = require('../utils/documentTypes');
+const { calculateFinalResult, isMarksheetComplete } = require('../utils/marks');
 const {
     applyPaymentRecord,
     buildDueEntries,
@@ -41,6 +45,21 @@ function resolveStandardMonthlyFee(fee, classFee, fallbackAmount = 0) {
         classFee?.calculatedMonthlyFee ||
         fallbackAmount
     );
+}
+
+function toMonthKey(dateInput = new Date()) {
+    const date = new Date(dateInput);
+    if (Number.isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+}
+
+function toStartOfDay(dateInput = new Date()) {
+    const date = new Date(dateInput);
+    if (Number.isNaN(date.getTime())) return null;
+    date.setHours(0, 0, 0, 0);
+    return date;
 }
 
 // Admin Dashboard
@@ -92,7 +111,8 @@ router.get('/students', async (req, res) => {
         res.render('admin/students/index', {
             title: 'Manage Students',
             students,
-            pendingStudents
+            pendingStudents,
+            documentTypes
         });
     } catch (error) {
         console.error(error);
@@ -372,7 +392,8 @@ router.delete('/students/:id', async (req, res) => {
 router.get('/teachers', async (req, res) => {
     try {
         const teachers = await Teacher.find()
-            .populate('userId', 'name email');
+            .populate('userId', 'name username email')
+            .populate('classIds', 'name');
             
         res.render('admin/teachers/index', {
             title: 'Manage Teachers',
@@ -385,8 +406,18 @@ router.get('/teachers', async (req, res) => {
 });
 
 // Add Teacher Form
-router.get('/teachers/new', (req, res) => {
-    res.render('admin/teachers/new', { title: 'Add New Teacher' });
+router.get('/teachers/new', async (req, res) => {
+    try {
+        const classes = await Class.find().sort({ name: 1 });
+        res.render('admin/teachers/new', {
+            title: 'Add New Teacher',
+            classes
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading teacher form');
+        res.redirect('/admin/teachers');
+    }
 });
 
 // Add Teacher
@@ -401,7 +432,17 @@ router.post('/teachers', (req, res, next) => {
     });
 }, async (req, res) => {
     try {
-        const { username, password, name, email, subject, qualifications } = req.body;
+        const {
+            username,
+            password,
+            name,
+            email,
+            subject,
+            qualifications,
+            monthlySalary
+        } = req.body;
+        const classIdsRaw = req.body.classIds || [];
+        const classIds = Array.isArray(classIdsRaw) ? classIdsRaw.filter(Boolean) : [classIdsRaw].filter(Boolean);
 
         // Basic validation
         if (!username || !password || !name || !email || !subject) {
@@ -425,11 +466,20 @@ router.post('/teachers', (req, res, next) => {
             photo: req.file ? req.file.filename : 'default.jpg'
         });
 
-        await Teacher.create({
+        const teacher = await Teacher.create({
             userId: user._id,
             subject,
-            qualifications
+            qualifications,
+            classIds,
+            monthlySalary: toAmount(monthlySalary)
         });
+
+        if (classIds.length > 0) {
+            await Class.updateMany(
+                { _id: { $in: classIds } },
+                { $set: { teacherId: teacher._id } }
+            );
+        }
 
         req.flash('success_msg', 'Teacher added successfully');
         return res.redirect('/admin/teachers');
@@ -440,31 +490,180 @@ router.post('/teachers', (req, res, next) => {
         return res.redirect('/admin/teachers/new');
     }
 });
-    // Delete Teacher
-    router.delete('/teachers/:id', async (req, res) => {
-        try {
-            const teacher = await Teacher.findById(req.params.id).populate('userId');
-            if (!teacher) {
-                req.flash('error_msg', 'Teacher not found');
-                return res.redirect('/admin/teachers');
-            }
 
-            // Remove teacher record
-            await Teacher.findByIdAndDelete(req.params.id);
-
-            // Optionally remove associated user account
-            if (teacher.userId) {
-                await User.findByIdAndDelete(teacher.userId._id);
-            }
-
-            req.flash('success_msg', 'Teacher deleted successfully');
-            res.redirect('/admin/teachers');
-        } catch (error) {
-            console.error(error);
-            req.flash('error_msg', 'Error deleting teacher');
-            res.redirect('/admin/teachers');
+// Edit Teacher Form
+router.get('/teachers/:id/edit', async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id)
+            .populate('userId')
+            .populate('classIds', 'name');
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher not found');
+            return res.redirect('/admin/teachers');
         }
-    });
+
+        const classes = await Class.find().sort({ name: 1 });
+        res.render('admin/teachers/edit', {
+            title: 'Edit Teacher',
+            teacher,
+            classes
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading teacher edit form');
+        res.redirect('/admin/teachers');
+    }
+});
+
+// Update Teacher
+router.put('/teachers/:id', upload.single('photo'), async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id).populate('userId');
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher not found');
+            return res.redirect('/admin/teachers');
+        }
+
+        const {
+            name,
+            email,
+            subject,
+            qualifications,
+            monthlySalary
+        } = req.body;
+        const classIdsRaw = req.body.classIds || [];
+        const classIds = Array.isArray(classIdsRaw) ? classIdsRaw.filter(Boolean) : [classIdsRaw].filter(Boolean);
+
+        const userUpdate = { name, email };
+        if (req.file) userUpdate.photo = req.file.filename;
+        await User.findByIdAndUpdate(teacher.userId._id, userUpdate);
+
+        teacher.subject = subject;
+        teacher.qualifications = qualifications;
+        teacher.monthlySalary = toAmount(monthlySalary);
+        teacher.classIds = classIds;
+        await teacher.save();
+
+        await Class.updateMany({ teacherId: teacher._id }, { $unset: { teacherId: 1 } });
+        if (classIds.length > 0) {
+            await Class.updateMany({ _id: { $in: classIds } }, { $set: { teacherId: teacher._id } });
+        }
+
+        req.flash('success_msg', 'Teacher updated successfully');
+        res.redirect('/admin/teachers');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error updating teacher');
+        res.redirect('/admin/teachers');
+    }
+});
+
+// Teacher Salary Details
+router.get('/teachers/:id/salary', async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id).populate('userId');
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher not found');
+            return res.redirect('/admin/teachers');
+        }
+
+        const month = req.query.month || toMonthKey();
+        let salary = await Salary.findOne({ teacherId: teacher._id, month });
+        if (!salary) {
+            salary = await Salary.create({
+                teacherId: teacher._id,
+                month,
+                baseSalary: toAmount(teacher.monthlySalary)
+            });
+        }
+
+        const salaryHistory = await Salary.find({ teacherId: teacher._id })
+            .sort({ month: -1 })
+            .limit(12);
+
+        res.render('admin/teachers/salary', {
+            title: 'Teacher Salary Management',
+            teacher,
+            salary,
+            salaryHistory,
+            selectedMonth: month
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading salary details');
+        res.redirect('/admin/teachers');
+    }
+});
+
+// Add Salary Payment
+router.post('/teachers/:id/salary/pay', async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id).populate('userId');
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher not found');
+            return res.redirect('/admin/teachers');
+        }
+
+        const month = req.body.month || toMonthKey();
+        const amount = toAmount(req.body.amount);
+        const note = req.body.note;
+
+        if (!amount || amount <= 0) {
+            req.flash('error_msg', 'Please enter a valid payment amount');
+            return res.redirect(`/admin/teachers/${req.params.id}/salary?month=${month}`);
+        }
+
+        let salary = await Salary.findOne({ teacherId: teacher._id, month });
+        if (!salary) {
+            salary = await Salary.create({
+                teacherId: teacher._id,
+                month,
+                baseSalary: toAmount(teacher.monthlySalary)
+            });
+        }
+
+        salary.payments.push({
+            amount,
+            note,
+            paidBy: req.session.user.id
+        });
+        salary.recalculate();
+        await salary.save();
+
+        req.flash('success_msg', 'Salary payment recorded successfully');
+        res.redirect(`/admin/teachers/${req.params.id}/salary?month=${month}`);
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error recording salary payment');
+        res.redirect('/admin/teachers');
+    }
+});
+
+// Delete Teacher
+router.delete('/teachers/:id', async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id).populate('userId');
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher not found');
+            return res.redirect('/admin/teachers');
+        }
+
+        await Class.updateMany({ teacherId: teacher._id }, { $unset: { teacherId: 1 } });
+        await Salary.deleteMany({ teacherId: teacher._id });
+        await Teacher.findByIdAndDelete(req.params.id);
+
+        if (teacher.userId) {
+            await User.findByIdAndDelete(teacher.userId._id);
+        }
+
+        req.flash('success_msg', 'Teacher deleted successfully');
+        res.redirect('/admin/teachers');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error deleting teacher');
+        res.redirect('/admin/teachers');
+    }
+});
 
 // Blog Management
 router.get('/blogs', async (req, res) => {
@@ -986,29 +1185,116 @@ router.post('/notices', upload.single('file'), async (req, res) => {
     }
 });
 
+// Delete Notice
+router.delete('/notices/:id', async (req, res) => {
+    try {
+        const notice = await Notice.findById(req.params.id);
+        if (!notice) {
+            req.flash('error_msg', 'Notice not found');
+            return res.redirect('/admin/notices');
+        }
+        await Notice.findByIdAndDelete(req.params.id);
+        req.flash('success_msg', 'Notice deleted successfully');
+        res.redirect('/admin/notices');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error deleting notice');
+        res.redirect('/admin/notices');
+    }
+});
+
+// Attendance Overview (Admin)
+router.get('/attendance', async (req, res) => {
+    try {
+        const selectedDate = toStartOfDay(req.query.date || new Date());
+        const selectedClassId = req.query.classId || '';
+
+        const classes = await Class.find().sort({ name: 1 });
+        const classFilter = selectedClassId ? { classId: selectedClassId } : {};
+        const dateFilter = selectedDate ? {
+            date: {
+                $gte: selectedDate,
+                $lte: new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000 - 1)
+            }
+        } : {};
+
+        const records = await Attendance.find({
+            ...classFilter,
+            ...dateFilter
+        })
+            .populate('classId', 'name')
+            .populate('entries.studentId', 'rollNo')
+            .sort({ date: -1 });
+
+        const attendanceRows = records.map((record) => {
+            const total = record.entries.length;
+            const present = record.entries.filter((entry) => entry.status === 'present').length;
+            const absent = Math.max(0, total - present);
+            const percentage = total ? Math.round((present / total) * 100) : 0;
+            return {
+                record,
+                total,
+                present,
+                absent,
+                percentage
+            };
+        });
+
+        res.render('admin/attendance', {
+            title: 'Attendance Overview',
+            classes,
+            selectedClassId,
+            selectedDate: selectedDate ? selectedDate.toISOString().slice(0, 10) : '',
+            attendanceRows
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading attendance overview');
+        res.redirect('/admin/dashboard');
+    }
+});
+
+// Marks Overview (Admin)
+router.get('/marks', async (req, res) => {
+    try {
+        const selectedClassId = req.query.classId || '';
+        const classes = await Class.find().sort({ name: 1 });
+
+        const studentFilter = selectedClassId ? { classId: selectedClassId, status: 'approved' } : { status: 'approved' };
+        const students = await Student.find(studentFilter)
+            .populate('userId', 'name')
+            .populate('classId', 'name')
+            .sort({ 'classId.name': 1, rollNo: 1 });
+
+        const resultRows = students.map((student) => {
+            const completion = isMarksheetComplete(student);
+            const finalResult = calculateFinalResult(student);
+            return {
+                student,
+                completion,
+                overallPercentage: finalResult.overallPercentage,
+                overallGrade: finalResult.overallGrade
+            };
+        });
+
+        res.render('admin/marks', {
+            title: 'Marks Overview',
+            classes,
+            selectedClassId,
+            resultRows
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading marks overview');
+        res.redirect('/admin/dashboard');
+    }
+});
+
 // ========================
 // CLASS-WISE PAYMENT COLLECTION
 // ========================
 
 // View class payment collection form
-
-    // Delete Notice
-    router.delete('/notices/:id', async (req, res) => {
-        try {
-            const notice = await Notice.findById(req.params.id);
-            if (!notice) {
-                req.flash('error_msg', 'Notice not found');
-                return res.redirect('/admin/notices');
-            }
-            await Notice.findByIdAndDelete(req.params.id);
-            req.flash('success_msg', 'Notice deleted successfully');
-            res.redirect('/admin/notices');
-        } catch (error) {
-            console.error(error);
-            req.flash('error_msg', 'Error deleting notice');
-            res.redirect('/admin/notices');
-        }
-    });
 router.get('/classes/:id/fees/collect-payment', async (req, res) => {
     try {
         const classDoc = await Class.findById(req.params.id).populate('students');

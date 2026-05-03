@@ -1,0 +1,79 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Mark Attendance</h3>
+        <p class="text-muted mb-0">Mark attendance class-wise and date-wise.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/teacher/attendance" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label">Class</label>
+                <select name="classId" class="form-select" required>
+                    <option value="">Select class</option>
+                    <% classes.forEach((classItem) => { %>
+                        <option value="<%= classItem._id %>" <%= String(selectedClassId) === String(classItem._id) ? 'selected' : '' %>>
+                            <%= classItem.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                <input type="date" name="date" class="form-control" value="<%= selectedDate %>" required>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary" type="submit">Load Students</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% if (selectedClassId && students && students.length > 0) { %>
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Attendance Entries</h5>
+        </div>
+        <div class="card-body p-0">
+            <form method="POST" action="/teacher/attendance">
+                <input type="hidden" name="classId" value="<%= selectedClassId %>">
+                <input type="hidden" name="date" value="<%= selectedDate %>">
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% students.forEach((student) => { %>
+                                <% const currentStatus = statusMap[String(student._id)] || 'present'; %>
+                                <tr>
+                                    <td><%= student.rollNo || '-' %></td>
+                                    <td><%= student.userId?.name || '-' %></td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <input type="radio" class="btn-check" name="attendance[<%= student._id %>]" id="present-<%= student._id %>" value="present" <%= currentStatus === 'present' ? 'checked' : '' %>>
+                                            <label class="btn btn-outline-success" for="present-<%= student._id %>">Present</label>
+
+                                            <input type="radio" class="btn-check" name="attendance[<%= student._id %>]" id="absent-<%= student._id %>" value="absent" <%= currentStatus === 'absent' ? 'checked' : '' %>>
+                                            <label class="btn btn-outline-danger" for="absent-<%= student._id %>">Absent</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3">
+                    <button class="btn btn-primary" type="submit">Save Attendance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<% } else if (selectedClassId) { %>
+    <div class="alert alert-info">No approved students found in this class.</div>
+<% } %>

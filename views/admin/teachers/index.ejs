@@ -11,6 +11,8 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Subject</th>
+                <th>Classes</th>
+                <th>Monthly Salary</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -24,7 +26,16 @@
                         <td><%= t.userId?.email || '—' %></td>
                         <td><%= t.subject %></td>
                         <td>
+                            <% if (t.classIds && t.classIds.length > 0) { %>
+                                <%= t.classIds.map(c => c.name).join(', ') %>
+                            <% } else { %>
+                                <span class="text-muted">Not assigned</span>
+                            <% } %>
+                        </td>
+                        <td><%= Number(t.monthlySalary || 0).toFixed(2) %></td>
+                        <td>
                             <a href="/admin/teachers/<%= t._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <a href="/admin/teachers/<%= t._id %>/salary" class="btn btn-sm btn-outline-primary">Salary</a>
                             <form action="/admin/teachers/<%= t._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this teacher?')">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
@@ -33,7 +44,7 @@
                     </tr>
                 <% }); %>
             <% } else { %>
-                <tr><td colspan="6" class="text-center text-muted">No teachers found</td></tr>
+                <tr><td colspan="8" class="text-center text-muted">No teachers found</td></tr>
             <% } %>
         </tbody>
     </table>

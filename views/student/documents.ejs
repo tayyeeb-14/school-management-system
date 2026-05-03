@@ -1,0 +1,57 @@
+<div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">My Documents</h3>
+        <p class="text-muted mb-0">Preview and download your official school documents anytime.</p>
+    </div>
+    <div class="text-muted small">
+        Class: <strong><%= student.classId ? student.classId.name : 'N/A' %></strong>
+        <span class="mx-2">|</span>
+        Roll No: <strong><%= student.rollNo || 'N/A' %></strong>
+    </div>
+</div>
+
+<div class="card dashboard-card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Available Documents</h5>
+        <span class="badge bg-light text-dark border"><%= documentTypes.length %> items</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Document</th>
+                        <th>Description</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% documentTypes.forEach((doc) => { %>
+                        <tr>
+                            <td>
+                                <strong><%= doc.label %></strong>
+                            </td>
+                            <td class="text-muted"><%= doc.description %></td>
+                            <td class="text-end">
+                                <a
+                                    href="/documents/<%= doc.key %>/preview"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="btn btn-sm btn-outline-primary me-2"
+                                >
+                                    Preview
+                                </a>
+                                <a
+                                    href="/documents/<%= doc.key %>/download"
+                                    class="btn btn-sm btn-primary"
+                                >
+                                    Download
+                                </a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

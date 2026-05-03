@@ -27,6 +27,11 @@ const teacherSchema = new mongoose.Schema({
     qualifications: {
         type: String
     },
+    monthlySalary: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     experience: {
         type: Number,
         default: 0

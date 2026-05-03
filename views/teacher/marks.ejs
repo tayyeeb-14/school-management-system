@@ -1,0 +1,106 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Marks Entry</h3>
+        <p class="text-muted mb-0">Enter subject-wise marks for UT1, UT2, Half Yearly, and Final exams.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/teacher/marks" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Class</label>
+                <select name="classId" class="form-select" required>
+                    <option value="">Select class</option>
+                    <% classes.forEach((classItem) => { %>
+                        <option value="<%= classItem._id %>" <%= String(selectedClassId) === String(classItem._id) ? 'selected' : '' %>>
+                            <%= classItem.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Exam</label>
+                <select name="examType" class="form-select" required>
+                    <% examConfig.forEach((exam) => { %>
+                        <option value="<%= exam.key %>" <%= selectedExamType === exam.key ? 'selected' : '' %>>
+                            <%= exam.label %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Subject</label>
+                <select name="subject" class="form-select" required>
+                    <% if (subjectOptions && subjectOptions.length > 0) { %>
+                        <% subjectOptions.forEach((subject) => { %>
+                            <option value="<%= subject %>" <%= selectedSubject === subject ? 'selected' : '' %>><%= subject %></option>
+                        <% }) %>
+                    <% } else { %>
+                        <option value="<%= selectedSubject %>"><%= selectedSubject || 'No subject' %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" type="submit">Load</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% if (selectedClassId && students && students.length > 0 && selectedSubject) { %>
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Enter Marks - <%= selectedSubject %> (<%= selectedExamType %>)</h5>
+        </div>
+        <div class="card-body p-0">
+            <form method="POST" action="/teacher/marks">
+                <input type="hidden" name="classId" value="<%= selectedClassId %>">
+                <input type="hidden" name="examType" value="<%= selectedExamType %>">
+                <input type="hidden" name="subject" value="<%= selectedSubject %>">
+
+                <div class="p-3 border-bottom">
+                    <label class="form-label mb-1">Total Marks (Out Of)</label>
+                    <input type="number" name="outOf" min="1" step="1" class="form-control" style="max-width: 220px;" value="<%= (marksMap[students[0]?._id]?.outOf) || 100 %>" required>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% students.forEach((student) => { %>
+                                <% const markItem = marksMap[String(student._id)] || null; %>
+                                <tr>
+                                    <td><%= student.rollNo || '-' %></td>
+                                    <td><%= student.userId?.name || '-' %></td>
+                                    <td>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            class="form-control"
+                                            style="max-width: 180px;"
+                                            name="marks[<%= student._id %>]"
+                                            value="<%= markItem ? markItem.marks : '' %>"
+                                        >
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3">
+                    <button class="btn btn-success" type="submit">Save Marks</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<% } else if (selectedClassId) { %>
+    <div class="alert alert-info">No students found for the selected class or subject.</div>
+<% } %>

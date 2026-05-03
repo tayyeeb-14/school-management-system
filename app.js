@@ -66,6 +66,7 @@ app.use("/auth", require("./routes/auth"));
 app.use("/admin", require("./routes/admin"));
 app.use("/teacher", require("./routes/teacher"));
 app.use("/student", require("./routes/student"));
+app.use("/documents", require("./routes/documents"));
 app.use("/blog", require("./routes/blog"));
 
 // Global error handler

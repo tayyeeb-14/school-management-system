@@ -42,6 +42,12 @@
         </a>
     </li>
     <li>
+        <a href="/student/documents" class="<%= (path === '/documents' || path.startsWith('/student/documents')) ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-file-pdf"></i></span>
+            <span class="menu-label">My Documents</span>
+        </a>
+    </li>
+    <li>
         <a href="/blog" class="<%= path === '/blog' ? 'active' : '' %>">
             <span class="menu-icon"><i class="fas fa-blog"></i></span>
             <span class="menu-label">School Blog</span>

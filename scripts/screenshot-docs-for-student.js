@@ -96,17 +96,43 @@ async function main() {
       catch (err) { console.error('Render error', t.name, err); continue; }
 
       const htmlInlined = await inlineLocalImages(html);
+      // Try to set content with networkidle0, fallback to load
       try {
         await page.setContent(htmlInlined, { waitUntil: 'networkidle0', timeout: 60000 });
       } catch (err) {
         console.warn('setContent timeout, continuing with partial load for', t.name);
         try { await page.setContent(htmlInlined, { waitUntil: 'load', timeout: 30000 }); } catch(e) { console.warn('second setContent also failed', e.message); }
       }
-      await page.setViewport({ width: 1200, height: 1600 });
+
+      // Force white background and center the container in case rendering environment differs
+      try {
+        await page.evaluate(() => {
+          document.documentElement.style.background = '#fff';
+          document.body.style.background = '#fff';
+          const wrapper = document.querySelector('.doc-body-wrapper');
+          if (wrapper) wrapper.style.justifyContent = 'center';
+          const container = document.querySelector('.doc-container');
+          if (container) container.style.margin = '0 auto';
+        });
+      } catch (e) {
+        // ignore
+      }
+
+      // Ensure viewport large enough to render document; increase deviceScaleFactor for clarity
+      await page.setViewport({ width: 1200, height: 1600, deviceScaleFactor: 2 });
+
       const pngPath = path.join(outDir, `${t.name}-${student._id}.png`);
       try {
-        await page.screenshot({ path: pngPath, fullPage: true });
-        console.log('Saved screenshot:', pngPath);
+        // Prefer element screenshot of the .doc-container so image is tightly cropped and scaled
+        const el = await page.$('.doc-container');
+        if (el) {
+          await el.screenshot({ path: pngPath, omitBackground: false });
+          console.log('Saved element screenshot:', pngPath);
+        } else {
+          // fallback to full page
+          await page.screenshot({ path: pngPath, fullPage: true });
+          console.log('Saved full-page screenshot (fallback):', pngPath);
+        }
       } catch (err) {
         console.error('Screenshot failed for', t.name, err.message);
       }

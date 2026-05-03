@@ -31,7 +31,7 @@ async function run() {
     admin = new User({
       username,
       password,
-      name: 'Site Admin',
+      name: 'MySchool Official Admin',
       email,
       role: 'admin'
     });

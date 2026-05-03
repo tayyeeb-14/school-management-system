@@ -1,0 +1,74 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Marks Overview</h3>
+        <p class="text-muted mb-0">Monitor completion status and final results for all students.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/admin/marks" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Class</label>
+                <select name="classId" class="form-select">
+                    <option value="">All Classes</option>
+                    <% classes.forEach((classItem) => { %>
+                        <option value="<%= classItem._id %>" <%= selectedClassId && String(selectedClassId) === String(classItem._id) ? 'selected' : '' %>>
+                            <%= classItem.name %>
+                        </option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <button class="btn btn-primary" type="submit">Filter</button>
+                <a href="/admin/marks" class="btn btn-outline-secondary ms-2">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Student Results</h5>
+    </div>
+    <div class="card-body p-0">
+        <% if (resultRows && resultRows.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Roll No</th>
+                            <th>Marks Completion</th>
+                            <th>Overall %</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% resultRows.forEach((row) => { %>
+                            <tr>
+                                <td><%= row.student.userId?.name || '-' %></td>
+                                <td><%= row.student.classId?.name || '-' %></td>
+                                <td><%= row.student.rollNo || '-' %></td>
+                                <td>
+                                    <% if (row.completion.complete) { %>
+                                        <span class="badge bg-success">Complete</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">
+                                            Incomplete (<%= row.completion.missing.length %> missing)
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td><%= Number(row.overallPercentage || 0).toFixed(2) %>%</td>
+                                <td><strong><%= row.overallGrade %></strong></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="p-3 text-muted">No student records found.</div>
+        <% } %>
+    </div>
+</div>

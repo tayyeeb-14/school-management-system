@@ -12,14 +12,14 @@
 <body class="document">
   <div class="doc-body-wrapper">
   <div class="doc-container certificate centered">
-    <div class="centered">
-      <img src="<%= logoDataUri %>" style="height:56px;margin-bottom:8px"/>
+    <div class="centered center-block">
+      <img src="<%= logoDataUri %>" style="height:56px;margin-bottom:6px"/>
       <div class="school-name">Your School Name</div>
+      <h1><%= locals.certificateTitle || 'Certificate of Completion' %></h1>
+      <p>This is to certify that</p>
+      <h2><%= student.userId.name %></h2>
+      <p>of class <strong><%= student.classId ? student.classId.name : '' %></strong> has successfully completed the course.</p>
     </div>
-    <h1><%= locals.certificateTitle || 'Certificate of Completion' %></h1>
-    <p>This is to certify that</p>
-    <h2><%= student.userId.name %></h2>
-    <p>of class <strong><%= student.classId ? student.classId.name : '' %></strong> has successfully completed the course.</p>
     <div style="height:60px"></div>
     <div class="signature-row">
       <div class="signature">__________________<br/>Class Teacher</div>

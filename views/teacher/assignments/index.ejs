@@ -1,0 +1,41 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">Manage Assignments</h3>
+    <a href="/teacher/assignments/new" class="btn btn-primary">New Assignment</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <% if (assignments && assignments.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Due Date</th>
+                            <th>Submissions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% assignments.forEach((assignment) => { %>
+                            <tr>
+                                <td><%= assignment.title %></td>
+                                <td><%= assignment.classId?.name || '-' %></td>
+                                <td><%= assignment.subject %></td>
+                                <td><%= moment(assignment.dueDate).format('DD MMM, YYYY') %></td>
+                                <td><%= assignment.submissions?.length || 0 %></td>
+                                <td class="text-end">
+                                    <a href="/teacher/assignments/<%= assignment._id %>/submissions" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="p-3 text-muted">No assignments created yet.</div>
+        <% } %>
+    </div>
+</div>

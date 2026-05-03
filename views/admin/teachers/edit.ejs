@@ -1,0 +1,53 @@
+<h3 class="mb-4">Edit Teacher</h3>
+<form action="/admin/teachers/<%= teacher._id %>" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_method" value="PUT">
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Full Name</label>
+            <input name="name" class="form-control" value="<%= teacher.userId?.name || '' %>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Email</label>
+            <input name="email" type="email" class="form-control" value="<%= teacher.userId?.email || '' %>" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Subject</label>
+            <input name="subject" class="form-control" value="<%= teacher.subject || '' %>" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Qualifications</label>
+            <input name="qualifications" class="form-control" value="<%= teacher.qualifications || '' %>">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Monthly Salary</label>
+            <input name="monthlySalary" type="number" min="0" step="0.01" class="form-control" value="<%= Number(teacher.monthlySalary || 0).toFixed(2) %>">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Assigned Classes</label>
+            <select name="classIds" class="form-select" multiple size="5">
+                <% const selectedClassIds = (teacher.classIds || []).map(c => String(c._id)); %>
+                <% classes.forEach((classItem) => { %>
+                    <option value="<%= classItem._id %>" <%= selectedClassIds.includes(String(classItem._id)) ? 'selected' : '' %>>
+                        <%= classItem.name %>
+                    </option>
+                <% }) %>
+            </select>
+            <small class="text-muted">Use Ctrl/Cmd to select multiple classes.</small>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Profile Photo (optional)</label>
+        <input name="photo" type="file" accept="image/*" class="form-control">
+    </div>
+
+    <button class="btn btn-primary" type="submit">Update Teacher</button>
+    <a href="/admin/teachers" class="btn btn-secondary ms-2">Cancel</a>
+</form>
