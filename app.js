@@ -16,18 +16,16 @@ connectDB();
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Support method override via form body `_method` and query parameter `?_method=` for compatibility
-app.use(methodOverride("_method"));
+
 app.use(methodOverride(function (req, res) {
-  if (req.query && req.query._method) return req.query._method;
+  if (req.body && req.body._method) {
+    const method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
 }));
-// Temporary request logger to help debug routing issues (remove after testing)
-app.use((req, res, next) => {
-  try {
-    console.log('[REQ]', req.method, req.originalUrl);
-  } catch (e) {}
-  next();
-});
+
+app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, "public")));
 
 // EJS setup

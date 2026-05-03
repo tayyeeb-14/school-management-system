@@ -322,8 +322,9 @@ const feeBreakdown = resolvedClassFee && resolvedClassFee.fees ? resolvedClassFe
                                     <% } %>
                                 </td>
                                 <td>
-                                    <form action="/admin/students/<%= student._id %>/fees/monthly-due/<%= entry.due._id %>?_method=DELETE" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this monthly due?')">
+                                    <form action="/admin/students/<%= student._id %>/fees/monthly-due/<%= entry.due._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this monthly due?')">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
                                             Delete
                                         </button>
                                     </form>
@@ -378,8 +379,9 @@ const feeBreakdown = resolvedClassFee && resolvedClassFee.fees ? resolvedClassFe
                                     <a href="/admin/students/<%= student._id %>/fees/invoice?paymentId=<%= payment._id %>" class="btn btn-sm btn-outline-primary">
                                         Invoice
                                     </a>
-                                    <form action="/admin/students/<%= student._id %>/fees/payment/<%= payment._id %>?_method=DELETE" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this payment and recalculate the ledger?')">
+                                    <form action="/admin/students/<%= student._id %>/fees/payment/<%= payment._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this payment and recalculate the ledger?')">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
                                             Delete
                                         </button>
                                     </form>

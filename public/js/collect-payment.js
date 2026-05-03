@@ -99,7 +99,6 @@
 
             // initial run
             updateCalculations();
-            console.log('collect-payment external script initialized');
         } catch (e) {
             console.error('init error', e);
         }

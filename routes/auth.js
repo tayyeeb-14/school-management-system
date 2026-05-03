@@ -215,10 +215,7 @@ router.post('/forgot-reset/send-otp', async (req, res) => {
         await user.save();
 
         await sendOtpEmail(user.email, otp);
-        // Only log OTP in non-production for debugging (remove in production)
-        if ((process.env.NODE_ENV || 'development') !== 'production') {
-            console.log('DEBUG OTP (plain):', otp);
-        }
+        // OTP generated (not logged in production)
 
         res.json({ message: 'OTP sent successfully' });
     } catch (error) {

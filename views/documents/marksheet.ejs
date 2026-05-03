@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Marksheet - <%= student.userId.name %></title>
+  <style>
+    <%- include('../partials/doc_inline_css') %>
+  </style>
+  </head>
+<body class="document">
+  <div class="doc-container">
+    <div class="doc-header">
+      <img class="logo" src="<%= logoDataUri %>" alt="Logo"/>
+      <div>
+        <div class="school-name">Your School Name</div>
+        <div class="doc-title">Marksheet</div>
+        <div class="meta">Academic session: 2025-2026</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <strong>Student:</strong> <%= student.userId.name %><br/>
+      <strong>Class:</strong> <%= student.classId ? student.classId.name : '' %> &nbsp;&nbsp; <strong>Roll No:</strong> <%= student.rollNo %>
+    </div>
+
+    <div class="section">
+      <table class="marks">
+        <thead>
+          <tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th></tr>
+        </thead>
+        <tbody>
+          <% const subjects = (student.subjects && student.subjects.length) ? student.subjects : ['Mathematics','English','Science','History']; %>
+          <% const marks = (locals.marks || [85,78,90,72]); %>
+          <% let total=0; let maxTotal=subjects.length*100; %>
+          <% for(let i=0;i<subjects.length;i++){ const m=marks[i]||0; total+=m; %>
+            <tr><td><%= subjects[i] %></td><td><%= m %></td><td>100</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+      <div class="totals">Total: <%= total %> / <%= maxTotal %> &nbsp;&nbsp; Percentage: <%= (total/maxTotal*100).toFixed(2) %>%</div>
+      <div>Status: <strong><%= (total/maxTotal*100) >= 40 ? 'PASS' : 'FAIL' %></strong></div>
+    </div>
+
+    <div class="signature-row">
+      <div class="signature">__________________<br/>Class Teacher</div>
+      <div class="signature">__________________<br/>Principal</div>
+    </div>
+
+    <div class="footer">
+      <div>Generated on <%= new Date().toLocaleDateString() %></div>
+      <div>Signature of authority</div>
+    </div>
+  </div>
+</body>
+</html>

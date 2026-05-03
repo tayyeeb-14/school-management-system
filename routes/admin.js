@@ -107,7 +107,6 @@ router.get('/students/new', (req, res) => {
 
 // Add Student
 router.post('/students', (req, res, next) => {
-    console.log('=== POST /admin/students route hit ===');
     upload.single('photo')(req, res, (err) => {
         if (err) {
             console.error('Multer error in student creation:', err);
@@ -119,14 +118,8 @@ router.post('/students', (req, res, next) => {
 }, async (req, res) => {
     try {
         const { username, password, name, email, class: className, rollNo, phone, fatherName } = req.body;
-        
-        console.log('=== Student Creation Attempt ===');
-        console.log('Body:', { username, name, email, className, rollNo, phone: phone ? 'provided' : 'not provided' });
-        console.log('File:', req.file ? req.file.filename : 'no file');
-        
         // Basic validation
         if (!username || !password || !name || !email || !className || !rollNo) {
-            console.log('Validation failed: Missing required fields');
             req.flash('error_msg', 'Please fill in all required fields');
             return res.redirect('/admin/students/new');
         }
@@ -140,7 +133,6 @@ router.post('/students', (req, res, next) => {
         // Check for duplicate username globally
         const existingUsername = await User.findOne({ username });
         if (existingUsername) {
-            console.log('Duplicate username found:', username);
             req.flash('error_msg', 'Username already exists');
             return res.redirect('/admin/students/new');
         }
@@ -148,12 +140,9 @@ router.post('/students', (req, res, next) => {
         // Check for duplicate roll number within the same class
         const existingRollNo = await Student.findOne({ rollNo, classId: classDoc._id });
         if (existingRollNo) {
-            console.log('Duplicate roll number found in same class:', rollNo);
             req.flash('error_msg', 'Roll number already exists in this class');
             return res.redirect('/admin/students/new');
         }
-
-        console.log('Creating user...');
         const user = await User.create({
             username,
             password,
@@ -163,18 +152,13 @@ router.post('/students', (req, res, next) => {
             role: 'student',
             photo: req.file ? req.file.filename : 'default.jpg'
         });
-        console.log('User created:', user._id);
-
         try {
-            console.log('Creating student profile...');
             const student = await Student.create({
                 userId: user._id,
                 classId: classDoc._id,
                 rollNo,
                 fatherName
             });
-            console.log('Student profile created successfully');
-
             // Add student to class
             classDoc.students.push(student._id);
             await classDoc.save();
@@ -184,8 +168,6 @@ router.post('/students', (req, res, next) => {
             await User.findByIdAndDelete(user._id);
             throw studentError;
         }
-
-        console.log('=== Student Created Successfully ===');
         req.flash('success_msg', 'Student added successfully');
         res.redirect('/admin/students');
     } catch (error) {
@@ -458,6 +440,31 @@ router.post('/teachers', (req, res, next) => {
         return res.redirect('/admin/teachers/new');
     }
 });
+    // Delete Teacher
+    router.delete('/teachers/:id', async (req, res) => {
+        try {
+            const teacher = await Teacher.findById(req.params.id).populate('userId');
+            if (!teacher) {
+                req.flash('error_msg', 'Teacher not found');
+                return res.redirect('/admin/teachers');
+            }
+
+            // Remove teacher record
+            await Teacher.findByIdAndDelete(req.params.id);
+
+            // Optionally remove associated user account
+            if (teacher.userId) {
+                await User.findByIdAndDelete(teacher.userId._id);
+            }
+
+            req.flash('success_msg', 'Teacher deleted successfully');
+            res.redirect('/admin/teachers');
+        } catch (error) {
+            console.error(error);
+            req.flash('error_msg', 'Error deleting teacher');
+            res.redirect('/admin/teachers');
+        }
+    });
 
 // Blog Management
 router.get('/blogs', async (req, res) => {
@@ -854,19 +861,30 @@ router.delete('/classes/:id/fees/:feeId', async (req, res) => {
             return res.redirect('/admin/classes/fees');
         }
 
-        const feeSub = classFee.fees.id(req.params.feeId);
-        if (!feeSub) {
-            console.warn('Attempt to delete non-existent fee subdoc', { classId: req.params.id, feeId: req.params.feeId });
+        const feeId = req.params.feeId;
+
+        // Ensure classFee is fetched correctly (by classId)
+        // classId in ClassFee refers to the Class document id
+        if (!classFee) {
+            req.flash('error_msg', 'Class fee not found');
+            return res.redirect('/admin/classes/fees');
+        }
+
+        // Check existence of feeId in the fees array
+        const exists = classFee.fees.some(f => String(f._id) === String(feeId));
+        if (!exists) {
+            console.warn('Attempt to delete non-existent fee id in array', { classId: req.params.id, feeId });
             req.flash('error_msg', 'Requested fee type was not found');
             return res.redirect(`/admin/classes/${req.params.id}/fees/edit`);
         }
 
-        feeSub.remove();
+        // Pull by id and save
+        classFee.fees.pull(feeId);
 
-        // Update total monthly fee
+        // Recalculate total monthly fee
         classFee.totalMonthlyFee = classFee.fees
             .filter(f => f.frequency === 'monthly')
-            .reduce((sum, f) => sum + f.amount, 0);
+            .reduce((sum, f) => sum + (parseFloat(f.amount) || 0), 0);
 
         await classFee.save();
 
@@ -903,6 +921,24 @@ router.post('/blogs', upload.single('image'), async (req, res) => {
         console.error(error);
         req.flash('error_msg', 'Error creating blog post');
         res.redirect('/admin/blogs/new');
+    }
+});
+
+// Delete Blog
+router.delete('/blogs/:id', async (req, res) => {
+    try {
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) {
+            req.flash('error_msg', 'Blog post not found');
+            return res.redirect('/admin/blogs');
+        }
+        await Blog.findByIdAndDelete(req.params.id);
+        req.flash('success_msg', 'Blog post deleted successfully');
+        res.redirect('/admin/blogs');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error deleting blog post');
+        res.redirect('/admin/blogs');
     }
 });
 
@@ -955,6 +991,24 @@ router.post('/notices', upload.single('file'), async (req, res) => {
 // ========================
 
 // View class payment collection form
+
+    // Delete Notice
+    router.delete('/notices/:id', async (req, res) => {
+        try {
+            const notice = await Notice.findById(req.params.id);
+            if (!notice) {
+                req.flash('error_msg', 'Notice not found');
+                return res.redirect('/admin/notices');
+            }
+            await Notice.findByIdAndDelete(req.params.id);
+            req.flash('success_msg', 'Notice deleted successfully');
+            res.redirect('/admin/notices');
+        } catch (error) {
+            console.error(error);
+            req.flash('error_msg', 'Error deleting notice');
+            res.redirect('/admin/notices');
+        }
+    });
 router.get('/classes/:id/fees/collect-payment', async (req, res) => {
     try {
         const classDoc = await Class.findById(req.params.id).populate('students');
@@ -985,9 +1039,8 @@ router.get('/classes/:id/fees/collect-payment', async (req, res) => {
 router.post('/classes/:id/fees/collect-payment', async (req, res) => {
     try {
         const { amountPerStudent, month, isOverdue } = req.body;
-        // Support both 'selectedStudents' and 'selectedStudents[]' naming; log payload for debugging
+        // Support both 'selectedStudents' and 'selectedStudents[]' naming
         let selectedStudents = req.body.selectedStudents || req.body['selectedStudents[]'];
-        console.log('Collect-payment payload:', { amountPerStudent, month, isOverdue, selectedStudents });
 
         // Get class
         const classDoc = await Class.findById(req.params.id);

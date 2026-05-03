@@ -13,8 +13,9 @@
                 </div>
                 <div>
                     <a href="/admin/notices/<%= n._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <form action="/admin/notices/<%= n._id %>?_method=DELETE" method="POST" class="d-inline">
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                    <form action="/admin/notices/<%= n._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this notice?')">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                 </div>
             </div>

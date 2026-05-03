@@ -174,7 +174,7 @@ function checkPasswordStrength(password) {
         const s = document.createElement('script');
         s.src = scriptUrl;
         s.async = false;
-        s.onload = () => console.log(`Loaded page script: ${scriptUrl}`);
+        s.onload = () => {};
         s.onerror = () => console.error(`Failed to load page script: ${scriptUrl}`);
         document.body.appendChild(s);
     } catch (err) {

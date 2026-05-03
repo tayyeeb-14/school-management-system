@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
+    ,
+    "test:e2e": "node scripts/e2e-sample-delete.js"
   },
   "keywords": [
     "school",

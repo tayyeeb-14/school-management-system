@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admit Card - <%= student.userId.name %></title>
+  <style>
+    <%- include('../partials/doc_inline_css') %>
+  </style>
+  </head>
+<body class="document">
+  <div class="doc-container">
+    <div class="doc-header">
+      <img class="logo" src="<%= logoDataUri %>" alt="Logo"/>
+      <div>
+        <div class="school-name">Your School Name</div>
+        <div class="doc-title">Admit Card / Hall Ticket</div>
+        <div class="meta">Exam: Midterm Examination</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <table style="width:100%"><tr>
+        <td style="width:120px"><img src="<%= photoDataUri %>" alt="photo" style="width:110px;height:140px;object-fit:cover;border:1px solid #ccc"/></td>
+        <td>
+          <strong>Name:</strong> <%= student.userId.name %><br/>
+          <strong>Class:</strong> <%= student.classId ? student.classId.name : '' %> &nbsp; <strong>Roll:</strong> <%= student.rollNo %><br/>
+          <strong>Exam Date:</strong> 10 May 2026 &nbsp; <strong>Center:</strong> Main Campus
+        </td>
+      </tr></table>
+    </div>
+
+    <div class="section">
+      <h4>Instructions</h4>
+      <ol>
+        <li>Carry this admit card and a valid photo ID.</li>
+        <li>Arrive at the exam center 30 minutes before the start time.</li>
+        <li>Mobile phones and electronic devices are prohibited.</li>
+      </ol>
+    </div>
+
+    <div class="signature-row">
+      <div class="signature">__________________<br/>Exam Officer</div>
+      <div class="signature">__________________<br/>Principal</div>
+    </div>
+
+    <div class="footer">
+      <div>Generated on <%= new Date().toLocaleDateString() %></div>
+      <div>Signature of authority</div>
+    </div>
+  </div>
+</body>
+</html>

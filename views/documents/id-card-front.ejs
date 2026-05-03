@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ID Card - <%= student.userId.name %></title>
+  <style>
+    <%- include('../partials/doc_inline_css') %>
+    .card-wrap{display:flex;gap:12px}
+  </style>
+</head>
+<body class="document">
+  <div class="doc-container centered">
+    <div class="card-wrap">
+      <div class="id-card">
+        <div class="centered"><img src="<%= logoDataUri %>" style="height:40px"/></div>
+        <h3 class="centered"><%= student.userId.name %></h3>
+        <div class="centered"><img src="<%= photoDataUri %>" class="id-photo"/></div>
+        <div><strong>Class:</strong> <%= student.classId ? student.classId.name : '' %></div>
+        <div><strong>ID:</strong> <%= student._id %></div>
+      </div>
+
+      <div class="id-card">
+        <h4>Back of Card</h4>
+        <p><strong>Emergency:</strong> +1 234 567 890</p>
+        <p>Address: 123 School Road</p>
+        <div style="margin-top:30px">Signature: ____________________</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

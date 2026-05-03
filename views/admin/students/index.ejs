@@ -33,8 +33,9 @@
                                 <td><%= moment(s.createdAt).format('MMM DD, YYYY') %></td>
                                 <td>
                                     <a href="/admin/students/<%= s._id %>/approve" class="btn btn-sm btn-success">Approve</a>
-                                    <form action="/admin/students/<%= s._id %>?_method=DELETE" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to reject this student?')">Reject</button>
+                                    <form action="/admin/students/<%= s._id %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to reject this student?')">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
                                     </form>
                                 </td>
                             </tr>
@@ -84,8 +85,9 @@ students.forEach(s => {
                                     <td>
                                         <a href="/admin/students/<%= s._id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <a href="/admin/students/<%= s._id %>/fees" class="btn btn-sm btn-info">Fees</a>
-                                        <form action="/admin/students/<%= s._id %>?_method=DELETE" method="POST" class="d-inline">
-                                            <button class="btn btn-sm btn-danger">Delete</button>
+                                        <form action="/admin/students/<%= s._id %>" method="POST" class="d-inline" onsubmit="return confirm('Delete this student?')">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                         </form>
                                     </td>
                                 </tr>

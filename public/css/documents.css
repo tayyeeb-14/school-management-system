@@ -1,0 +1,41 @@
+/* Document styles for printable documents */
+:root{
+  --brand:#0b5ed7;
+  --muted:#666;
+  --border:#ddd;
+  --paper-bg:#fff;
+}
+body.document {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: var(--paper-bg);
+  color: #222;
+  margin: 0;
+  padding: 20px;
+}
+.doc-container{
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  padding: 20px;
+  background: #fff;
+}
+.doc-header{display:flex;align-items:center;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:18px}
+.doc-header img.logo{height:72px;margin-right:16px}
+.doc-title{font-size:20px;font-weight:700}
+.school-name{font-size:18px;font-weight:600;color:var(--brand)}
+.meta{color:var(--muted);font-size:13px}
+.section{margin-bottom:16px}
+table.marks{width:100%;border-collapse:collapse}
+table.marks th, table.marks td{border:1px solid var(--border);padding:8px;text-align:left}
+.totals{margin-top:12px;font-weight:700}
+.signature-row{display:flex;justify-content:space-between;margin-top:30px}
+.signature{width:200px;text-align:center}
+.footer{border-top:1px solid var(--border);padding-top:8px;margin-top:18px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between}
+.id-card{width:350px;border:1px solid var(--border);padding:12px}
+.id-photo{width:100px;height:120px;object-fit:cover;border:1px solid #ccc}
+.centered{ text-align:center }
+
+@media print{
+  body{padding:0}
+  .doc-container{border:none;margin:0}
+}

@@ -1,6 +1,5 @@
 // ===== PASSWORD RESET SCRIPT v2 (external) =====
 const VERSION = Date.now();
-console.log(' forgot-reset.js loaded - Version:', VERSION);
 
 function checkPasswordStrength(password) {
     const strengthBar = document.getElementById('password-strength');
@@ -57,17 +56,12 @@ let currentEmail = '';
 
 // Try immediate binding
 function initializeForm() {
-    console.log('Initializing forgot-reset form...');
-    
     const sendOtpBtn = document.getElementById('sendOtpBtn');
-    console.log('sendOtpBtn:', sendOtpBtn);
     
     if (sendOtpBtn) {
         sendOtpBtn.onclick = async function(e) {
             e.preventDefault();
-            console.log('Send OTP clicked');
             const email = document.getElementById('email').value;
-            console.log('Email:', email);
             
             if (!email) {
                 showAlert('Please enter your email', 'warning');
@@ -78,16 +72,13 @@ function initializeForm() {
             showSpinner('sendOtp');
             
             try {
-                console.log('Sending fetch to /auth/forgot-reset/send-otp');
                 const response = await fetch('/auth/forgot-reset/send-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
                 
-                console.log('Response status:', response.status);
                 const data = await response.json();
-                console.log('Response:', data);
                 
                 if (response.ok) {
                     showAlert('OTP sent to your email!', 'success');
@@ -103,7 +94,7 @@ function initializeForm() {
                 hideSpinner('sendOtp');
             }
         };
-        console.log('Send OTP listener attached');
+        
     } else {
         console.error('sendOtpBtn not found!');
     }
@@ -212,19 +203,14 @@ function initializeForm() {
 }
 
 // Initialize immediately
-console.log('Calling initializeForm (external)');
 initializeForm();
 
 // Also try with setTimeout as fallback
 setTimeout(() => {
-    console.log('Reinitializing form (timeout)');
     initializeForm();
 }, 500);
 
 // Also try with DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded fired (external)');
     initializeForm();
 });
-
-console.log('External script initialization complete');

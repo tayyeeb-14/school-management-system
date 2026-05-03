@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Certificate - <%= student.userId.name %></title>
+  <style>
+    <%- include('../partials/doc_inline_css') %>
+    .certificate{border:10px solid #eee;padding:30px}
+    .certificate h1{font-size:28px;margin-bottom:8px}
+  </style>
+</head>
+<body class="document">
+  <div class="doc-container certificate centered">
+    <div class="school-name">Your School Name</div>
+    <div class="centered"><img src="<%= logoDataUri %>" style="height:48px;margin-top:8px"/></div>
+    <h1><%= locals.certificateTitle || 'Certificate of Completion' %></h1>
+    <p>This is to certify that</p>
+    <h2><%= student.userId.name %></h2>
+    <p>of class <strong><%= student.classId ? student.classId.name : '' %></strong> has successfully completed the course.</p>
+    <div style="height:60px"></div>
+    <div class="signature-row">
+      <div class="signature">__________________<br/>Class Teacher</div>
+      <div class="signature">__________________<br/>Principal</div>
+    </div>
+  </div>
+</body>
+</html>
