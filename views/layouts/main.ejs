@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - MySchool Portal</title>
+    <title><%= (typeof title !== 'undefined' ? title : 'MySchool Portal') %> - MySchool Portal</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <!-- Bootstrap 5 CSS -->
@@ -25,7 +25,7 @@
     <%- include('../partials/messages') %>
 
     <!-- Main Content -->
-    <main class="<%= title === 'MySchool Portal' ? 'home-main' : 'container py-4' %>">
+    <main class="<%= (typeof title !== 'undefined' && title === 'MySchool Portal') ? 'home-main' : 'container py-4' %>">
         <%- body %>
     </main>
 

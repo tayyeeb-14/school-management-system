@@ -1,51 +1,58 @@
-<%- contentFor('body') %>
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">My Results</h3>
+        <p class="text-muted mb-0">Exam-wise weighted result summary.</p>
+    </div>
+    <div class="text-end">
+        <div class="fw-semibold">Overall: <%= Number(resultData.overallPercentage || 0).toFixed(2) %>%</div>
+        <div class="text-muted">Grade: <strong><%= resultData.overallGrade %></strong></div>
+    </div>
+</div>
 
-<div class="container">
-    <h1 class="mb-4">My Results</h1>
+<% if (!completion.complete) { %>
+    <div class="alert alert-warning">
+        Result is provisional. <strong><%= completion.missing.length %></strong> mark entries are still missing.
+    </div>
+<% } %>
 
-    <% for (const subject in marksBySubject) { %>
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3 class="mb-0"><%= subject %></h3>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Test/Exam</th>
-                                <th>Marks Obtained</th>
-                                <th>Total Marks</th>
-                                <th>Percentage</th>
-                                <th>Grade</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% marksBySubject[subject].forEach(mark => { %>
-                                <tr>
-                                    <td><%= mark.examName %></td>
-                                    <td><%= mark.marksObtained %></td>
-                                    <td><%= mark.totalMarks %></td>
-                                    <td><%= ((mark.marksObtained / mark.totalMarks) * 100).toFixed(2) %>%</td>
-                                    <td>
-                                        <% 
-                                        const percentage = (mark.marksObtained / mark.totalMarks) * 100;
-                                        let grade;
-                                        if (percentage >= 90) grade = 'A+';
-                                        else if (percentage >= 80) grade = 'A';
-                                        else if (percentage >= 70) grade = 'B';
-                                        else if (percentage >= 60) grade = 'C';
-                                        else if (percentage >= 50) grade = 'D';
-                                        else grade = 'F';
-                                        %>
-                                        <%= grade %>
-                                    </td>
-                                </tr>
+<div class="card">
+    <div class="card-body p-0">
+        <% if (resultData.rows && resultData.rows.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <% examConfig.forEach((exam) => { %>
+                                <th><%= exam.label %></th>
                             <% }) %>
-                        </tbody>
-                    </table>
-                </div>
+                            <th>Final %</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% resultData.rows.forEach((row) => { %>
+                            <tr>
+                                <td><strong><%= row.subject %></strong></td>
+                                <% examConfig.forEach((exam) => { %>
+                                    <% const item = row.exams[exam.key]; %>
+                                    <td>
+                                        <% if (item && item.outOf) { %>
+                                            <%= item.marks %>/<%= item.outOf %>
+                                        <% } else { %>
+                                            <span class="text-muted">-</span>
+                                        <% } %>
+                                    </td>
+                                <% }) %>
+                                <td><%= Number(row.finalPercentage || 0).toFixed(2) %>%</td>
+                                <td><strong><%= row.grade %></strong></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
             </div>
-        </div>
-    <% } %>
+        <% } else { %>
+            <div class="p-3 text-muted">No marks available yet.</div>
+        <% } %>
+    </div>
 </div>

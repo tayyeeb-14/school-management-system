@@ -6,6 +6,7 @@ const { isLoggedIn } = require('../middleware/auth');
 const Student = require('../models/Student');
 const { generatePdfFromHtml } = require('../utils/pdf');
 const { DOCUMENT_TYPE_MAP } = require('../utils/documentTypes');
+const { calculateFinalResult, isMarksheetComplete } = require('../utils/marks');
 
 const FALLBACK_LOGO_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="48"><rect width="100%" height="100%" fill="#2c7be5"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-family="Arial" font-size="16">School</text></svg>';
@@ -94,6 +95,9 @@ async function buildDocumentRenderData(student, type) {
   if (type === 'certificate') {
     locals.certificateTitle = 'Certificate of Achievement';
   }
+  if (type === 'marksheet') {
+    locals.marksheetData = calculateFinalResult(student);
+  }
 
   return {
     student,
@@ -117,6 +121,16 @@ router.get('/:type/preview', isLoggedIn, async (req, res) => {
       return res.status(status).render('error', { error });
     }
 
+    if (type === 'marksheet') {
+      const completion = isMarksheetComplete(student);
+      if (!completion.complete) {
+        return res.status(400).render('error', {
+          title: 'Document Error',
+          error: `Marksheet is not ready. Missing entries: ${completion.missing.slice(0, 5).join(', ')}${completion.missing.length > 5 ? '...' : ''}`
+        });
+      }
+    }
+
     const viewName = `documents/${type}`;
     const renderData = await buildDocumentRenderData(student, type);
     return res.render(viewName, { ...renderData, preview: true, layout: false });
@@ -137,6 +151,16 @@ router.get('/:type/download', isLoggedIn, async (req, res) => {
     const { student, error, status } = await resolveStudentForRequest(req);
     if (error) {
       return res.status(status).render('error', { error });
+    }
+
+    if (type === 'marksheet') {
+      const completion = isMarksheetComplete(student);
+      if (!completion.complete) {
+        return res.status(400).render('error', {
+          title: 'Document Error',
+          error: `Marksheet is not ready. Missing entries: ${completion.missing.slice(0, 5).join(', ')}${completion.missing.length > 5 ? '...' : ''}`
+        });
+      }
     }
 
     const viewName = `documents/${type}`;

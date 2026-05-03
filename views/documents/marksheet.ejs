@@ -24,22 +24,62 @@
       <strong>Class:</strong> <%= student.classId ? student.classId.name : '' %> &nbsp;&nbsp; <strong>Roll No:</strong> <%= student.rollNo %>
     </div>
 
+    <% const result = locals.marksheetData || null; %>
+    <% const examColumns = ['UT1', 'UT2', 'HALF_YEARLY', 'FINAL']; %>
     <div class="section">
       <table class="marks">
         <thead>
-          <tr><th>Subject</th><th>Marks Obtained</th><th>Max Marks</th></tr>
+          <tr>
+            <th>Subject</th>
+            <th>UT1</th>
+            <th>UT2</th>
+            <th>Half Yearly</th>
+            <th>Final</th>
+            <th>Final %</th>
+            <th>Grade</th>
+          </tr>
         </thead>
         <tbody>
-          <% const subjects = (student.subjects && student.subjects.length) ? student.subjects : ['Mathematics','English','Science','History']; %>
-          <% const marks = (locals.marks || [85,78,90,72]); %>
-          <% let total=0; let maxTotal=subjects.length*100; %>
-          <% for(let i=0;i<subjects.length;i++){ const m=marks[i]||0; total+=m; %>
-            <tr><td><%= subjects[i] %></td><td><%= m %></td><td>100</td></tr>
+          <% if (result && result.rows && result.rows.length > 0) { %>
+            <% result.rows.forEach((row) => { %>
+              <tr>
+                <td><%= row.subject %></td>
+                <% examColumns.forEach((examKey) => { %>
+                  <% const exam = row.exams[examKey]; %>
+                  <td>
+                    <% if (exam && exam.outOf) { %>
+                      <%= exam.marks %>/<%= exam.outOf %>
+                    <% } else { %>
+                      -
+                    <% } %>
+                  </td>
+                <% }) %>
+                <td><%= Number(row.finalPercentage || 0).toFixed(2) %>%</td>
+                <td><%= row.grade %></td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <% const subjects = (student.subjects && student.subjects.length) ? student.subjects : ['Mathematics','English','Science','History']; %>
+            <% subjects.forEach((subject) => { %>
+              <tr>
+                <td><%= subject %></td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>0.00%</td>
+                <td>F</td>
+              </tr>
+            <% }) %>
           <% } %>
         </tbody>
       </table>
-      <div class="totals">Total: <%= total %> / <%= maxTotal %> &nbsp;&nbsp; Percentage: <%= (total/maxTotal*100).toFixed(2) %>%</div>
-      <div>Status: <strong><%= (total/maxTotal*100) >= 40 ? 'PASS' : 'FAIL' %></strong></div>
+      <div class="totals">
+        Overall Percentage:
+        <%= result ? Number(result.overallPercentage || 0).toFixed(2) : '0.00' %>%
+        &nbsp;&nbsp; Grade:
+        <strong><%= result ? result.overallGrade : 'F' %></strong>
+      </div>
     </div>
 
     <div class="signature-row">

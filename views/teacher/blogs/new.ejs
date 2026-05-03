@@ -1,0 +1,26 @@
+<h3 class="mb-4">Add New Blog Post</h3>
+
+<form action="/teacher/blogs" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input name="title" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <input name="category" class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea name="content" class="form-control" rows="6" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Image</label>
+        <input type="file" name="image" class="form-control">
+    </div>
+
+    <button class="btn btn-primary" type="submit">Publish Post</button>
+    <a href="/teacher/blogs" class="btn btn-secondary ms-2">Cancel</a>
+</form>

@@ -427,6 +427,13 @@ router.post('/marks', async (req, res) => {
             if (existingIndex >= 0) student.marks[existingIndex] = markPayload;
             else student.marks.push(markPayload);
 
+            if (!Array.isArray(student.subjects)) {
+                student.subjects = [];
+            }
+            if (!student.subjects.includes(subject)) {
+                student.subjects.push(subject);
+            }
+
             await student.save();
             updatedCount += 1;
         }

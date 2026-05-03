@@ -6,8 +6,10 @@ const Student = require('../models/Student');
 const Assignment = require('../models/Assignment');
 const Fee = require('../models/Fee');
 const Blog = require('../models/Blog');
+const Attendance = require('../models/Attendance');
 const upload = require('../config/multer');
 const { DOCUMENT_TYPES } = require('../utils/documentTypes');
+const { calculateFinalResult, EXAM_CONFIG, isMarksheetComplete } = require('../utils/marks');
 const {
     buildDueEntries,
     buildFeeSummary,
@@ -84,6 +86,10 @@ router.use((req, res, next) => {
 router.get('/dashboard', async (req, res) => {
     try {
         const student = await Student.findOne({ userId: req.session.user.id });
+        if (!student) {
+            req.flash('error_msg', 'Student not found');
+            return res.redirect('/');
+        }
         
         // Get pending assignments
         const pendingAssignments = await Assignment.find({
@@ -97,8 +103,23 @@ router.get('/dashboard', async (req, res) => {
             'submissions.studentId': req.session.user.id
         }).sort({ 'submissions.submittedAt': -1 }).limit(5);
 
-        // Calculate attendance percentage
-        const attendancePercentage = student.attendancePercentage;
+        // Calculate attendance percentage from class/date attendance records
+        const attendanceRecords = await Attendance.find({
+            classId: student.classId,
+            'entries.studentId': student._id
+        }).select('entries');
+
+        let totalAttendanceEntries = 0;
+        let totalPresent = 0;
+        for (const record of attendanceRecords) {
+            const entry = record.entries.find((item) => String(item.studentId) === String(student._id));
+            if (!entry) continue;
+            totalAttendanceEntries += 1;
+            if (entry.status === 'present') totalPresent += 1;
+        }
+        const attendancePercentage = totalAttendanceEntries
+            ? Math.round((totalPresent / totalAttendanceEntries) * 100)
+            : 0;
 
         res.render('student/dashboard', {
             title: 'Student Dashboard',
@@ -197,17 +218,32 @@ router.post('/assignments/:id/submit', upload.single('file'), async (req, res) =
 router.get('/attendance', async (req, res) => {
     try {
         const student = await Student.findOne({ userId: req.session.user.id });
+        if (!student) {
+            req.flash('error_msg', 'Student not found');
+            return res.redirect('/student/dashboard');
+        }
         
-        // Get attendance records for the last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const attendance = student.attendance.filter(a => a.date >= thirtyDaysAgo);
+        const attendanceRecords = await Attendance.find({
+            classId: student.classId,
+            'entries.studentId': student._id
+        }).sort({ date: -1 });
+
+        const attendance = attendanceRecords.map((record) => {
+            const entry = record.entries.find((item) => String(item.studentId) === String(student._id));
+            return {
+                date: record.date,
+                status: entry?.status || 'absent'
+            };
+        });
+
+        const total = attendance.length;
+        const present = attendance.filter((item) => item.status === 'present').length;
+        const attendancePercentage = total ? Math.round((present / total) * 100) : 0;
 
         res.render('student/attendance', {
             title: 'My Attendance',
             attendance,
-            attendancePercentage: student.attendancePercentage
+            attendancePercentage
         });
     } catch (error) {
         console.error(error);
@@ -275,19 +311,19 @@ router.get('/timetable', async (req, res) => {
 router.get('/results', async (req, res) => {
     try {
         const student = await Student.findOne({ userId: req.session.user.id });
-        
-        // Group marks by subject
-        const marksBySubject = student.marks.reduce((acc, mark) => {
-            if (!acc[mark.subject]) {
-                acc[mark.subject] = [];
-            }
-            acc[mark.subject].push(mark);
-            return acc;
-        }, {});
+        if (!student) {
+            req.flash('error_msg', 'Student not found');
+            return res.redirect('/student/dashboard');
+        }
+
+        const completion = isMarksheetComplete(student);
+        const resultData = calculateFinalResult(student);
 
         res.render('student/results', {
             title: 'My Results',
-            marksBySubject
+            resultData,
+            completion,
+            examConfig: EXAM_CONFIG
         });
     } catch (error) {
         console.error(error);

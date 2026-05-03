@@ -28,13 +28,13 @@
                                 <tr>
                                     <td><%= moment(record.date).format('MMM DD, YYYY') %></td>
                                     <td>
-                                        <% if (record.present) { %>
+                                        <% if (record.status === 'present') { %>
                                             <span class="text-success">Present</span>
                                         <% } else { %>
                                             <span class="text-danger">Absent</span>
                                         <% } %>
                                     </td>
-                                    <td><%= record.note || '-' %></td>
+                                    <td>-</td>
                                 </tr>
                             <% }) %>
                         </tbody>
