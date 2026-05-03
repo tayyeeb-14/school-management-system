@@ -11,8 +11,10 @@
 </head>
 <body class="document">
   <div class="doc-container certificate centered">
-    <div class="school-name">Your School Name</div>
-    <div class="centered"><img src="<%= logoDataUri %>" style="height:48px;margin-top:8px"/></div>
+    <div class="centered">
+      <img src="<%= logoDataUri %>" style="height:56px;margin-bottom:8px"/>
+      <div class="school-name">Your School Name</div>
+    </div>
     <h1><%= locals.certificateTitle || 'Certificate of Completion' %></h1>
     <p>This is to certify that</p>
     <h2><%= student.userId.name %></h2>

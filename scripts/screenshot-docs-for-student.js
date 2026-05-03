@@ -12,6 +12,16 @@ const { default: puppeteer } = require('puppeteer');
 const readFile = util.promisify(fs.readFile);
 const renderFile = util.promisify(ejs.renderFile);
 
+async function fileToDataUri(relPath, fallbackSvg) {
+  const p = path.resolve(__dirname, '..', 'public', relPath.replace(/^\//, ''));
+  if (fs.existsSync(p)) {
+    const buf = await readFile(p);
+    const ext = path.extname(p).slice(1) || 'png';
+    return `data:image/${ext};base64,${buf.toString('base64')}`;
+  }
+  return `data:image/svg+xml;utf8,${encodeURIComponent(fallbackSvg)}`;
+}
+
 async function inlineLocalImages(html) {
   const workspace = path.resolve(__dirname, '..');
   const replacements = [];
@@ -73,7 +83,12 @@ async function main() {
         continue;
       }
 
-      const data = { student, marks: (student.marks || []).map(m => m.marks || 0), locals: {} };
+      const fallbackLogo = '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40"><rect width="100%" height="100%" fill="#2c7be5"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#fff" font-family="Arial" font-size="16">School</text></svg>';
+      const fallbackPhoto = '<svg xmlns="http://www.w3.org/2000/svg" width="110" height="140"><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-family="Arial" font-size="14">No Photo</text></svg>';
+      const logoDataUri = await fileToDataUri('/img/logo.png', fallbackLogo);
+      const photoRel = (student.userId && student.userId.photo) ? `/uploads/images/${student.userId.photo}` : '/img/default-student.png';
+      const photoDataUri = await fileToDataUri(photoRel, fallbackPhoto);
+      const data = { student, marks: (student.marks || []).map(m => m.marks || 0), locals: {}, logoDataUri, photoDataUri };
       if (t.name === 'certificate') data.locals.certificateTitle = 'Certificate of Achievement';
 
       let html;

@@ -10,9 +10,11 @@
 </head>
 <body class="document">
   <div class="doc-container centered">
+    <div class="centered" style="margin-bottom:12px">
+      <img src="<%= logoDataUri %>" style="height:40px"/>
+    </div>
     <div class="card-wrap">
       <div class="id-card">
-        <div class="centered"><img src="<%= logoDataUri %>" style="height:40px"/></div>
         <h3 class="centered"><%= student.userId.name %></h3>
         <div class="centered"><img src="<%= photoDataUri %>" class="id-photo"/></div>
         <div><strong>Class:</strong> <%= student.classId ? student.classId.name : '' %></div>
