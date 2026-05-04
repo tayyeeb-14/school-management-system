@@ -6,7 +6,43 @@
         </p>
     </div>
     <div class="text-muted">
-        Subject: <strong><%= teacher.subject || 'N/A' %></strong>
+        Subjects: <strong><%= (teacher.subjects || []).length ? (teacher.subjects || []).join(', ') : 'N/A' %></strong>
+    </div>
+</div>
+
+<script src="/js/teacher-shift.js"></script>
+
+<div class="card mt-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Recent Shifts</h5>
+    </div>
+    <div class="card-body p-0">
+        <% if (recentShifts && recentShifts.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Duration (mins)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentShifts.forEach((s) => { %>
+                            <tr>
+                                <td><%= moment(s.date).format('DD MMM, YYYY') %></td>
+                                <td><%= s.checkInAt ? moment(s.checkInAt).format('HH:mm') : '-' %></td>
+                                <td><%= s.checkOutAt ? moment(s.checkOutAt).format('HH:mm') : '-' %></td>
+                                <td><%= s.durationMinutes || '-' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="p-3 text-muted">No shift records found.</div>
+        <% } %>
     </div>
 </div>
 
@@ -70,6 +106,22 @@
                     </div>
                     <div class="col-6 col-md-4">
                         <a href="/teacher/blogs" class="btn btn-outline-warning w-100">My Blogs</a>
+                    </div>
+
+                    <div class="col-6 col-md-4">
+                        <form id="checkInForm" action="/teacher/check-in" method="POST">
+                            <input type="hidden" name="lat" id="checkin-lat">
+                            <input type="hidden" name="lng" id="checkin-lng">
+                            <button id="checkInBtn" class="btn btn-outline-primary w-100" type="submit">Check In</button>
+                        </form>
+                    </div>
+
+                    <div class="col-6 col-md-4">
+                        <form id="checkOutForm" action="/teacher/check-out" method="POST">
+                            <input type="hidden" name="lat" id="checkout-lat">
+                            <input type="hidden" name="lng" id="checkout-lng">
+                            <button id="checkOutBtn" class="btn btn-outline-danger w-100" type="submit">Check Out</button>
+                        </form>
                     </div>
                 </div>
             </div>

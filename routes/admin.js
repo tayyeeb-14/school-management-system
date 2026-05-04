@@ -527,7 +527,7 @@ router.put('/teachers/:id', upload.single('photo'), async (req, res) => {
         const {
             name,
             email,
-            subject,
+            subjects,
             qualifications,
             monthlySalary
         } = req.body;
@@ -538,7 +538,14 @@ router.put('/teachers/:id', upload.single('photo'), async (req, res) => {
         if (req.file) userUpdate.photo = req.file.filename;
         await User.findByIdAndUpdate(teacher.userId._id, userUpdate);
 
-        teacher.subject = subject;
+        // Accept comma-separated subjects or single value
+        if (typeof subjects === 'string') {
+            teacher.subjects = subjects.split(',').map(s => String(s || '').trim()).filter(Boolean);
+        } else if (Array.isArray(subjects)) {
+            teacher.subjects = subjects.map(s => String(s || '').trim()).filter(Boolean);
+        } else {
+            teacher.subjects = [];
+        }
         teacher.qualifications = qualifications;
         teacher.monthlySalary = toAmount(monthlySalary);
         teacher.classIds = classIds;

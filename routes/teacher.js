@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { isLoggedIn, isTeacher } = require('../middleware/auth');
 const Teacher = require('../models/Teacher');
+const TeacherShift = require('../models/TeacherShift');
 const Student = require('../models/Student');
 const Assignment = require('../models/Assignment');
 const Class = require('../models/Class');
@@ -78,6 +79,10 @@ router.get('/dashboard', async (req, res) => {
             .sort({ date: -1 })
             .limit(5);
 
+        const recentShifts = await TeacherShift.find({ teacherId: teacher._id })
+            .sort({ date: -1 })
+            .limit(5);
+
         const currentMonth = toMonthKey();
         let currentSalary = await Salary.findOne({ teacherId: teacher._id, month: currentMonth });
         if (!currentSalary) {
@@ -93,12 +98,91 @@ router.get('/dashboard', async (req, res) => {
             teacher,
             stats,
             recentAttendance,
+            recentShifts,
             currentSalary,
             path: req.path
         });
     } catch (error) {
         console.error(error);
         res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Teacher check-in
+router.post('/check-in', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const now = new Date();
+        const dateKey = new Date(now);
+        dateKey.setHours(0, 0, 0, 0);
+
+        const location = req.body.location || req.body.lat && req.body.lng ? `lat:${req.body.lat},lng:${req.body.lng}` : 'unknown';
+
+        const update = {
+            $setOnInsert: {
+                teacherId: teacher._id,
+                date: dateKey,
+                checkInAt: now,
+                checkInLocation: location
+            }
+        };
+
+        await TeacherShift.findOneAndUpdate({ teacherId: teacher._id, date: dateKey }, update, { upsert: true, new: true });
+
+        req.flash('success_msg', 'Checked in successfully');
+        res.redirect('/teacher/dashboard');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error during check-in');
+        res.redirect('/teacher/dashboard');
+    }
+});
+
+// Teacher check-out
+router.post('/check-out', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const now = new Date();
+        const dateKey = new Date(now);
+        dateKey.setHours(0, 0, 0, 0);
+
+        const location = req.body.location || req.body.lat && req.body.lng ? `lat:${req.body.lat},lng:${req.body.lng}` : 'unknown';
+
+        const shift = await TeacherShift.findOne({ teacherId: teacher._id, date: dateKey });
+        if (!shift) {
+            req.flash('error_msg', 'No check-in found for today');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        if (shift.checkOutAt) {
+            req.flash('error_msg', 'Already checked out for today');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const durationMs = now.getTime() - (shift.checkInAt ? new Date(shift.checkInAt).getTime() : now.getTime());
+        const durationMinutes = Math.round(durationMs / 60000);
+
+        shift.checkOutAt = now;
+        shift.checkOutLocation = location;
+        shift.durationMinutes = durationMinutes;
+        await shift.save();
+
+        req.flash('success_msg', 'Checked out successfully');
+        res.redirect('/teacher/dashboard');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error during check-out');
+        res.redirect('/teacher/dashboard');
     }
 });
 
@@ -165,10 +249,19 @@ router.get('/attendance', async (req, res) => {
             });
         }
 
-        const classAllowed = classes.some((item) => String(item._id) === String(selectedClassId));
-        if (!classAllowed) {
-            req.flash('error_msg', 'Access denied for selected class');
-            return res.redirect('/teacher/attendance');
+        // Enforce class-teacher rule: if the Class has a class teacher assigned, only that teacher may mark attendance.
+        const classDoc = await Class.findById(selectedClassId).select('teacherId');
+        if (classDoc && classDoc.teacherId) {
+            if (String(classDoc.teacherId) !== String(teacher._id)) {
+                req.flash('error_msg', 'Only the assigned class teacher can access this class attendance');
+                return res.redirect('/teacher/attendance');
+            }
+        } else {
+            const classAllowed = classes.some((item) => String(item._id) === String(selectedClassId));
+            if (!classAllowed) {
+                req.flash('error_msg', 'Access denied for selected class');
+                return res.redirect('/teacher/attendance');
+            }
         }
 
         const students = await Student.find({
@@ -221,10 +314,19 @@ router.post('/attendance', async (req, res) => {
         const selectedDate = toStartOfDay(req.body.date || new Date());
         const submitted = req.body.attendance || {};
 
-        const classAllowed = teacher.classIds.some((item) => String(item._id) === String(selectedClassId));
-        if (!classAllowed) {
-            req.flash('error_msg', 'Access denied for selected class');
-            return res.redirect('/teacher/attendance');
+        // Enforce class-teacher rule for submission: if class has a class teacher assigned, only that teacher may submit.
+        const classDoc = await Class.findById(selectedClassId).select('teacherId');
+        if (classDoc && classDoc.teacherId) {
+            if (String(classDoc.teacherId) !== String(teacher._id)) {
+                req.flash('error_msg', 'Only the assigned class teacher can submit attendance for this class');
+                return res.redirect('/teacher/attendance');
+            }
+        } else {
+            const classAllowed = teacher.classIds.some((item) => String(item._id) === String(selectedClassId));
+            if (!classAllowed) {
+                req.flash('error_msg', 'Access denied for selected class');
+                return res.redirect('/teacher/attendance');
+            }
         }
 
         const students = await Student.find({
@@ -292,7 +394,7 @@ router.get('/marks', async (req, res) => {
         const classes = teacher.classIds || [];
         const selectedClassId = req.query.classId || (classes[0]?._id ? String(classes[0]._id) : '');
         const selectedExamType = String(req.query.examType || EXAM_CONFIG[0].key).toUpperCase();
-        const selectedSubject = String(req.query.subject || teacher.subject || '').trim();
+        const selectedSubject = String(req.query.subject || (teacher.subjects && teacher.subjects[0]) || '').trim();
 
         if (!selectedClassId) {
             return res.render('teacher/marks', {
@@ -301,7 +403,7 @@ router.get('/marks', async (req, res) => {
                 classes,
                 selectedClassId: '',
                 selectedExamType,
-                selectedSubject,
+                selectedSubject: String(req.query.subject || (teacher.subjects && teacher.subjects[0]) || '').trim(),
                 examConfig: EXAM_CONFIG,
                 students: [],
                 subjectOptions: [],
@@ -322,14 +424,14 @@ router.get('/marks', async (req, res) => {
             .populate('userId', 'name')
             .sort({ rollNo: 1 });
 
-        const subjectSet = new Set([teacher.subject].filter(Boolean));
+        const subjectSet = new Set((teacher.subjects || []).filter(Boolean));
         students.forEach((student) => {
             toArray(student.subjects).forEach((subject) => {
                 const cleaned = String(subject || '').trim();
                 if (cleaned) subjectSet.add(cleaned);
             });
         });
-        const subjectOptions = Array.from(subjectSet);
+        const subjectOptions = Array.from((teacher.subjects || []).concat(Array.from(subjectSet)));
 
         const effectiveSubject = selectedSubject || subjectOptions[0] || '';
         const marksMap = {};
