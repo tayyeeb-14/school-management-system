@@ -6,10 +6,9 @@ const teacherSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    subject: {
-        type: String,
-        required: true
-    },
+    subjects: [{
+        type: String
+    }],
     classIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'
