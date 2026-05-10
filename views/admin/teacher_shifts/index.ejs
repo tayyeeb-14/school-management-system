@@ -44,15 +44,12 @@
                             <% const teacher = s.teacherId || {}; const user = teacher.userId || {}; %>
                             <tr>
                                 <td>
-                                    <% if (user.photo) { %>
-                                        <img src="/uploads/images/<%= user.photo %>" alt="photo" class="rounded-circle" width="48" height="48">
-                                    <% } else { %>
-                                        <img src="/img/avatar.png" alt="photo" class="rounded-circle" width="48" height="48">
-                                    <% } %>
+                                    <% const photoSrc = user.photo ? ('/uploads/images/' + user.photo) : '/img/avatar.png'; %>
+                                    <img src="<%= photoSrc %>" alt="<%= user.name || 'Teacher' %>" class="teacher-photo" onerror="this.onerror=null;this.src='/img/avatar.png'">
                                 </td>
                                 <td>
                                     <div><strong><%= user.name || 'Unnamed' %></strong></div>
-                                    <div class="text-muted small"><%= (teacher.subjects || []).join(', ') %></div>
+                                    <div class="text-muted small"><%= (teacher.subjects || []).slice(0,3).join(', ') %></div>
                                 </td>
                                 <td><%= moment(s.date).format('DD MMM, YYYY') %></td>
                                 <td><%= s.checkInAt ? moment(s.checkInAt).format('HH:mm') : '-' %></td>

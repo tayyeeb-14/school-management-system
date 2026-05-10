@@ -12,6 +12,12 @@ const teacherShiftSchema = new mongoose.Schema({
     },
     checkInAt: Date,
     checkOutAt: Date,
+    // New numeric lat/lng fields for reliable storage and querying
+    checkInLat: { type: Number },
+    checkInLng: { type: Number },
+    checkOutLat: { type: Number },
+    checkOutLng: { type: Number },
+    // Backwards-compatible string fields (kept for migration/readability)
     checkInLocation: {
         type: String,
         default: 'unknown'
