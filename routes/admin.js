@@ -12,6 +12,7 @@ const Notice = require('../models/Notice');
 const Attendance = require('../models/Attendance');
 const Salary = require('../models/Salary');
 const upload = require('../config/multer');
+const TeacherShift = require('../models/TeacherShift');
 const { documentTypes } = require('../utils/documentTypes');
 const { calculateFinalResult, isMarksheetComplete } = require('../utils/marks');
 const {
@@ -306,6 +307,39 @@ router.get('/students/:id/edit', async (req, res) => {
         console.error(error);
         req.flash('error_msg', 'Error loading student');
         res.redirect('/admin/students');
+    }
+});
+
+// Teacher Shifts (Admin) - list with filters
+router.get('/teacher-shifts', async (req, res) => {
+    try {
+        const filterDateRaw = req.query.date || '';
+        const selectedTeacher = req.query.teacherId || '';
+
+        const filter = {};
+        if (filterDateRaw) {
+            const start = toStartOfDay(new Date(filterDateRaw));
+            filter.date = { $gte: start, $lte: new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1) };
+        }
+        if (selectedTeacher) filter.teacherId = selectedTeacher;
+
+        const shifts = await TeacherShift.find(filter)
+            .sort({ date: -1 })
+            .populate({ path: 'teacherId', populate: { path: 'userId', select: 'name photo' } });
+
+        const teachers = await Teacher.find().populate('userId', 'name').sort({});
+
+        res.render('admin/teacher_shifts/index', {
+            title: 'Teacher Shifts',
+            shifts,
+            teachers,
+            selectedDate: filterDateRaw,
+            selectedTeacher
+        });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading teacher shifts');
+        res.redirect('/admin/dashboard');
     }
 });
 

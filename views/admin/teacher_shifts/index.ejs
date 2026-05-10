@@ -1,0 +1,105 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Teacher Shifts</h3>
+</div>
+
+<form method="GET" action="/admin/teacher-shifts" class="row g-3 align-items-end mb-3">
+    <div class="col-auto">
+        <label class="form-label">Date</label>
+        <input type="date" name="date" class="form-control" value="<%= selectedDate || '' %>">
+    </div>
+    <div class="col-auto">
+        <label class="form-label">Teacher</label>
+        <select name="teacherId" class="form-select">
+            <option value="">All</option>
+            <% teachers.forEach(function(t) { %>
+                <option value="<%= t._id %>" <%= (String(selectedTeacher) === String(t._id)) ? 'selected' : '' %>><%= t.userId?.name || 'Unnamed' %></option>
+            <% }) %>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary">Filter</button>
+        <a href="/admin/teacher-shifts" class="btn btn-outline-secondary ms-2">Reset</a>
+    </div>
+</form>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width:64px"></th>
+                        <th>Teacher</th>
+                        <th>Date</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Total</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (shifts && shifts.length > 0) { %>
+                        <% shifts.forEach(function(s) { %>
+                            <% const teacher = s.teacherId || {}; const user = teacher.userId || {}; %>
+                            <tr>
+                                <td>
+                                    <% if (user.photo) { %>
+                                        <img src="/uploads/images/<%= user.photo %>" alt="photo" class="rounded-circle" width="48" height="48">
+                                    <% } else { %>
+                                        <img src="/img/avatar.png" alt="photo" class="rounded-circle" width="48" height="48">
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div><strong><%= user.name || 'Unnamed' %></strong></div>
+                                    <div class="text-muted small"><%= (teacher.subjects || []).join(', ') %></div>
+                                </td>
+                                <td><%= moment(s.date).format('DD MMM, YYYY') %></td>
+                                <td><%= s.checkInAt ? moment(s.checkInAt).format('HH:mm') : '-' %></td>
+                                <td><%= s.checkOutAt ? moment(s.checkOutAt).format('HH:mm') : '-' %></td>
+                                <td>
+                                    <% if (s.durationMinutes || s.durationMinutes === 0) { %>
+                                        <% const mins = s.durationMinutes; const h = Math.floor(mins / 60); const m = mins % 60; %>
+                                        <%= h ? (h + 'h ') : '' %><%= m ? (m + 'm') : '' %>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% function parseCoords(loc) {
+                                        if (!loc) return null;
+                                        const mLat = loc.match(/lat:([\d\.\-]+)/);
+                                        const mLng = loc.match(/lng:([\d\.\-]+)/);
+                                        if (mLat && mLng) return { lat: mLat[1], lng: mLng[1] };
+                                        return null;
+                                    }
+                                    const locStr = s.checkOutLocation || s.checkInLocation || '';
+                                    const coords = parseCoords(locStr);
+                                    %>
+                                    <% if (coords) { %>
+                                        <a href="https://www.google.com/maps?q=<%= coords.lat %>,<%= coords.lng %>" target="_blank">View Map</a>
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (s.checkOutAt) { %>
+                                        <span class="badge bg-success">Checked Out</span>
+                                    <% } else if (s.checkInAt) { %>
+                                        <span class="badge bg-primary">Active</span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">—</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="8" class="text-center text-muted p-4">No shifts found.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
