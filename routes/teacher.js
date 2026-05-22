@@ -121,18 +121,25 @@ router.post('/check-in', async (req, res) => {
         const dateKey = new Date(now);
         dateKey.setHours(0, 0, 0, 0);
 
-        const location = req.body.location || req.body.lat && req.body.lng ? `lat:${req.body.lat},lng:${req.body.lng}` : 'unknown';
+        // Parse numeric coords if provided (client sends lat/lng)
+        let checkInLat = null;
+        let checkInLng = null;
+        if (req.body.lat && req.body.lng) {
+            checkInLat = Number(req.body.lat);
+            checkInLng = Number(req.body.lng);
+        }
+        const locationStr = req.body.location || (checkInLat !== null ? `lat:${checkInLat},lng:${checkInLng}` : 'unknown');
 
-        const update = {
-            $setOnInsert: {
-                teacherId: teacher._id,
-                date: dateKey,
-                checkInAt: now,
-                checkInLocation: location
-            }
+        const setOnInsert = {
+            teacherId: teacher._id,
+            date: dateKey,
+            checkInAt: now,
+            checkInLocation: locationStr
         };
+        if (checkInLat !== null) setOnInsert.checkInLat = checkInLat;
+        if (checkInLng !== null) setOnInsert.checkInLng = checkInLng;
 
-        await TeacherShift.findOneAndUpdate({ teacherId: teacher._id, date: dateKey }, update, { upsert: true, new: true });
+        await TeacherShift.findOneAndUpdate({ teacherId: teacher._id, date: dateKey }, { $setOnInsert: setOnInsert }, { upsert: true, new: true });
 
         req.flash('success_msg', 'Checked in successfully');
         res.redirect('/teacher/dashboard');
@@ -156,7 +163,14 @@ router.post('/check-out', async (req, res) => {
         const dateKey = new Date(now);
         dateKey.setHours(0, 0, 0, 0);
 
-        const location = req.body.location || req.body.lat && req.body.lng ? `lat:${req.body.lat},lng:${req.body.lng}` : 'unknown';
+        let checkOutLat = null;
+        let checkOutLng = null;
+        if (req.body.lat && req.body.lng) {
+            checkOutLat = Number(req.body.lat);
+            checkOutLng = Number(req.body.lng);
+        }
+
+        const location = req.body.location || (checkOutLat !== null ? `lat:${checkOutLat},lng:${checkOutLng}` : 'unknown');
 
         const shift = await TeacherShift.findOne({ teacherId: teacher._id, date: dateKey });
         if (!shift) {
@@ -174,6 +188,8 @@ router.post('/check-out', async (req, res) => {
 
         shift.checkOutAt = now;
         shift.checkOutLocation = location;
+        if (checkOutLat !== null) shift.checkOutLat = checkOutLat;
+        if (checkOutLng !== null) shift.checkOutLng = checkOutLng;
         shift.durationMinutes = durationMinutes;
         await shift.save();
 
@@ -498,6 +514,13 @@ router.post('/marks', async (req, res) => {
         if (!classAllowed) {
             req.flash('error_msg', 'Access denied for selected class');
             return res.redirect('/teacher/marks');
+        }
+
+        // Server-side subject authorization: teacher may only enter marks for their assigned subjects
+        const teacherSubjects = (teacher.subjects || []).map(s => String(s || '').trim().toLowerCase());
+        if (!teacherSubjects.includes(String(subject).toLowerCase())) {
+            req.flash('error_msg', 'You are not authorised to enter marks for this subject');
+            return res.redirect(`/teacher/marks?classId=${classId}&examType=${examType}`);
         }
 
         const students = await Student.find({

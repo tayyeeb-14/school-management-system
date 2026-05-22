@@ -63,15 +63,19 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                    <% function parseCoords(loc) {
-                                        if (!loc) return null;
-                                        const mLat = loc.match(/lat:([\d\.\-]+)/);
-                                        const mLng = loc.match(/lng:([\d\.\-]+)/);
-                                        if (mLat && mLng) return { lat: mLat[1], lng: mLng[1] };
-                                        return null;
-                                    }
-                                    const locStr = s.checkOutLocation || s.checkInLocation || '';
-                                    const coords = parseCoords(locStr);
+                                    <%
+                                        // Prefer numeric coords (new fields). Fallback to legacy string parsing.
+                                        let coords = null;
+                                        if (s.checkOutLat && s.checkOutLng) {
+                                            coords = { lat: s.checkOutLat, lng: s.checkOutLng };
+                                        } else if (s.checkInLat && s.checkInLng) {
+                                            coords = { lat: s.checkInLat, lng: s.checkInLng };
+                                        } else {
+                                            const locStr = s.checkOutLocation || s.checkInLocation || '';
+                                            const mLat = (locStr || '').match(/lat:([\d\.\-]+)/);
+                                            const mLng = (locStr || '').match(/lng:([\d\.\-]+)/);
+                                            if (mLat && mLng) coords = { lat: mLat[1], lng: mLng[1] };
+                                        }
                                     %>
                                     <% if (coords) { %>
                                         <a href="https://www.google.com/maps?q=<%= coords.lat %>,<%= coords.lng %>" target="_blank">View Map</a>
