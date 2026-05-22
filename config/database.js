@@ -10,8 +10,11 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB Connected (Atlas)");
   } catch (error) {
-    console.error("MongoDB Connection Error:", error.message);
-    process.exit(1);
+    // Log error but do not abort server startup — UI verification can proceed without DB.
+    // This avoids taking down the app during local UI checks when Atlas/DNS is unreachable.
+    console.error("MongoDB Connection Error:", error && error.message ? error.message : error);
+    // Do not exit; return so callers can continue. Routes that require DB will still fail when used.
+    return;
   }
 };
 

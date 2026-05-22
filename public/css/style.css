@@ -69,6 +69,10 @@
     margin-left: 6px;
 }
 
+/* Logo image in navbar */
+.brand-logo { height: 38px; width: auto; display: inline-block; object-fit: contain; }
+.site-navbar.scrolled .brand-logo { height: 32px; }
+
 .site-navbar .nav-link {
     color: #374151;
     position: relative;
@@ -145,6 +149,51 @@
     .site-navbar { padding: 0.5rem 0; }
     .site-navbar .nav-link { padding: 0.45rem 0.5rem; }
     .site-navbar .navbar-brand { font-size: 1rem; }
+}
+
+/* Slightly reduced navbar height on small screens for tighter mobile header */
+@media (max-width: 575.98px) {
+    :root { --navbar-height: 64px; }
+    .site-navbar { padding: 0.45rem 0; }
+    .site-navbar .brand-logo { height: 34px; }
+}
+
+/* Auth card: compact, glassy, premium look */
+.auth-card {
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(250,250,252,0.9));
+    box-shadow: 0 18px 40px rgba(6,14,26,0.12);
+    border: 1px solid rgba(15,23,42,0.04);
+}
+.auth-card-header {
+    background: linear-gradient(90deg,var(--brand),var(--brand-600));
+    color: #fff;
+    padding: 1rem 1rem;
+}
+.auth-logo { height: 40px; width: auto; object-fit: contain; }
+.auth-card-body { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+
+/* Login button: modern gradient with soft shadow and larger hit target */
+.btn-auth-cta {
+    background: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(79,70,229,0.14);
+    padding: 0.85rem 1rem;
+}
+.btn-auth-cta:active { transform: translateY(1px); }
+
+/* Smaller input group icons and softer shadow for mobile */
+.auth-card .input-group .input-group-text { background: transparent; border: 1px solid rgba(15,23,42,0.06); }
+.auth-card .form-control { border-radius: 10px; }
+
+@media (max-width: 575.98px) {
+    .auth-card { margin: 1rem; }
+    .auth-card-header { padding: 0.9rem 0.9rem; }
+    .auth-card-body { padding: 1rem; }
 }
 
 /* Branded (blue) navbar variant: white text, white underline, centered mobile menu */
@@ -409,7 +458,7 @@
 }
 .teacher-shifts-table .table thead th {
     font-weight: 700;
-    font-size: 0. nine rem;
+    font-size: 0.9rem;
 }
 .teacher-shifts-table .table tbody td {
     vertical-align: middle;
@@ -418,7 +467,7 @@
     font-weight: 600;
     padding: 0.45em 0.6em;
     border-radius: 999px;
-    font-size: 0. eight rem;
+    font-size: 0.8rem;
 }
 .teacher-shifts-table .badge.bg-primary { background-color: #4f46e5; }
 .teacher-shifts-table .badge.bg-success { background-color: #16a34a; }

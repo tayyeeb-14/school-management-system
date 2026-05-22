@@ -440,14 +440,17 @@ router.get('/marks', async (req, res) => {
             .populate('userId', 'name')
             .sort({ rollNo: 1 });
 
-        const subjectSet = new Set((teacher.subjects || []).filter(Boolean));
-        students.forEach((student) => {
-            toArray(student.subjects).forEach((subject) => {
-                const cleaned = String(subject || '').trim();
-                if (cleaned) subjectSet.add(cleaned);
-            });
-        });
-        const subjectOptions = Array.from((teacher.subjects || []).concat(Array.from(subjectSet)));
+        // Load class subjects to restrict available subjects per class
+        const classDoc = await Class.findById(selectedClassId).select('subjects');
+        const classSubjects = Array.isArray(classDoc?.subjects) ? classDoc.subjects.map(s => String(s||'').trim()).filter(Boolean) : [];
+
+        // Build subject options from teacher subjects + class subjects (intersection gives allowed subjects)
+        const teacherSubjects = (teacher.subjects || []).map(s => String(s||'').trim()).filter(Boolean);
+        // Allowed subjects are intersection of teacherSubjects and classSubjects, but include teacherSubjects too for legacy
+        const allowedSet = new Set();
+        teacherSubjects.forEach(s => allowedSet.add(s));
+        classSubjects.forEach(s => allowedSet.add(s));
+        const subjectOptions = Array.from(allowedSet);
 
         const effectiveSubject = selectedSubject || subjectOptions[0] || '';
         const marksMap = {};
@@ -517,9 +520,13 @@ router.post('/marks', async (req, res) => {
         }
 
         // Server-side subject authorization: teacher may only enter marks for their assigned subjects
-        const teacherSubjects = (teacher.subjects || []).map(s => String(s || '').trim().toLowerCase());
-        if (!teacherSubjects.includes(String(subject).toLowerCase())) {
-            req.flash('error_msg', 'You are not authorised to enter marks for this subject');
+        const teacherSubjectsLower = (teacher.subjects || []).map(s => String(s || '').trim().toLowerCase());
+        const classDocForCheck = await Class.findById(classId).select('subjects teacherId');
+        const classSubjectsLower = (classDocForCheck?.subjects || []).map(s => String(s||'').trim().toLowerCase());
+
+        // Subject must be both allowed by teacher and exist for the class
+        if (!teacherSubjectsLower.includes(String(subject).toLowerCase()) || (classSubjectsLower.length && !classSubjectsLower.includes(String(subject).toLowerCase()))) {
+            req.flash('error_msg', 'You are not authorised to enter marks for this subject or subject not defined for class');
             return res.redirect(`/teacher/marks?classId=${classId}&examType=${examType}`);
         }
 
