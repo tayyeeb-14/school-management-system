@@ -400,6 +400,28 @@ body {
     border-bottom: 1px solid #dee2e6;
 }
 
+/* Ensure teacher photos in the teacher-shifts table stay constrained and don't overflow */
+.teacher-shifts-table img.teacher-photo,
+.teacher-shifts-table td img.teacher-photo {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+}
+
+@media (max-width: 767.98px) {
+    .teacher-shifts-table .table tbody tr {
+        display: block;
+        padding: 0.75rem 0.9rem;
+        align-items: center;
+    }
+    .teacher-shifts-table .table tbody td:first-child {
+        width: auto;
+        padding-right: 0.75rem;
+    }
+    .teacher-shifts-table .table tbody td img.teacher-photo { display: inline-block; vertical-align: middle; }
+}
+
 .profile-section img {
     width: 100px;
     height: 100px;

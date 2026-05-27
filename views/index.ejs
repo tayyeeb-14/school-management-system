@@ -143,124 +143,35 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 %>
 
 <div class="home-page">
-    <section class="home-page__hero home-bleed" aria-label="Homepage hero">
-        <div id="homeHeroCarousel" class="carousel slide home-carousel" data-bs-ride="carousel" data-bs-interval="5600">
-            <div class="carousel-indicators home-carousel-indicators">
-                <% heroSlides.forEach((slide, index) => { %>
-                    <button
-                        type="button"
-                        data-bs-target="#homeHeroCarousel"
-                        data-bs-slide-to="<%= index %>"
-                        class="<%= index === 0 ? 'active' : '' %>"
-                        aria-current="<%= index === 0 ? 'true' : 'false' %>"
-                        aria-label="Slide <%= index + 1 %>"></button>
-                <% }); %>
+    <section class="premium-hero" aria-label="Cinematic homepage hero">
+        <!-- Single-source premium hero background (use hero-premium.png) -->
+        <div class="premium-hero-media">
+            <img class="premium-hero-image" src="/img/hero-premium.png" alt="Campus and students" loading="lazy" decoding="async">
+            <div class="premium-hero-overlay" aria-hidden="true"></div>
+        </div>
+
+        <div class="premium-hero-content container">
+            <span class="eyebrow">Modern learning, strong values, and confident futures</span>
+            <h1 class="premium-hero-title">Inspiring excellence in education with a campus experience families trust.</h1>
+            <p class="premium-hero-sub">A premium school experience focused on strong academics, character building, and all‑round development.</p>
+
+            <div class="premium-hero-actions">
+                <a class="btn-primary" href="/auth/register">Enroll Now</a>
+                <a class="btn-ghost" href="/admissions">Learn More</a>
             </div>
 
-            <div class="carousel-inner">
-                <% heroSlides.forEach((slide, index) => { %>
-                    <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
-                        <img src="<%= slide.src %>" class="home-carousel-image" alt="<%= slide.alt %>">
-                    </div>
-                <% }); %>
-            </div>
-
-            <button class="carousel-control-prev home-carousel-control" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next home-carousel-control" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-
-            <div class="home-hero-overlay" aria-hidden="true"></div>
-            <div class="home-hero-glow home-hero-glow--one" aria-hidden="true"></div>
-            <div class="home-hero-glow home-hero-glow--two" aria-hidden="true"></div>
-
-            <div class="home-hero-shell">
-                <div class="container">
-                    <div class="home-hero-grid">
-                        <div class="home-hero-copy home-reveal">
-                            <span class="section-eyebrow section-eyebrow--light">Modern learning, strong values, and confident futures</span>
-                            <h1 class="home-hero-title">Inspiring excellence in education with a campus experience families trust.</h1>
-                            <p class="home-hero-text">
-                                A premium school experience focused on strong academics, character building, safety,
-                                and all-round development from the early years through senior secondary.
-                            </p>
-
-                            <div class="home-hero-actions">
-                                <a href="/auth/register" class="home-btn home-btn--primary">Start Registration</a>
-                                <a href="#programs" class="home-btn home-btn--ghost">Explore Programs</a>
-                            </div>
-
-                            <div class="home-proof-chips" aria-label="School highlights">
-                                <span class="home-proof-chip">Affiliated school</span>
-                                <span class="home-proof-chip">Nursery to Grade XII</span>
-                                <span class="home-proof-chip">Parent-friendly communication</span>
-                            </div>
-                        </div>
-
-                        <div class="home-hero-stack">
-                            <aside class="home-panel home-panel--glass home-reveal" style="--delay: 0.12s;">
-                                <div class="home-panel-head">
-                                    <span class="home-panel-kicker">Admissions 2026-27</span>
-                                    <h2>Limited seats open for the upcoming academic session.</h2>
-                                </div>
-                                <p>
-                                    Schedule a campus visit, speak with admissions, and explore the right programme
-                                    for your child with clarity and confidence.
-                                </p>
-
-                                <div class="home-mini-metrics">
-                                    <div>
-                                        <strong><%= stats.classes %></strong>
-                                        <span>Classes</span>
-                                    </div>
-                                    <div>
-                                        <strong><%= stats.activities %>+</strong>
-                                        <span>Activities</span>
-                                    </div>
-                                    <div>
-                                        <strong><%= stats.teachers %></strong>
-                                        <span>Teachers</span>
-                                    </div>
-                                </div>
-
-                                <a href="/contact" class="home-inline-link">
-                                    Book a campus visit
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </aside>
-
-                            <aside class="home-panel home-panel--solid home-reveal" style="--delay: 0.24s;">
-                                <div class="home-panel-head">
-                                    <span class="home-panel-kicker">Latest notices</span>
-                                    <h2>Stay updated with what matters this week.</h2>
-                                </div>
-
-                                <% if (latestNotices.length) { %>
-                                    <ul class="home-notice-list">
-                                        <% latestNotices.forEach((noticeItem) => { %>
-                                            <li>
-                                                <div class="home-notice-meta">
-                                                    <span class="home-notice-tag"><%= noticeItem.category || 'general' %></span>
-                                                    <span><%= moment(noticeItem.date).format('DD MMM YYYY') %></span>
-                                                </div>
-                                                <strong><%= noticeItem.title %></strong>
-                                                <p><%= noticeItem.description ? noticeItem.description.substring(0, 96) : 'Important school update for students and parents.' %></p>
-                                            </li>
-                                        <% }); %>
-                                    </ul>
-                                <% } else { %>
-                                    <div class="home-empty-state">
-                                        <strong>Fresh announcements will appear here.</strong>
-                                        <p>Once notices are published, families can quickly review key dates and updates from the homepage.</p>
-                                    </div>
-                                <% } %>
-                            </aside>
-                        </div>
-                    </div>
+            <div class="premium-stats-card" role="region" aria-label="School metrics">
+                <div class="stat">
+                    <div class="left"><i class="fa fa-user-graduate" aria-hidden="true"></i><strong><%= stats.students %></strong></div>
+                    <div class="right"><small>Students</small></div>
+                </div>
+                <div class="stat">
+                    <div class="left"><i class="fa fa-chalkboard-teacher" aria-hidden="true"></i><strong><%= stats.teachers %></strong></div>
+                    <div class="right"><small>Teachers</small></div>
+                </div>
+                <div class="stat">
+                    <div class="left"><i class="fa fa-book-open" aria-hidden="true"></i><strong><%= stats.classes %></strong></div>
+                    <div class="right"><small>Classes</small></div>
                 </div>
             </div>
         </div>

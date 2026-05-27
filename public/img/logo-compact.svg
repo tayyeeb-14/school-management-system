@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Compact icon version: shield + M, transparent background -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="MySchool compact logo">
+  <defs>
+    <linearGradient id="cg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0a2540"/>
+      <stop offset="1" stop-color="#07162a"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 4 L54 14 V30 C54 44 42 56 32 60 C22 56 10 44 10 30 V14 Z" fill="url(#cg)"/>
+  <path d="M32 6 L52 15 V30 C52 43 41 54 32 57 C23 54 12 43 12 30 V15 Z" fill="none" stroke="#D4A537" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M20 24 L28 18 L36 24 L44 18 L44 40 L20 40 Z" fill="#D4A537"/>
+  <path d="M28 18 L28 36 L36 36 L36 24" fill="#0a2540"/>
+</svg>

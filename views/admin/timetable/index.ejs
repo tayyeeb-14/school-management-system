@@ -1,0 +1,333 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Timetable</h3>
+  <form method="POST" action="/admin/timetable/generate">
+    <button class="btn btn-primary me-2">Generate Timetable</button>
+  </form>
+  <div>
+    <button id="validateBtn" class="btn btn-outline-warning me-2">Validate Timetable</button>
+  </div>
+</div>
+<!-- Modal for editing slot -->
+<div id="slotModal" class="modal" style="display:none;">
+  <div class="modal-backdrop"></div>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h5 id="modalTitle">Edit Timetable Slot</h5>
+      <button id="modalClose" class="btn-close">×</button>
+    </div>
+    <form id="slotForm">
+      <input type="hidden" name="id" id="slotId">
+      <div class="mb-2">
+        <label class="form-label">Class</label>
+        <div id="slotClass" class="form-control-plaintext"></div>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Day</label>
+        <select id="slotDay" class="form-select">
+          <option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Period</label>
+        <input id="slotPeriod" type="number" class="form-control" min="1">
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Subject</label>
+        <input id="subjectSearch" class="form-control" placeholder="Search subjects...">
+        <select id="slotSubject" class="form-select mt-1" size="6" style="max-height:200px; overflow:auto;"></select>
+        <div class="form-text">Select canonical subject. Create via Subjects admin if missing.</div>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Teacher</label>
+        <input id="teacherSearch" class="form-control" placeholder="Search teachers...">
+        <select id="slotTeacher" class="form-select mt-1" size="6" style="max-height:200px; overflow:auto;"></select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Time (optional)</label>
+        <input id="slotTime" type="text" class="form-control" placeholder="e.g. 09:00 - 09:40">
+      </div>
+      <div class="form-check mb-3">
+        <input id="slotLocked" type="checkbox" class="form-check-input">
+        <label class="form-check-label">Locked (prevents generation/edits)</label>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" id="modalCancel" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+/* Simple modern modal styles, responsive */
+.modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45)}
+.modal-panel{position:relative;z-index:2001;background:#fff;border-radius:8px;max-width:720px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.15);padding:1rem}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem}
+.btn-close{background:transparent;border:0;font-size:1.25rem}
+.form-control-plaintext{padding:.375rem .75rem;background:#f8f9fa;border-radius:4px}
+@media (max-width:576px){.modal-panel{max-width:95%;padding:.75rem}}
+</style>
+
+<script>
+const modal = document.getElementById('slotModal');
+const slotForm = document.getElementById('slotForm');
+const slotId = document.getElementById('slotId');
+const slotClass = document.getElementById('slotClass');
+const slotDay = document.getElementById('slotDay');
+const slotPeriod = document.getElementById('slotPeriod');
+const slotSubject = document.getElementById('slotSubject');
+const subjectSearch = document.getElementById('subjectSearch');
+const slotTeacher = document.getElementById('slotTeacher');
+const teacherSearch = document.getElementById('teacherSearch');
+const slotTime = document.getElementById('slotTime');
+const slotLocked = document.getElementById('slotLocked');
+const modalClose = document.getElementById('modalClose');
+const modalCancel = document.getElementById('modalCancel');
+
+let SUBJECTS = [];
+let TEACHERS = [];
+
+async function loadSubjects(){
+  const res = await fetch('/admin/subjects');
+  const json = await res.json();
+  if (!json.ok) return;
+  SUBJECTS = json.subjects || [];
+  renderSubjectOptions('');
+}
+
+function renderSubjectOptions(filter){
+  slotSubject.innerHTML = '';
+  const f = String(filter||'').toLowerCase();
+  SUBJECTS.forEach(s=>{
+    if (!f || s.name.toLowerCase().includes(f)){
+      const opt = document.createElement('option'); opt.value = s.name; opt.textContent = s.name; slotSubject.appendChild(opt);
+    }
+  });
+}
+
+async function loadTeachers(filterSubject, classId){
+  const params = new URLSearchParams();
+  if (filterSubject) params.set('subject', filterSubject);
+  if (classId) params.set('classId', classId);
+  const res = await fetch('/admin/teachers?'+params.toString());
+  const json = await res.json();
+  if (!json.ok) return;
+  TEACHERS = json.teachers || [];
+  renderTeacherOptions('');
+}
+
+function renderTeacherOptions(filter){
+  slotTeacher.innerHTML = '';
+  const f = String(filter||'').toLowerCase();
+  TEACHERS.forEach(t=>{
+    if (!f || t.name.toLowerCase().includes(f)){
+      const opt = document.createElement('option'); opt.value = t._id; opt.textContent = t.name; slotTeacher.appendChild(opt);
+    }
+  });
+}
+
+subjectSearch.addEventListener('input', (e)=> renderSubjectOptions(e.target.value));
+teacherSearch.addEventListener('input', (e)=> renderTeacherOptions(e.target.value));
+
+modalClose.addEventListener('click', closeModal);
+modalCancel.addEventListener('click', closeModal);
+
+function openModal(){ modal.style.display='flex'; subjectSearch.focus(); }
+function closeModal(){ modal.style.display='none'; }
+
+document.addEventListener('click', async (e)=>{
+  if (e.target.matches('.toggle-lock')){
+    const id = e.target.dataset.id;
+    const res = await fetch(`/admin/timetable/${id}/toggle-lock`, { method: 'POST' });
+    const json = await res.json(); if (json.ok) location.reload(); else alert('Failed to toggle lock');
+  }
+  if (e.target.matches('.edit-slot')){
+    const id = e.target.dataset.id;
+    // fetch slot details
+    const res = await fetch(`/admin/timetable/slot/${id}`);
+    const json = await res.json();
+    if (!json.ok){ alert('Failed to load slot'); return; }
+    const s = json.slot;
+    slotId.value = s._id;
+    slotClass.textContent = s.className || '—';
+    slotDay.value = s.day || 'Mon';
+    slotPeriod.value = s.period || 1;
+    slotTime.value = s.time || '';
+    slotLocked.checked = !!s.locked;
+    await loadSubjects();
+    // select subject
+    Array.from(slotSubject.options).forEach(o=> o.selected = (o.value === (s.subject||'')));
+    await loadTeachers(s.subject, s.classId);
+    Array.from(slotTeacher.options).forEach(o=> o.selected = (s.teacherId ? String(o.value) === String(s.teacherId) : false));
+    openModal();
+  }
+});
+
+slotForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const id = slotId.value;
+  const payload = {
+    subject: slotSubject.value || '',
+    teacherId: slotTeacher.value || '',
+    time: slotTime.value || '',
+    period: Number(slotPeriod.value) || undefined,
+    day: slotDay.value,
+    locked: slotLocked.checked
+  };
+  // client-side validation: ensure subject selected
+  if (!payload.subject || payload.subject === ''){ alert('Please select a subject'); return; }
+  // call server to attempt update (server will prevent conflicts)
+  const res = await fetch(`/admin/timetable/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  const json = await res.json();
+  if (!json.ok){ alert(json.error || 'Failed to save slot'); return; }
+  closeModal();
+  location.reload();
+});
+
+// load initial lists for quick UX
+loadSubjects();
+
+</script>
+
+<script>
+// Validation runner & UI
+const validateBtn = document.getElementById('validateBtn');
+const validationSummary = document.getElementById('validationSummary');
+const validationIssues = document.getElementById('validationIssues');
+
+async function runValidation(showToast=true){
+  validationSummary.textContent = 'Running validation...';
+  validationIssues.innerHTML = '';
+  try{
+    const res = await fetch('/admin/timetable/validate');
+    const json = await res.json();
+    if (!json.ok){ validationSummary.textContent = 'Validation failed'; return; }
+    const issues = json.issues || [];
+    if (issues.length === 0){
+      validationSummary.innerHTML = '<span class="badge-issue badge-success">No issues found</span>';
+      // clear any existing highlights
+      document.querySelectorAll('[data-slot-id]').forEach(r=> r.classList.remove('row-issue'));
+      return;
+    }
+
+    // show summary counts
+    const counts = issues.reduce((acc,i)=>{ acc[i.type]=(acc[i.type]||0)+1; return acc; },{});
+    validationSummary.innerHTML = `
+      <span class="badge-issue badge-danger">Conflicts: ${counts.teacher_conflict||0}</span>
+      <span class="badge-issue badge-warning ms-1">Empty: ${counts.empty_slot||0}</span>
+      <span class="badge-issue badge-warning ms-1">Invalid Subject: ${counts.invalid_subject||0}</span>
+    `;
+
+    // render issues list
+    validationIssues.innerHTML = '';
+    for (const it of issues){
+      const div = document.createElement('div');
+      div.className = 'mb-2';
+      let badge = '<span class="badge-issue badge-warning">Issue</span>';
+      if (it.type === 'teacher_conflict') badge = '<span class="badge-issue badge-danger">Teacher Conflict</span>';
+      else if (it.type === 'empty_slot') badge = '<span class="badge-issue badge-warning">Empty Slot</span>';
+      else if (it.type === 'invalid_subject') badge = '<span class="badge-issue badge-warning">Invalid Subject</span>';
+      div.innerHTML = `${badge} <strong>${it.message}</strong>`;
+
+      // highlight related rows
+      if (it.slot){
+        const row = document.querySelector(`[data-slot-id=\"${it.slot}\"]`);
+        if (row) row.classList.add('row-issue');
+      }
+      if (it.slots && Array.isArray(it.slots)){
+        it.slots.forEach(sid=>{
+          const row = document.querySelector(`[data-slot-id=\"${sid}\"]`);
+          if (row) row.classList.add('row-issue');
+        });
+      }
+
+      // tooltip on click to focus
+      div.addEventListener('click', ()=>{
+        if (it.slot) {
+          const row = document.querySelector(`[data-slot-id=\"${it.slot}\"]`);
+          if (row) row.scrollIntoView({behavior:'smooth', block:'center'});
+        } else if (it.slots && it.slots[0]){
+          const row = document.querySelector(`[data-slot-id=\"${it.slots[0]}\"]`);
+          if (row) row.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+      });
+
+      validationIssues.appendChild(div);
+    }
+
+  }catch(err){
+    console.error('Validation error', err);
+    validationSummary.textContent = 'Validation error';
+  }
+}
+
+validateBtn.addEventListener('click', ()=> runValidation());
+
+// run on load
+document.addEventListener('DOMContentLoaded', ()=> runValidation(false));
+
+// run after modal save via global reload; ensure we re-run after edits
+</script>
+
+<% if (slots && slots.length) { %>
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <div class="table-responsive">
+        <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Day</th>
+          <th>Period</th>
+          <th>Subject</th>
+          <th>Teacher</th>
+          <th>Locked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% slots.forEach(function(s) { %>
+          <tr data-slot-id="<%= s._id %>" data-class-id="<%= s.classId ? s.classId._id : '' %>">
+            <td class="cell-class"><%= s.classId ? s.classId.name : '—' %></td>
+            <td class="cell-day"><%= s.day %></td>
+            <td class="cell-period"><%= s.period %></td>
+            <td class="cell-subject">
+              <span class="slot-subject"><%= s.subject %></span>
+              <button class="btn btn-sm btn-link edit-slot" data-id="<%= s._id %>">Edit</button>
+            </td>
+            <td class="cell-teacher"><%= s.teacherId && s.teacherId.userId ? s.teacherId.userId.name : (s.teacherId ? 'Assigned' : '-') %></td>
+            <td class="cell-locked">
+              <span class="me-2"><%= s.locked ? 'Yes' : 'No' %></span>
+              <button class="btn btn-sm btn-outline-secondary toggle-lock" data-id="<%= s._id %>" data-locked="<%= s.locked %>"><%= s.locked ? 'Unlock' : 'Lock' %></button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div id="validationPanel" class="card" style="max-height:640px; overflow:auto;">
+        <div class="card-body">
+          <h5 class="card-title">Validation</h5>
+          <div id="validationSummary" class="mb-2">Running validation...</div>
+          <div id="validationIssues"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+  <p class="text-muted">No timetable slots found. Click Generate Timetable to create slots.</p>
+<% } %>
+
+<style>
+/* validation badges and highlighting */
+.badge-issue{display:inline-block;padding:.25rem .4rem;border-radius:.25rem;font-size:.75rem}
+.badge-danger{background:#f8d7da;color:#842029}
+.badge-warning{background:#fff3cd;color:#664d03}
+.badge-success{background:#d1e7dd;color:#0f5132}
+.row-issue{background:linear-gradient(90deg, rgba(255,230,230,0.6), rgba(255,255,255,0));}
+.cell-issue{outline:2px solid rgba(255,0,0,0.12);}
+.cell-warning{outline:2px solid rgba(255,193,7,0.12);}
+@media (max-width:767px){#validationPanel{max-height:320px;margin-top:1rem}}
+</style>

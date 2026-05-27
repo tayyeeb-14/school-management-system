@@ -27,6 +27,44 @@ const {
     sortPaymentsByDateDesc,
     toAmount
 } = require('../utils/fee');
+const TimetableSlot = require('../models/Timetable');
+const Subject = require('../models/Subject');
+
+// API: list subjects
+router.get('/subjects', async (req, res) => {
+    try {
+        const subs = await Subject.find().sort({ name: 1 }).lean();
+        res.json({ ok: true, subjects: subs });
+    } catch (error) {
+        console.error('Failed to list subjects', error);
+        res.status(500).json({ ok: false, error: 'Failed to load subjects' });
+    }
+});
+
+// API: list teachers, optional filters: subject, classId, q (query by name)
+router.get('/teachers', async (req, res) => {
+    try {
+        const { subject, classId, q } = req.query;
+        const filter = {};
+        if (subject) {
+            // match subject in teacher.subjects (case-insensitive)
+            filter.subjects = { $elemMatch: { $regex: new RegExp(`^${subject.trim()}$`, 'i') } };
+        }
+        if (classId) {
+            filter.classIds = classId;
+        }
+        let teachers = await Teacher.find(filter).populate('userId', 'name').lean();
+        if (q) {
+            const qq = String(q).toLowerCase();
+            teachers = teachers.filter(t => (t.userId && t.userId.name && t.userId.name.toLowerCase().includes(qq)));
+        }
+        const out = teachers.map(t => ({ _id: t._id, name: t.userId ? t.userId.name : 'Unknown' }));
+        res.json({ ok: true, teachers: out });
+    } catch (error) {
+        console.error('Failed to list teachers', error);
+        res.status(500).json({ ok: false, error: 'Failed to load teachers' });
+    }
+});
 
 // Protect all admin routes
 router.use(isLoggedIn, isAdmin);
@@ -340,6 +378,291 @@ router.get('/teacher-shifts', async (req, res) => {
         console.error(error);
         req.flash('error_msg', 'Error loading teacher shifts');
         res.redirect('/admin/dashboard');
+    }
+});
+
+// Update class teacher safely: sync teacher.classIds
+router.post('/classes/:id/set-class-teacher', async (req, res) => {
+    try {
+        const classId = req.params.id;
+        const newTeacherId = req.body.teacherId || null;
+        const cls = await Class.findById(classId);
+        if (!cls) {
+            req.flash('error_msg','Class not found');
+            return res.redirect('/admin/classes');
+        }
+
+        const oldTeacherId = cls.teacherId ? String(cls.teacherId) : null;
+        cls.teacherId = newTeacherId || undefined;
+        await cls.save();
+
+        // Remove classId from old teacher.classIds
+        if (oldTeacherId) {
+            await Teacher.findByIdAndUpdate(oldTeacherId, { $pull: { classIds: classId } }).catch(()=>{});
+        }
+        // Add classId to new teacher.classIds
+        if (newTeacherId) {
+            await Teacher.findByIdAndUpdate(newTeacherId, { $addToSet: { classIds: classId } });
+        }
+
+        req.flash('success_msg','Class teacher updated and teacher assignments synchronized');
+        res.redirect('/admin/classes');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg','Error updating class teacher');
+        res.redirect('/admin/classes');
+    }
+});
+
+// Timetable view + generator
+router.get('/timetable', async (req, res) => {
+    try {
+        // show a simple admin view with generate button and latest slots
+        const slots = await TimetableSlot.find().populate('classId', 'name').populate('teacherId', 'userId').sort({ classId: 1, day: 1, period: 1 }).limit(500);
+        res.render('admin/timetable/index', { title: 'Timetable', slots });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading timetable');
+        res.redirect('/admin/dashboard');
+    }
+});
+
+// Generate timetable (simple smart generator)
+router.post('/timetable/generate', async (req, res) => {
+    try {
+        // Basic config
+        const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+        const PERIODS_PER_DAY = Number(process.env.PERIODS_PER_DAY) || 7; // includes breaks
+        const BREAK_AT = Number(process.env.BREAK_AT) || 4; // break after this period
+
+        // Load classes and teachers
+        const classes = await Class.find().lean();
+        const teachers = await Teacher.find().populate('userId').lean();
+
+        // Build teacher map for quick lookup
+        const teacherMap = {};
+        teachers.forEach(t => { teacherMap[String(t._id)] = t; });
+
+        // Clear existing generated slots that are not locked
+        await TimetableSlot.deleteMany({ locked: { $ne: true } });
+
+        // Track teacher assignments to avoid conflicts: teacherId -> day -> period -> true
+        const teacherSchedule = {};
+        function isTeacherFree(tid, day, period) {
+            if (!tid) return false;
+            const key = String(tid);
+            if (!teacherSchedule[key]) return true;
+            return !teacherSchedule[key][day] || !teacherSchedule[key][day][period];
+        }
+        function markTeacher(tid, day, period) {
+            if (!tid) return;
+            const key = String(tid);
+            teacherSchedule[key] = teacherSchedule[key] || {};
+            teacherSchedule[key][day] = teacherSchedule[key][day] || {};
+            teacherSchedule[key][day][period] = true;
+        }
+
+        // For each class, build a subject list and assign round-robin
+        for (const cls of classes) {
+            const classId = cls._id;
+            const classSubjects = Array.isArray(cls.subjects) ? cls.subjects.filter(Boolean) : [];
+            if (!classSubjects.length) continue; // nothing to schedule
+
+            // Find candidate teachers for each subject who are assigned to this class and have the subject
+            const subjectTeachers = {};
+            for (const sub of classSubjects) {
+                subjectTeachers[sub] = teachers.filter(t => {
+                    const teachesSubject = Array.isArray(t.subjects) ? t.subjects.map(s=>String(s).trim()).includes(String(sub).trim()) : false;
+                    const assignedToClass = Array.isArray(t.classIds) ? t.classIds.map(String).includes(String(classId)) : false;
+                    return teachesSubject && assignedToClass;
+                });
+            }
+
+            // Prepare a queue of subject slots for the week (simple even distribution)
+            const weeklySlots = [];
+            for (let d=0; d<DAYS.length; d++) {
+                for (let p=1; p<=PERIODS_PER_DAY; p++) {
+                    if (p === BREAK_AT) {
+                        // mark break
+                        weeklySlots.push({ day: DAYS[d], period: p, subject: 'Break', teacherId: null });
+                    } else {
+                        // pick subject in round-robin
+                        const idx = (d * PERIODS_PER_DAY + p) % classSubjects.length;
+                        const subject = classSubjects[idx];
+                        weeklySlots.push({ day: DAYS[d], period: p, subject, teacherId: null });
+                    }
+                }
+            }
+
+            // Assign teachers to slots respecting availability and max workload per day
+            const MAX_PERIODS_PER_DAY = Number(process.env.MAX_PERIODS_PER_DAY) || 5;
+            const teacherDailyCount = {}; // tid -> day -> count
+
+            for (const slot of weeklySlots) {
+                if (slot.subject === 'Break') {
+                    // persist break slot
+                    await TimetableSlot.create({ classId, day: slot.day, period: slot.period, subject: 'Break', teacherId: null, time: '' });
+                    continue;
+                }
+
+                const candidates = subjectTeachers[slot.subject] || [];
+                let assigned = null;
+
+                // sort candidates by least load today
+                candidates.sort((a,b) => {
+                    const ak = String(a._id); const bk = String(b._id);
+                    const aCount = (teacherDailyCount[ak] && teacherDailyCount[ak][slot.day]) || 0;
+                    const bCount = (teacherDailyCount[bk] && teacherDailyCount[bk][slot.day]) || 0;
+                    return aCount - bCount;
+                });
+
+                for (const cand of candidates) {
+                    const tid = cand._id;
+                    const tidk = String(tid);
+                    const dayCount = (teacherDailyCount[tidk] && teacherDailyCount[tidk][slot.day]) || 0;
+                    if (dayCount >= MAX_PERIODS_PER_DAY) continue;
+                    if (!isTeacherFree(tid, slot.day, slot.period)) continue;
+                    // assign
+                    assigned = tid;
+                    teacherDailyCount[tidk] = teacherDailyCount[tidk] || {};
+                    teacherDailyCount[tidk][slot.day] = (teacherDailyCount[tidk][slot.day] || 0) + 1;
+                    markTeacher(tid, slot.day, slot.period);
+                    break;
+                }
+
+                await TimetableSlot.create({ classId, day: slot.day, period: slot.period, subject: slot.subject, teacherId: assigned, time: '' });
+            }
+        }
+
+        req.flash('success_msg', 'Timetable generated (non-locked slots). Review and lock as needed.');
+        res.redirect('/admin/timetable');
+    } catch (error) {
+        console.error('Timetable generation failed', error);
+        req.flash('error_msg', 'Error generating timetable');
+        res.redirect('/admin/timetable');
+    }
+});
+
+// Update a timetable slot (edit subject/teacher/time/period/day/locked)
+router.put('/timetable/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { subject, teacherId, time, period, day, locked } = req.body;
+        const slot = await TimetableSlot.findById(id);
+        if (!slot) return res.status(404).json({ error: 'Slot not found' });
+
+        // Prevent editing locked slots via this endpoint (use toggle-lock)
+        if (slot.locked && typeof locked === 'undefined') {
+            return res.status(403).json({ error: 'Slot is locked; unlock before editing' });
+        }
+
+        // If subject provided, validate it exists in Subject collection
+        if (subject) {
+            const sub = await Subject.findOne({ name: subject.trim() });
+            if (!sub) return res.status(400).json({ error: 'Subject not recognized; please create it first' });
+            slot.subject = subject.trim();
+        }
+
+        // If changing day/period ensure no duplicate slot for same class
+        const newDay = typeof day !== 'undefined' ? day : slot.day;
+        const newPeriod = typeof period !== 'undefined' ? Number(period) : slot.period;
+        if (newDay !== slot.day || newPeriod !== slot.period) {
+            const dup = await TimetableSlot.findOne({ classId: slot.classId, day: newDay, period: newPeriod, _id: { $ne: slot._id } });
+            if (dup) return res.status(400).json({ error: 'Another slot exists for this class at that day/period' });
+            slot.day = newDay;
+            slot.period = newPeriod;
+        }
+
+        // Validate teacher conflicts: same teacher cannot be assigned to different classes at same day+period
+        if (typeof teacherId !== 'undefined' && teacherId) {
+            const conflict = await TimetableSlot.findOne({ teacherId: teacherId, day: slot.day, period: slot.period, _id: { $ne: slot._id } });
+            if (conflict) return res.status(400).json({ error: 'Teacher conflict: assigned elsewhere at same day and period' });
+            slot.teacherId = teacherId;
+        } else if (typeof teacherId !== 'undefined') {
+            slot.teacherId = undefined;
+        }
+
+        if (typeof time !== 'undefined') slot.time = time;
+        if (typeof locked !== 'undefined') slot.locked = !!locked;
+
+        await slot.save();
+        res.json({ ok: true, slot });
+    } catch (error) {
+        console.error('Failed updating timetable slot', error);
+        res.status(500).json({ error: 'Failed to update slot' });
+    }
+});
+
+// Toggle lock
+router.post('/timetable/:id/toggle-lock', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const slot = await TimetableSlot.findById(id);
+        if (!slot) return res.status(404).json({ error: 'Slot not found' });
+        slot.locked = !slot.locked;
+        await slot.save();
+        res.json({ ok: true, locked: slot.locked });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to toggle lock' });
+    }
+});
+
+// Timetable validation endpoint
+router.get('/timetable/validate', async (req, res) => {
+    try {
+        const slots = await TimetableSlot.find().lean();
+        const issues = [];
+
+        // Teacher conflicts: same teacher assigned in same day+period for multiple classes
+        const teacherMap = {};
+        for (const s of slots) {
+            if (!s.teacherId) continue;
+            const key = `${s.teacherId}|${s.day}|${s.period}`;
+            teacherMap[key] = teacherMap[key] || [];
+            teacherMap[key].push(s);
+        }
+        for (const k in teacherMap) {
+            const arr = teacherMap[k];
+            if (arr.length > 1) {
+                issues.push({ type: 'teacher_conflict', message: `Teacher assigned to multiple classes at ${arr[0].day} period ${arr[0].period}`, slots: arr.map(x=>x._id) });
+            }
+        }
+
+        // Empty slots
+        for (const s of slots) {
+            if (!s.subject || String(s.subject).trim() === '') {
+                issues.push({ type: 'empty_slot', message: `Empty subject in class ${s.classId} ${s.day} period ${s.period}`, slot: s._id });
+            }
+        }
+
+        // Invalid subject assignments: subject should exist in Subject collection
+        const subjects = await Subject.find().lean();
+        const subjectSet = new Set(subjects.map(t=>t.name));
+        for (const s of slots) {
+            if (s.subject && s.subject !== 'Break' && !subjectSet.has(String(s.subject).trim())) {
+                issues.push({ type: 'invalid_subject', message: `Subject '${s.subject}' not found in master subjects`, slot: s._id });
+            }
+        }
+
+        res.json({ ok: true, issues });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Validation failed' });
+    }
+});
+
+// Fetch single slot for modal edit
+router.get('/timetable/slot/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const slot = await TimetableSlot.findById(id).populate('classId', 'name').lean();
+        if (!slot) return res.status(404).json({ ok: false, error: 'Slot not found' });
+        slot.className = slot.classId ? slot.classId.name : '';
+        res.json({ ok: true, slot });
+    } catch (error) {
+        console.error('Failed to fetch slot', error);
+        res.status(500).json({ ok: false, error: 'Failed to load slot' });
     }
 });
 

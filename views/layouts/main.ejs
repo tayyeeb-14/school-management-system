@@ -13,9 +13,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="/css/style.css" rel="stylesheet">
-    <link href="/css/home-hero.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="/css/style.css" rel="stylesheet">
+        <!-- Global premium system styles -->
+        <link href="/css/premium/system.css" rel="stylesheet">
+        <% if (typeof title !== 'undefined' && title === 'MySchool Portal') { %>
+            <link href="/css/premium/home.css" rel="stylesheet">
+        <% } %>
     <meta name="theme-color" content="#4f46e5">
 </head>
 <body>

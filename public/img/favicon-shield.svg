@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MySchool Portal shield logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0a2540" stop-opacity="1" />
+      <stop offset="1" stop-color="#07162a" stop-opacity="1" />
+    </linearGradient>
+  </defs>
+  <!-- Transparent background intentionally omitted -->
+  <!-- Outer shield -->
+  <path d="M32 4 L54 14 V30 C54 44 42 56 32 60 C22 56 10 44 10 30 V14 Z" fill="url(#g)"/>
+
+  <!-- Gold border (thin) -->
+  <path d="M32 6 L52 15 V30 C52 43 41 54 32 57 C23 54 12 43 12 30 V15 Z" fill="none" stroke="#D4AF37" stroke-width="1.6" stroke-linejoin="round"/>
+
+  <!-- Inner emblem: stylized book / M -->
+  <g transform="translate(0,2)">
+    <path d="M20 24 L28 18 L36 24 L44 18 L44 40 L20 40 Z" fill="#D4AF37"/>
+    <!-- cutouts to create page separations -->
+    <path d="M28 18 L28 36 L36 36 L36 24" fill="#0a2540"/>
+  </g>
+
+  <!-- Shine accent for cinematic feel -->
+  <path d="M16 10 C24 6 40 6 48 10" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="2" stroke-linecap="round"/>
+</svg>
