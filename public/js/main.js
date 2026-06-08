@@ -185,7 +185,8 @@ function checkPasswordStrength(password) {
 /* Navbar scroll behavior: toggle 'scrolled' class when user scrolls */
 (function navbarScrollHandler() {
     try {
-        const nav = document.querySelector('.premium-navbar');
+        // Fall back to any header or bootstrap navbar for baseline behavior
+        const nav = document.querySelector('header[role="banner"], nav[role="banner"], .navbar');
         if (!nav) return;
 
         const threshold = 24; // px scrolled before header becomes solid
@@ -314,7 +315,7 @@ function checkPasswordStrength(password) {
 (function setNavbarHeightVar() {
     try {
         const root = document.documentElement;
-        const nav = document.querySelector('.premium-navbar');
+        const nav = document.querySelector('header[role="banner"], nav[role="banner"], .navbar');
         if (!nav) return;
 
         function update() {

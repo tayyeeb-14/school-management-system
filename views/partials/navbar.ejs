@@ -1,79 +1,29 @@
-<!-- Premium solid cinematic navbar -->
-<header class="premium-navbar" role="banner">
-    <div class="nav-inner container">
-        <div class="nav-left">
-            <a href="/" class="brand-link">
-                <img src="/img/logo-horizontal.svg" alt="MySchool Portal" class="brand-logo">
-                <img src="/img/logo-compact.svg" alt="MySchool" class="brand-shield" aria-hidden="true">
-                <small class="brand-tagline">International Education · Distinction</small>
-            </a>
-        </div>
-
-        <nav class="nav-center" aria-label="Primary navigation">
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="/admissions">Admissions</a>
-            <a href="/blog">Blog</a>
-            <a href="/contact">Contact</a>
-        </nav>
-
-        <div class="nav-right">
-            <% if (!user) { %>
-                <a class="nav-login" href="/auth/login">Login</a>
-                <a class="nav-register" href="/auth/register">Register</a>
-            <% } else { %>
-                <a class="nav-login" href="/profile">Profile</a>
-            <% } %>
-            <button id="mobileNavToggle" class="mobile-toggle" aria-expanded="false" aria-label="Open menu">
-                <svg width="22" height="14" viewBox="0 0 22 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="1" width="22" height="2" rx="1" fill="currentColor"/><rect y="6" width="22" height="2" rx="1" fill="currentColor"/><rect y="11" width="22" height="2" rx="1" fill="currentColor"/></svg>
-            </button>
-        </div>
+<!-- Legacy Bootstrap navbar — reset to single source baseline -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light" role="banner">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/img/logo-horizontal.svg" alt="MySchool" height="34" class="me-2">
+      <span class="brand-text">MySchool Portal</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admissions">Admissions</a></li>
+        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+      </ul>
+      <div class="d-flex align-items-center">
+        <% if (!user) { %>
+            <a class="btn btn-outline-primary me-2" href="/auth/login">Login</a>
+            <a class="btn btn-primary" href="/auth/register">Register</a>
+        <% } else { %>
+            <a class="btn btn-outline-secondary" href="/profile">Profile</a>
+        <% } %>
+      </div>
     </div>
-
-    <!-- Mobile slide menu -->
-    <div id="mobileNav" class="mobile-nav-panel" aria-hidden="true">
-        <div class="mobile-nav-content">
-            <div class="mobile-brand">
-                <img src="/img/logo-compact.svg" alt="MySchool" class="brand-logo-compact">
-                <div class="mobile-tagline">International Education · Distinction</div>
-            </div>
-            <nav class="mobile-links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/admissions">Admissions</a>
-                <a href="/blog">Blog</a>
-                <a href="/contact">Contact</a>
-            </nav>
-            <div class="mobile-actions">
-                <% if (!user) { %>
-                    <a class="mobile-register" href="/auth/register">Register</a>
-                    <a class="mobile-login" href="/auth/login">Login</a>
-                <% } else { %>
-                    <a class="mobile-login" href="/profile">Profile</a>
-                <% } %>
-            </div>
-        </div>
-        <button class="mobile-nav-close" aria-label="Close menu">✕</button>
-    </div>
-
-    <script>
-        (function(){
-            const btn = document.getElementById('mobileNavToggle');
-            const panel = document.getElementById('mobileNav');
-            const closeBtn = document.querySelector('.mobile-nav-close');
-            const header = document.querySelector('.premium-navbar');
-            if (!btn || !panel) return;
-
-            function openPanel(){ panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); btn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
-            function closePanel(){ panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); btn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
-
-            btn.addEventListener('click', ()=>{ const open = panel.classList.contains('open'); open ? closePanel() : openPanel(); });
-            if (closeBtn) closeBtn.addEventListener('click', closePanel);
-
-            // Sticky scroll effect: add .scrolled when page is scrolled
-            window.addEventListener('scroll', ()=>{
-                if (window.scrollY > 10) header.classList.add('scrolled'); else header.classList.remove('scrolled');
-            });
-        })();
-    </script>
-</header>
+  </div>
+</nav>

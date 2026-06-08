@@ -7,7 +7,7 @@
 
     document.body.classList.add('home-page-active');
 
-    var navbar = document.querySelector('.premium-navbar');
+    var navbar = document.querySelector('header[role="banner"], nav[role="banner"], .navbar');
     if (navbar) {
       navbar.classList.add('home-nav');
     }

@@ -103,12 +103,10 @@
     .auth-card-body { padding: 1rem; }
 }
 
-/* Legacy site-navbar CSS has been moved to public/css/legacy-site-navbar.css */
 
+/* Legacy navbar fully removed */
 
 /* Legacy navbar removed: premium-navbar is the single navbar system now */
-.navbar { transition: box-shadow 220ms ease; }
-.navbar { transition: box-shadow 220ms ease; }
 
 .card:hover {
     transform: translateY(-2px);

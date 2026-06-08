@@ -143,36 +143,14 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 %>
 
 <div class="home-page">
-    <section class="premium-hero" aria-label="Cinematic homepage hero">
-        <!-- Single-source premium hero background (use hero-premium.png) -->
-        <div class="premium-hero-media">
-            <img class="premium-hero-image" src="/img/hero-premium.png" alt="Campus and students" loading="lazy" decoding="async">
-            <div class="premium-hero-overlay" aria-hidden="true"></div>
-        </div>
-
-        <div class="premium-hero-content container">
+    <section class="home-hero home-bleed" aria-label="Homepage hero">
+        <div class="container home-hero-shell text-center py-5">
             <span class="eyebrow">Modern learning, strong values, and confident futures</span>
-            <h1 class="premium-hero-title">Inspiring excellence in education with a campus experience families trust.</h1>
-            <p class="premium-hero-sub">A premium school experience focused on strong academics, character building, and all‑round development.</p>
-
-            <div class="premium-hero-actions">
-                <a class="btn-primary" href="/auth/register">Enroll Now</a>
-                <a class="btn-ghost" href="/admissions">Learn More</a>
-            </div>
-
-            <div class="premium-stats-card" role="region" aria-label="School metrics">
-                <div class="stat">
-                    <div class="left"><i class="fa fa-user-graduate" aria-hidden="true"></i><strong><%= stats.students %></strong></div>
-                    <div class="right"><small>Students</small></div>
-                </div>
-                <div class="stat">
-                    <div class="left"><i class="fa fa-chalkboard-teacher" aria-hidden="true"></i><strong><%= stats.teachers %></strong></div>
-                    <div class="right"><small>Teachers</small></div>
-                </div>
-                <div class="stat">
-                    <div class="left"><i class="fa fa-book-open" aria-hidden="true"></i><strong><%= stats.classes %></strong></div>
-                    <div class="right"><small>Classes</small></div>
-                </div>
+            <h1 class="section-heading mt-3">Inspiring excellence in education with a campus experience families trust.</h1>
+            <p class="section-copy mx-auto" style="max-width:720px;">A school experience focused on strong academics, character building, and all‑round development.</p>
+            <div class="mt-4">
+                <a class="btn btn-primary me-2" href="/auth/register">Enroll Now</a>
+                <a class="btn btn-outline-secondary" href="/admissions">Learn More</a>
             </div>
         </div>
     </section>
