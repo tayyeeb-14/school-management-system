@@ -78,7 +78,7 @@ input.form-control:focus, textarea.form-control:focus, select.form-select:focus{
 .table tbody tr td{background:linear-gradient(180deg,#fff,#fbfcfe);border-bottom:1px solid rgba(12,17,22,0.03);padding:14px;border-radius:8px;margin-bottom:10px}
 
 /* Utility: ensure no horizontal overflow for mobile */
-html,body{max-width:100%;overflow-x:hidden}
+html,body{max-width:100%;overflow-x:hidden;margin:0;padding:0}
 
 /* Small touch spacing helpers for forms/buttons */
 .touch-target{padding:12px 14px;border-radius:10px}
@@ -99,6 +99,8 @@ html,body{max-width:100%;overflow-x:hidden}
 
 html, body {
   height:100%;
+  margin:0;
+  padding:0;
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   color: #0f1724;
   background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
