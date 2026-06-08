@@ -48,30 +48,22 @@
 
         <!-- Main Content -->
         <div class="dashboard-main">
-            <!-- Top Navigation -->
-            <nav class="navbar navbar-expand navbar-light bg-white shadow-sm mb-4 dashboard-nav">
-                    <div class="container-fluid">
-                        <button class="btn btn-primary d-lg-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#dashboardSidebar" aria-controls="dashboardSidebar" aria-label="Open menu">
+            <!-- Top Navigation (single source of truth) -->
+            <%- include('../partials/navbar') %>
+
+            <!-- Dashboard page header: keeps the sidebar toggle and page title -->
+            <div class="container-fluid dashboard-page-header py-3">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-primary d-lg-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#dashboardSidebar" aria-controls="dashboardSidebar" aria-label="Open menu">
                         <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="d-flex align-items-center">
-                            <img src="/img/logo.png" alt="logo" style="height:34px; object-fit:contain; margin-right:12px;"/>
-                            <h4 class="mb-0"><%= title %></h4>
-                        </div>
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+                    </button>
+                    <h4 class="mb-0"> <%= title %> </h4>
+                    <div class="ms-auto d-none d-lg-flex align-items-center">
+                        <a href="/profile" class="btn btn-link">Profile</a>
+                        <a href="/auth/logout" class="btn btn-link ms-2">Logout</a>
+                    </div>
                 </div>
-            </nav>
+            </div>
 
             <!-- Page Content -->
             <div class="container-fluid pb-4">

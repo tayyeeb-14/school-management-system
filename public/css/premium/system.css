@@ -56,12 +56,8 @@
   .premium-navbar .mobile-toggle{display:inline-flex}
 }
 
-/* ===== Legacy navbar neutralization ===== */
-/* Hide old site-navbar markup to prevent duplicate nav rendering */
-.site-navbar{display:none !important}
-
-/* Hide legacy bootstrap hamburger in site-navbar contexts */
-.site-navbar .navbar-toggler{display:none !important}
+/* Legacy navbar neutralization removed: premium-navbar is single source now */
+/* Removed legacy .site-navbar hiding rules during final cleanup */
 
 
 /* Global card system */

@@ -51,12 +51,13 @@ body.home-page-active main.home-main {
 }
 
 .home-bleed {
-  width: 100vw;
+.home-bleed {
+  /* Use full width without vw to avoid viewport-width overflow on mobile */
+  width: 100%;
   position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  left: 0;
+  right: 0;
+  margin: 0;
 }
 
 .home-section {
@@ -407,24 +408,7 @@ body.home-page-active main.home-main {
   margin-bottom: 0.8rem;
 }
 
-.home-panel-head h2 {
-  margin: 0.35rem 0 0;
-  font-size: 1.45rem;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-}
-
-.home-panel-kicker {
-  display: inline-flex;
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: inherit;
-  opacity: 0.78;
-}
-
-.home-panel p {
+  /* Legacy navbar rules removed */
   margin: 0;
   line-height: 1.7;
   color: inherit;
@@ -1102,32 +1086,8 @@ body.home-page-active main.home-main {
   .home-hero-shell {
     padding-top: calc(var(--navbar-height, 60px) + 1.5rem);
     padding-bottom: 5rem;
-  }
 
-  .home-hero-title {
-    font-size: clamp(2.8rem, 15vw, 4rem);
-  }
-
-  .home-hero-text,
-  .section-copy,
-  .home-testimonial-quote,
-  .home-blog-body p {
-    font-size: 0.98rem;
-  }
-
-  .home-hero-actions,
-  .home-admission-actions,
-  .home-final-actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .home-btn {
-    width: 100%;
-  }
-
-  .home-proof-chips {
-    gap: 0.6rem;
+  /* Legacy navbar rules removed */
   }
 
   .home-proof-chip {
@@ -1206,30 +1166,7 @@ body.home-page-active main.home-main {
     max-width: 42rem;
     margin-bottom: 2.35rem;
   }
-
-  .site-navbar {
-    padding: 0;
-  }
-
-  .site-navbar .navbar-inner {
-    min-height: 64px;
-    padding: 0;
-    border-radius: 0;
-  }
-
-  .site-navbar .navbar-collapse-panel {
-    margin-top: 0;
-    padding: 0.3rem 0 0.8rem;
-    border-radius: 0;
-  }
-
-  .site-navbar .navbar-brand {
-    gap: 0.6rem;
-  }
-
-  .site-navbar .brand-text {
-    font-size: 0.98rem;
-  }
+  /* Legacy navbar rules removed */
 
   .home-hero-grid {
     gap: 1.6rem;
@@ -1295,39 +1232,7 @@ body.home-page-active main.home-main {
   .home-page {
     margin-top: 0;
   }
-
-  .site-navbar {
-    padding: 0;
-  }
-
-  .site-navbar .navbar-inner {
-    min-height: 62px;
-    padding: 0;
-  }
-
-  .site-navbar .brand-mark {
-    width: auto;
-    height: auto;
-    border-radius: 0;
-  }
-
-  .site-navbar .brand-text {
-    font-size: 0.95rem;
-  }
-
-  .site-navbar .mobile-nav-link {
-    min-height: 50px;
-    padding: 0.82rem 0 0.82rem 0.85rem;
-  }
-
-  .site-navbar .mobile-nav-link::before {
-    left: 0;
-  }
-
-  .site-navbar .mobile-menu-actions {
-    margin-top: 0.65rem;
-    padding-top: 0.75rem;
-  }
+  /* Legacy navbar rules removed */
 
   .home-section,
   .home-final-cta {
