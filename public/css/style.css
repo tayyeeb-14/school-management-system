@@ -5,10 +5,28 @@
     --brand-100: #eef2ff;
     --body-bg: #f8f9fa;
     --navbar-height: 70px;
+    /* Spacing scale */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-1: 0.75rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2rem;
+    --space-5: 3rem;
+    --space-6: 4rem;
+    /* Type scale */
+    --type-base: 16px;
+    --type-scale-ratio: 1.2;
+    --font-sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
-/* Use Inter as the primary font; Playfair Display for hero headline */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap');
+/* Design tokens: Manrope base, Cormorant for hero headings */
+
+html, body { font-family: var(--font-sans); font-size: var(--type-base); }
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }
 
 .program-card {
     background: #ffffff;
@@ -113,6 +131,18 @@
     box-shadow: 0 4px 8px rgba(0,0,0,.1);
 }
 
+/* Card system baseline */
+.card, .home-panel, .program-card, .home-program-card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Button system: map home-btn to Bootstrap-friendly look */
+.home-btn { font-weight: 800; letter-spacing: -0.01em; }
+.home-btn--primary { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-600) 100%); color: #fff; border: none; }
+.home-btn--secondary { background: #fff; color: var(--brand-600); border: 1px solid rgba(15,23,42,0.06); }
+
+
 /* Dashboard Stats */
 
 /* Teacher Shifts table refinements */
@@ -199,6 +229,24 @@
 footer {
     background-color: #0f172a;
     color: #cbd5e1;
+}
+
+/* Prevent horizontal overflow globally (guard against layout regressions) */
+html, body {
+    overflow-x: hidden;
+}
+
+/* Navbar responsive fixes to avoid collapse overflow and improve alignment */
+.navbar .navbar-brand img.navbar-logo { max-height: 38px; width: auto; }
+.navbar .brand-text { font-weight: 700; }
+
+/* Ensure collapse content can wrap on small viewports and CTAs stay readable */
+@media (max-width: 767.98px) {
+    .navbar .collapse { width: 100%; }
+    .navbar .collapse .navbar-nav { display: block; }
+    .navbar .collapse .navbar-nav .nav-item { display: block; }
+    .navbar .collapse .d-flex { width: 100%; justify-content: center; margin-top: 0.5rem; gap: 0.6rem; }
+    .navbar .collapse .home-btn { min-width: 44%; }
 }
 
 footer a {
@@ -297,6 +345,63 @@ footer a:hover { color: var(--brand) !important; }
     height: 3rem;
     color: var(--brand);
 }
+
+/* Navbar sticky and scrolled state */
+.navbar.scrolled {
+    transition: background-color 220ms ease, box-shadow 220ms ease;
+    background-color: #ffffff !important;
+    box-shadow: 0 6px 24px rgba(6,14,26,0.08);
+}
+
+.navbar .navbar-logo { height: 34px; width: auto; }
+.navbar .brand-text { font-weight:700; color: var(--brand-600); }
+.navbar.sticky-top { z-index: 1040; }
+
+/* Navbar spacing refinement */
+.navbar { padding-top: 0.7rem; padding-bottom: 0.7rem; }
+.navbar .nav-link { padding: 0.55rem 0.6rem; font-weight:600; color: rgba(15,23,42,0.75); }
+.navbar .btn { padding: 0.45rem 0.9rem; border-radius: 10px; }
+
+/* Make navbar content wrap on narrower breakpoints to avoid horizontal overflow */
+.navbar .navbar-collapse {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+}
+.navbar .navbar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+}
+.navbar .navbar-nav .nav-item { white-space: nowrap; }
+.navbar .d-flex.align-items-center { flex-shrink: 0; }
+
+@media (max-width: 991.98px) {
+    /* ensure buttons tuck below nav links on smaller screens */
+    .navbar .navbar-collapse { gap: 0.6rem; }
+    .navbar .d-flex.align-items-center { margin-left: 0.5rem; }
+}
+
+/* Force navbar expand breakpoint at lg (simulate navbar-expand-lg regardless of HTML classes)
+     This keeps the hamburger/collapse behaviour consistent even if the template contains
+     a different expand class. Also hide duplicate brand text and ensure collapse wraps. */
+@media (min-width: 992px) {
+    .navbar .navbar-collapse { display: flex !important; flex-basis: auto; align-items: center; justify-content: space-between; }
+    .navbar .navbar-toggler { display: none !important; }
+    .navbar .brand-text { display: none !important; }
+}
+
+@media (max-width: 991.98px) {
+    .navbar .navbar-collapse { display: none !important; width: 100%; }
+    .navbar .navbar-collapse.show { display: block !important; }
+    .navbar .navbar-toggler { display: block !important; }
+    .navbar .navbar-nav { display: flex; flex-direction: column; gap: 0.25rem 0; }
+    .navbar .d-flex.align-items-center { width: 100%; justify-content: center; margin-top: 0.5rem; gap: 0.6rem; }
+    .navbar .navbar-brand .navbar-logo { max-height: 36px; }
+}
+
+/* Hide brand text by default to avoid duplicate visible brand when logo contains text */
+.navbar .brand-text { display: none; }
 
 /* Home gallery and info styles */
 .home-gallery .gallery-item {

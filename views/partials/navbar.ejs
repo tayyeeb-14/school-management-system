@@ -1,9 +1,9 @@
-<!-- Legacy Bootstrap navbar — reset to single source baseline -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light" role="banner">
+<!-- Premium navbar: responsive, sticky, single source -->
+<nav class="navbar navbar-expand-md navbar-light bg-light sticky-top" role="banner" aria-label="Primary">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/img/logo-horizontal.svg" alt="MySchool" height="34" class="me-2">
-      <span class="brand-text">MySchool Portal</span>
+      <img src="/img/logo-horizontal.svg" alt="MySchool" height="34" class="me-2 navbar-logo">
+      <span class="brand-text d-none d-md-inline">MySchool Portal</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -18,10 +18,10 @@
       </ul>
       <div class="d-flex align-items-center">
         <% if (!user) { %>
-            <a class="btn btn-outline-primary me-2" href="/auth/login">Login</a>
-            <a class="btn btn-primary" href="/auth/register">Register</a>
+            <a class="home-btn home-btn--secondary me-2" href="/auth/login">Login</a>
+            <a class="home-btn home-btn--primary" href="/auth/register">Register</a>
         <% } else { %>
-            <a class="btn btn-outline-secondary" href="/profile">Profile</a>
+            <a class="home-btn home-btn--secondary" href="/profile">Profile</a>
         <% } %>
       </div>
     </div>

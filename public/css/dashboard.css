@@ -283,8 +283,10 @@ body {
 }
 
 /* Sidebar Styles */
+:root { --dashboard-sidebar-width: 280px; }
+
 .dashboard-sidebar {
-    width: 280px;
+    width: var(--dashboard-sidebar-width);
     background-color: #ffffff;
     border-right: 1px solid #dee2e6;
     position: fixed;
@@ -299,7 +301,7 @@ body {
 /* Main Content Area */
 .dashboard-main {
     flex: 1;
-    margin-left: 280px;
+    margin-left: var(--dashboard-sidebar-width);
     min-height: 100vh;
     background-color: #f8f9fa;
     position: relative;
@@ -806,4 +808,22 @@ body {
 
 .card-loading {
     animation: cardPulse 1.5s infinite;
+}
+
+/* Prevent horizontal overflow on tablet sizes between lg and xl */
+@media (max-width: 1199.98px) {
+    .dashboard-main {
+        margin-left: 0;
+        width: 100%;
+    }
+    /* Keep sidebar as offcanvas; ensure it doesn't push layout */
+    .dashboard-sidebar {
+        position: fixed;
+        transform: translateX(-100%);
+    }
+    .offcanvas-lg.offcanvas-start.show.dashboard-sidebar {
+        transform: translateX(0);
+    }
+    /* Avoid accidental horizontal scroll on dashboard pages */
+    .dashboard-body { overflow-x: hidden; }
 }

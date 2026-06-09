@@ -144,13 +144,31 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 
 <div class="home-page">
     <section class="home-hero home-bleed" aria-label="Homepage hero">
+        <div class="home-hero-bg" aria-hidden="true">
+            <img src="/img/hero-premium.png" alt="School campus and students" class="home-hero-bg-image">
+            <div class="home-hero-overlay"></div>
+        </div>
         <div class="container home-hero-shell text-center py-5">
-            <span class="eyebrow">Modern learning, strong values, and confident futures</span>
-            <h1 class="section-heading mt-3">Inspiring excellence in education with a campus experience families trust.</h1>
-            <p class="section-copy mx-auto" style="max-width:720px;">A school experience focused on strong academics, character building, and all‑round development.</p>
-            <div class="mt-4">
-                <a class="btn btn-primary me-2" href="/auth/register">Enroll Now</a>
-                <a class="btn btn-outline-secondary" href="/admissions">Learn More</a>
+            <div class="home-hero-grid">
+                <div class="home-hero-copy">
+                    <span class="section-eyebrow">Modern learning, strong values, and confident futures</span>
+                    <h1 class="home-hero-title mt-3">Inspiring excellence in education with a campus experience families trust.</h1>
+                    <p class="home-hero-text mx-auto">A school experience focused on strong academics, character building, and all‑round development.</p>
+                    <div class="home-hero-actions mt-4">
+                        <a class="home-btn home-btn--primary" href="/auth/register">Enroll Now</a>
+                        <a class="home-btn home-btn--secondary" href="/admissions">Learn More</a>
+                    </div>
+                </div>
+                <div class="home-hero-stack">
+                    <div class="home-panel home-panel--glass">
+                        <h5 class="mb-1">Open House & Admissions</h5>
+                        <p class="mb-0">Schedule a campus visit or submit an enquiry to our admissions team.</p>
+                    </div>
+                    <div class="home-panel home-panel--glass">
+                        <h5 class="mb-1">News & Notices</h5>
+                        <p class="mb-0">Latest updates for parents, students and staff.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

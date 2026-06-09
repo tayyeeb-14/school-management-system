@@ -34,6 +34,37 @@ const puppeteer = require('puppeteer');
 
     const report = [];
 
+    // Attempt admin login to capture dashboard tables where possible
+    let loggedIn = false;
+    const adminUser = process.env.UI_ADMIN_USER || 'admin';
+    const adminPass = process.env.UI_ADMIN_PASS || 'admin';
+    try {
+      await page.setViewport({ width: 1366, height: 768 });
+      await page.goto('http://localhost:3000/auth/login', { waitUntil: 'networkidle2' });
+      const selectors = [
+        { user: 'input[name=username]', pass: 'input[name=password]', submit: 'button[type=submit]'},
+        { user: '#username', pass: '#password', submit: 'button[type=submit]'},
+        { user: 'input[name=email]', pass: 'input[name=password]', submit: 'button[type=submit]'}
+      ];
+      for (const s of selectors) {
+        try {
+          await page.waitForSelector(s.user, { timeout: 1500 });
+          await page.evaluate((u, p, su) => {
+            document.querySelector(u).value = '';
+            document.querySelector(p).value = '';
+          }, s.user, s.pass);
+          await page.type(s.user, adminUser, { delay: 50 });
+          await page.type(s.pass, adminPass, { delay: 50 });
+          await Promise.all([
+            page.click(s.submit),
+            page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 4000 }).catch(() => {})
+          ]);
+          if (!page.url().includes('/auth/login')) { loggedIn = true; break; }
+        } catch (e) {}
+      }
+      if (loggedIn) console.log('QA: admin login successful'); else console.log('QA: admin login not completed');
+    } catch (e) { console.warn('QA: login attempt error', e); }
+
     for (const p of pages) {
       for (const vp of viewports) {
         await page.setViewport({ width: vp.w, height: vp.h, isMobile: !!vp.mobile });
@@ -41,7 +72,7 @@ const puppeteer = require('puppeteer');
         await page.goto(url, { waitUntil: 'networkidle2' });
 
         // brief pause for dynamic layout
-        await page.waitForTimeout(300);
+        await new Promise(res => setTimeout(res, 300));
 
         // checks
         const checks = await page.evaluate(() => {
