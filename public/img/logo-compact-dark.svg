@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Compact icon dark background variant -->
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="MySchool compact logo dark">
-  <rect x="0" y="0" width="64" height="64" fill="#071739" rx="8"/>
-  <path d="M32 8 L50 18 V34 C50 46 40 54 32 56 C24 54 14 46 14 34 V18 Z" fill="#0b3856"/>
-  <path d="M20 26 L28 20 L36 26 L44 20 L44 40 L20 40 Z" fill="#F0D08A"/>
-  <path d="M28 20 L28 38 L36 38 L36 26" fill="#071739"/>
-</svg>

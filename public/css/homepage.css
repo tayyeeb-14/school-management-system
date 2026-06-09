@@ -1,0 +1,159 @@
+/* New homepage.css - Mobile first premium school homepage
+   Color system and tokens per user spec
+*/
+:root{
+  --color-primary:#0B1F3A;
+  --color-secondary:#1D4ED8;
+  --color-accent:#F59E0B;
+  --color-bg:#FFFFFF;
+  --color-section:#F8FAFC;
+  --color-text:#0F172A;
+
+  --radius-lg:16px;
+  --radius-md:10px;
+  --shadow-sm:0 6px 18px rgba(11,23,42,0.06);
+  --shadow-md:0 18px 48px rgba(11,23,42,0.10);
+
+  --space-1:0.5rem;
+  --space-2:1rem;
+  --space-3:1.5rem;
+  --space-4:2.25rem;
+  --space-5:3rem;
+
+  --nav-height:64px;
+}
+
+/* Compatibility mapping for the rebuilt homepage (ph- prefix)
+  This maps the new `ph-` class names in `views/index.ejs` to the
+  styles defined below so the homepage renders correctly without
+  changing backend routes or templates.
+*/
+.home-page .ph-nav{position:sticky;top:0;z-index:1100;height:var(--nav-height);display:flex;align-items:center;background:transparent;padding:0.45rem 1rem;transition:background 220ms ease,box-shadow 220ms ease}
+.home-page .ph-nav.scrolled{background:rgba(255,255,255,0.98);box-shadow:var(--shadow-sm)}
+.home-page .ph-brand{display:flex;align-items:center}
+.home-page .ph-links{display:none}
+.home-page .ph-actions{margin-left:auto;display:flex;gap:0.5rem;align-items:center}
+.home-page .ph-hamburger{background:transparent;border:none;font-size:1.2rem}
+
+/* Hero mapping */
+.home-page .ph-hero{background:linear-gradient(180deg, var(--color-section), var(--color-bg));padding:calc(var(--nav-height) + 0.75rem) 0 1.2rem}
+.home-page .ph-hero-inner{display:grid;grid-template-columns:1fr;gap:1rem;align-items:center;max-width:1200px;margin:0 auto;padding:0 1rem}
+.home-page .ph-badge{display:inline-block;background:rgba(13,30,60,0.06);color:var(--color-primary);font-weight:700;padding:0.3rem 0.65rem;border-radius:999px;font-size:0.82rem}
+.home-page .ph-hero-copy h1{font-family:Inter, system-ui; font-weight:800;font-size:1.5rem;line-height:1.05;color:var(--color-primary);margin:0;margin-top:0.4rem}
+.home-page .ph-lead{color:rgba(15,23,42,0.82);margin-top:0.6rem;font-size:0.98rem}
+.home-page .ph-ctas{display:flex;gap:0.6rem;margin-top:0.9rem}
+.home-page .ph-hero-art{width:100%;height:220px;border-radius:12px;overflow:hidden}
+
+/* Trust grid mapping */
+.home-page .ph-trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin:1rem 0 0}
+.home-page .ph-trust-card{background:#fff;border-radius:12px;padding:0.9rem;display:flex;flex-direction:column;align-items:flex-start;box-shadow:var(--shadow-sm)}
+
+/* Cards / grids mapping */
+.home-page .ph-why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem}
+.home-page .ph-card{background:var(--color-bg);border-radius:12px;padding:1rem;box-shadow:var(--shadow-sm);display:flex;gap:0.8rem;align-items:flex-start}
+.home-page .ph-program-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem}
+.home-page .ph-gallery{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.home-page .ph-steps-list{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;padding:1rem 0}
+.home-page .ph-test-slider{padding:1.6rem 0}
+.home-page .ph-test-track{display:flex;gap:0.9rem;transition:transform 420ms ease}
+.home-page .ph-test-card{min-width:260px;background:#fff;padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm)}
+.home-page .ph-news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem}
+
+/* Offcanvas (mobile menu) hidden by default */
+.home-page .ph-offcanvas{position:fixed;inset:0;display:none;background:rgba(11,23,42,0.6);z-index:1200}
+.home-page .ph-offcanvas.open{display:block}
+.home-page .ph-offcanvas-inner{background:#fff;max-width:320px;height:100%;padding:1rem}
+
+/* Hide global layout navbar when homepage is active (body will get the class via homepage.js)
+  This prevents two navigation systems showing simultaneously.
+*/
+body.home-page .navbar{display:none !important}
+
+/* Base */
+html,body{height:100%;margin:0;background:var(--color-bg);color:var(--color-text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+.container-wide{max-width:1200px;margin:0 auto;padding:0 1rem}
+
+/* NAVBAR (styles limited to homepage via body.home-page class) */
+body.home-page .navbar{position:sticky;top:0;z-index:1100;height:var(--nav-height);display:flex;align-items:center;background:transparent;padding:0.45rem 1rem;transition:background 220ms ease,box-shadow 220ms ease}
+body.home-page .navbar.scrolled{background:rgba(255,255,255,0.98);box-shadow:var(--shadow-sm)}
+body.home-page .navbar .navbar-brand img{height:42px}
+body.home-page .nav-link{padding:0.4rem 0.6rem;font-weight:600;color:var(--color-primary)}
+body.home-page .nav-actions .btn{border-radius:10px;padding:0.5rem 0.9rem;font-weight:700}
+body.home-page .btn-ghost{background:transparent;border:1px solid rgba(11,23,42,0.06);color:var(--color-primary)}
+body.home-page .btn-primary{background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));color:#fff;border:none;box-shadow:var(--shadow-md)}
+
+/* HERO */
+.hero{background:linear-gradient(180deg, var(--color-section), var(--color-bg));padding:calc(var(--nav-height) + 0.75rem) 0 1.2rem}
+.hero-inner{display:grid;grid-template-columns:1fr;gap:1rem;align-items:center;max-width:1200px;margin:0 auto;padding:0 1rem}
+.hero-badge{display:inline-block;background:rgba(13,30,60,0.06);color:var(--color-primary);font-weight:700;padding:0.3rem 0.65rem;border-radius:999px;font-size:0.82rem}
+.hero-title{font-family:Inter, system-ui; font-weight:800;font-size:1.5rem;line-height:1.05;color:var(--color-primary);margin:0;margin-top:0.4rem}
+.hero-copy{color:rgba(15,23,42,0.82);margin-top:0.6rem;font-size:0.98rem}
+.hero-ctas{display:flex;gap:0.6rem;margin-top:0.9rem}
+.hero-visual{width:100%;height:220px;border-radius:12px;background:linear-gradient(135deg,var(--color-secondary),var(--color-primary));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-md)}
+
+/* Trust metrics (near hero) */
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin:1rem 0 0}
+.metric-card{background:#fff;border-radius:12px;padding:0.9rem;display:flex;flex-direction:column;align-items:flex-start;box-shadow:var(--shadow-sm)}
+.metric-value{font-weight:800;color:var(--color-primary);font-size:1.25rem}
+.metric-label{font-size:0.78rem;color:rgba(15,23,42,0.6);text-transform:uppercase;margin-top:0.25rem}
+
+/* WHY CHOOSE US */
+.why{padding:1.8rem 0}
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem}
+.why-card{background:var(--color-bg);border-radius:12px;padding:1rem;box-shadow:var(--shadow-sm);display:flex;gap:0.8rem;align-items:flex-start}
+.why-icon{width:48px;height:48px;border-radius:8px;background:linear-gradient(90deg,var(--color-secondary),var(--color-primary));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.why-title{font-weight:700;margin:0}
+.why-copy{margin:0;font-size:0.95rem;color:rgba(15,23,42,0.75)}
+
+/* PROGRAMS */
+.programs{padding:1.2rem 0}
+.program-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem}
+.program-card{background:#fff;border-radius:12px;padding:1rem;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:0.6rem}
+.program-cta{margin-top:auto;align-self:flex-start}
+
+/* CAMPUS LIFE gallery */
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.gallery-item{height:140px;border-radius:12px;background:linear-gradient(135deg,rgba(13,30,60,0.08),rgba(245,158,11,0.08));overflow:hidden;display:flex;align-items:end;justify-content:start;padding:0.6rem;color:var(--color-primary);font-weight:700}
+
+/* ADMISSION PROCESS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;padding:1rem 0}
+.step{background:#fff;padding:0.8rem;border-radius:10px;box-shadow:var(--shadow-sm);text-align:center}
+.step-number{background:var(--color-primary);color:#fff;width:36px;height:36px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+/* TESTIMONIALS */
+.testimonials{padding:1.6rem 0}
+.test-slider{position:relative;overflow:hidden}
+.test-list{display:flex;gap:0.9rem;transition:transform 420ms ease}
+.test-card{min-width:260px;background:#fff;padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm)}
+.avatar{width:48px;height:48px;border-radius:999px;background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+
+/* NEWS */
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem}
+.news-card{background:#fff;padding:1rem;border-radius:12px;box-shadow:var(--shadow-sm)}
+
+/* FINAL CTA & FOOTER */
+.final-cta{background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));color:#fff;padding:1.6rem;border-radius:12px;margin-top:1rem}
+.footer{background:#071524;color:#cbd5e1;padding:2rem;margin-top:1.6rem}
+.footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.footer a{color:inherit;text-decoration:none}
+
+/* Responsive: Tablet and Desktop */
+@media(min-width:768px){
+  .hero-inner{grid-template-columns:1fr 420px;align-items:center;gap:2rem}
+  .hero-visual{height:320px}
+  .trust-grid{grid-template-columns:repeat(4,1fr);}
+  .why-grid{grid-template-columns:repeat(3,1fr)}
+  .program-grid{grid-template-columns:repeat(4,1fr)}
+  .gallery{grid-template-columns:2fr 1fr}
+  .news-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(min-width:1200px){
+  .container-wide{max-width:1240px}
+  .hero-title{font-size:2.4rem}
+  .hero-copy{font-size:1.05rem}
+}
+
+/* Accessibility helpers */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

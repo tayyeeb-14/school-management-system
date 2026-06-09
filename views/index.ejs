@@ -143,267 +143,173 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 %>
 
 <div class="home-page">
-    <section class="home-hero home-bleed" aria-label="Homepage hero">
-        <div class="home-hero-bg" aria-hidden="true">
-            <img src="/img/hero-premium.png" alt="School campus and students" class="home-hero-bg-image">
-            <div class="home-hero-overlay"></div>
+  <!-- New premium homepage (completely rebuilt) -->
+  <link rel="stylesheet" href="/css/homepage.css">
+
+  <header class="ph-nav" role="navigation" aria-label="Primary">
+    <div class="container-wide ph-nav-inner">
+      <a href="/" class="ph-brand" aria-label="School homepage">
+        <svg width="140" height="28" viewBox="0 0 140 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="140" height="28" rx="6" fill="#0B1F3A"></rect>
+          <text x="18" y="19" fill="#F59E0B" font-family="Poppins,Inter, sans-serif" font-weight="700" font-size="12">International School</text>
+        </svg>
+      </a>
+
+      <nav class="ph-links" aria-label="Main menu">
+        <a class="ph-link" href="/">Home</a>
+        <a class="ph-link" href="/about">About</a>
+        <a class="ph-link" href="/admissions">Admissions</a>
+        <a class="ph-link" href="/academics">Academics</a>
+        <a class="ph-link" href="/student-life">Student Life</a>
+        <a class="ph-link" href="/blog">Blog</a>
+        <a class="ph-link" href="/contact">Contact</a>
+      </nav>
+
+      <div class="ph-actions">
+        <a href="/auth/login" class="btn btn-ghost">Login</a>
+        <a href="/auth/register" class="btn btn-primary">Register</a>
+        <button class="ph-hamburger" aria-label="Open menu" aria-controls="ph-offcanvas" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="ph-offcanvas" class="ph-offcanvas" aria-hidden="true">
+    <div class="ph-offcanvas-inner">
+      <button class="ph-offcanvas-close" aria-label="Close menu">✕</button>
+      <nav class="ph-offcanvas-nav">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/admissions">Admissions</a>
+        <a href="/academics">Academics</a>
+        <a href="/student-life">Student Life</a>
+        <a href="/blog">Blog</a>
+        <a href="/contact">Contact</a>
+        <div style="margin-top:1rem"><a class="btn btn-primary" href="/auth/register">Register</a></div>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="ph-hero" aria-labelledby="ph-hero-heading">
+      <div class="container-wide ph-hero-inner">
+        <div class="ph-hero-copy">
+          <div class="ph-badge">Admissions Open 2026</div>
+          <h1 id="ph-hero-heading">Inspiring Excellence. Building Future Leaders.</h1>
+          <p class="ph-lead">A modern international curriculum, exceptional faculty, and a campus that nurtures curiosity and character.</p>
+          <div class="ph-ctas">
+            <a class="btn btn-primary" href="/auth/register">Apply Now</a>
+            <a class="btn btn-ghost" href="/contact">Book Campus Visit</a>
+          </div>
         </div>
-        <div class="container home-hero-shell text-center py-5">
-            <div class="home-hero-grid">
-                <div class="home-hero-copy">
-                    <span class="section-eyebrow">Modern learning, strong values, and confident futures</span>
-                    <h1 class="home-hero-title mt-3">Inspiring excellence in education with a campus experience families trust.</h1>
-                    <p class="home-hero-text mx-auto">A school experience focused on strong academics, character building, and all‑round development.</p>
-                    <div class="home-hero-actions mt-4">
-                        <a class="home-btn home-btn--primary" href="/auth/register">Enroll Now</a>
-                        <a class="home-btn home-btn--secondary" href="/admissions">Learn More</a>
-                    </div>
-                </div>
-                <div class="home-hero-stack">
-                    <div class="home-panel home-panel--glass">
-                        <h5 class="mb-1">Open House & Admissions</h5>
-                        <p class="mb-0">Schedule a campus visit or submit an enquiry to our admissions team.</p>
-                    </div>
-                    <div class="home-panel home-panel--glass">
-                        <h5 class="mb-1">News & Notices</h5>
-                        <p class="mb-0">Latest updates for parents, students and staff.</p>
-                    </div>
-                </div>
-            </div>
+
+        <div class="ph-hero-art" aria-hidden="true">
+          <img src="/img/svg/campus-illustration.svg" alt="Campus illustration">
         </div>
+      </div>
+
+      <div class="container-wide ph-trust">
+        <div class="ph-trust-grid">
+          <div class="ph-trust-card"><strong>1200+</strong><span>Students</span></div>
+          <div class="ph-trust-card"><strong>85+</strong><span>Teachers</span></div>
+          <div class="ph-trust-card"><strong>45+</strong><span>Classes</span></div>
+          <div class="ph-trust-card"><strong>25+</strong><span>Activities</span></div>
+        </div>
+      </div>
     </section>
 
-    <section class="home-metrics home-bleed" aria-label="School metrics">
-        <div class="container">
-            <div class="home-metric-grid">
-                <% trustMetrics.forEach((metric, index) => { %>
-                    <article class="home-metric-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
-                        <div class="home-metric-value">
-                            <span class="home-counter" data-counter="<%= metric.value %>">0</span><span><%= metric.suffix %></span>
-                        </div>
-                        <h3><%= metric.label %></h3>
-                        <p><%= metric.copy %></p>
-                    </article>
-                <% }); %>
-            </div>
+    <section class="ph-why" aria-labelledby="ph-why-heading">
+      <div class="container-wide">
+        <h2 id="ph-why-heading">Why Choose Us</h2>
+        <div class="ph-why-grid">
+          <article class="ph-card"><img src="/img/svg/icon-faculty.svg" alt="Faculty icon"><h3>Experienced Faculty</h3><p>Dedicated educators focused on personalised growth.</p></article>
+          <article class="ph-card"><img src="/img/svg/icon-classroom.svg" alt="Classroom icon"><h3>Smart Classrooms</h3><p>Technology-led learning environments that engage students.</p></article>
+          <article class="ph-card"><img src="/img/svg/icon-safety.svg" alt="Safety icon"><h3>Safe Campus</h3><p>Secure, caring spaces that nurture wellbeing.</p></article>
+          <article class="ph-card"><img src="/img/svg/icon-sports.svg" alt="Sports icon"><h3>Sports Excellence</h3><p>Comprehensive physical education and competitive teams.</p></article>
+          <article class="ph-card"><img src="/img/svg/icon-arts.svg" alt="Arts icon"><h3>Arts & Creativity</h3><p>Structured programs to build creativity and expression.</p></article>
+          <article class="ph-card"><img src="/img/svg/icon-future.svg" alt="Future icon"><h3>Future Ready</h3><p>Skills-focused learning to prepare for modern careers.</p></article>
         </div>
+      </div>
     </section>
 
-    <section id="programs" class="home-section home-section--soft home-bleed">
-        <div class="container">
-            <div class="home-section-head">
-                <span class="section-eyebrow">Academic pathways</span>
-                <h2 class="section-heading">Comprehensive programmes designed for every stage of the student journey.</h2>
-                <p class="section-copy">
-                    From foundational learning to advanced subject preparation, each programme is structured to build
-                    confidence, curiosity, and long-term success.
-                </p>
-            </div>
-
-            <div class="home-program-grid">
-                <% programCards.forEach((program, index) => { %>
-                    <article class="home-program-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
-                        <div class="home-program-icon">
-                            <i class="fas <%= program.icon %>"></i>
-                        </div>
-                        <div class="home-program-detail"><%= program.detail %></div>
-                        <h3><%= program.title %></h3>
-                        <p><%= program.copy %></p>
-                    </article>
-                <% }); %>
-            </div>
+    <section class="ph-programs" aria-labelledby="ph-programs-heading">
+      <div class="container-wide">
+        <h2 id="ph-programs-heading">Academic Programs</h2>
+        <div class="ph-program-grid">
+          <article class="ph-program"><h3>Primary School</h3><p>Foundations in literacy, numeracy and curiosity.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
+          <article class="ph-program"><h3>Middle School</h3><p>Exploratory learning and structured growth.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
+          <article class="ph-program"><h3>Secondary School</h3><p>Subject depth and critical thinking development.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
+          <article class="ph-program"><h3>Senior Secondary</h3><p>Stream-focused mentoring and college readiness.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
         </div>
+      </div>
     </section>
 
-    <section class="home-admission-band home-bleed" aria-label="Admission call to action">
-        <div class="container">
-            <div class="home-admission-card home-reveal">
-                <div>
-                    <span class="section-eyebrow section-eyebrow--light">Admissions open</span>
-                    <h2>Ready to give your child a confident, future-ready school experience?</h2>
-                    <p>Connect with our team to understand programmes, campus culture, and the admissions process.</p>
-                </div>
-                <div class="home-admission-actions">
-                    <a href="/auth/register" class="home-btn home-btn--light">Apply now</a>
-                    <a href="/contact" class="home-btn home-btn--ghost-light">Speak to admissions</a>
-                </div>
-            </div>
+    <section class="ph-campus" aria-labelledby="ph-campus-heading">
+      <div class="container-wide">
+        <h2 id="ph-campus-heading">Campus Experience</h2>
+        <div class="ph-gallery">
+          <div class="ph-gallery-item"><img src="/img/svg/gallery-1.svg" alt="Lab"></div>
+          <div class="ph-gallery-item"><img src="/img/svg/gallery-2.svg" alt="Library"></div>
+          <div class="ph-gallery-item"><img src="/img/svg/gallery-3.svg" alt="Sports"></div>
+          <div class="ph-gallery-item"><img src="/img/svg/gallery-4.svg" alt="Events"></div>
         </div>
+      </div>
     </section>
 
-    <section class="home-section home-bleed">
-        <div class="container">
-            <div class="home-story-grid">
-                <div class="home-story-copy">
-                    <span class="section-eyebrow">Why choose our school</span>
-                    <h2 class="section-heading">A school environment that balances academic ambition with care, structure, and opportunity.</h2>
-                    <p class="section-copy section-copy--left">
-                        Families look for more than marks alone. They want strong teaching, safe systems, inspiring
-                        spaces, and a campus culture that helps children grow with confidence.
-                    </p>
-
-                    <div class="home-highlight-grid">
-                        <% schoolHighlights.forEach((item, index) => { %>
-                            <article class="home-highlight-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
-                                <div class="home-highlight-icon">
-                                    <i class="fas <%= item.icon %>"></i>
-                                </div>
-                                <div>
-                                    <h3><%= item.title %></h3>
-                                    <p><%= item.copy %></p>
-                                </div>
-                            </article>
-                        <% }); %>
-                    </div>
-                </div>
-
-                <div class="home-media-collage home-reveal" style="--delay: 0.18s;">
-                    <figure class="home-media-card home-media-card--tall">
-                        <img src="/img/1.jpg" alt="Learning environment inside the school">
-                        <figcaption>Focused classrooms with a student-first learning atmosphere.</figcaption>
-                    </figure>
-                    <figure class="home-media-card">
-                        <img src="/img/3.jpg" alt="Safe campus setting">
-                        <figcaption>Safe, welcoming, and well-managed campus spaces.</figcaption>
-                    </figure>
-                    <figure class="home-media-card">
-                        <img src="/img/4.jpg" alt="Students developing through activities">
-                        <figcaption>Co-curricular experiences that build confidence and leadership.</figcaption>
-                    </figure>
-                </div>
-            </div>
-        </div>
+    <section class="ph-steps" aria-labelledby="ph-steps-heading">
+      <div class="container-wide">
+        <h2 id="ph-steps-heading">Admission Process</h2>
+        <ol class="ph-steps-list">
+          <li><strong>1</strong><span>Submit Application</span></li>
+          <li><strong>2</strong><span>Document Verification</span></li>
+          <li><strong>3</strong><span>Interaction</span></li>
+          <li><strong>4</strong><span>Admission Confirmation</span></li>
+        </ol>
+      </div>
     </section>
 
-    <section class="home-section home-section--navy home-bleed">
-        <div class="container">
-            <div class="home-section-head home-section-head--light">
-                <span class="section-eyebrow section-eyebrow--light">Operational confidence</span>
-                <h2 class="section-heading section-heading--light">Built for modern school communities that value communication, clarity, and consistency.</h2>
-                <p class="section-copy section-copy--light">
-                    These advantages make the experience smoother for administrators, teachers, students, and parents.
-                </p>
-            </div>
-
-            <div class="home-benefit-grid">
-                <% platformBenefits.forEach((benefit, index) => { %>
-                    <article class="home-benefit-card home-reveal" style="--delay: <%= 0.06 * (index + 1) %>s;">
-                        <div class="home-benefit-icon">
-                            <i class="fas <%= benefit.icon %>"></i>
-                        </div>
-                        <h3><%= benefit.title %></h3>
-                        <p><%= benefit.copy %></p>
-                    </article>
-                <% }); %>
-            </div>
+    <section class="ph-testimonials" aria-labelledby="ph-testimonials-heading">
+      <div class="container-wide">
+        <h2 id="ph-testimonials-heading">Testimonials</h2>
+        <div class="ph-test-slider" id="ph-test-slider">
+          <div class="ph-test-track">
+            <blockquote class="ph-test-card"><p>"Excellent communication and a caring faculty."</p><footer>— Dr Rajesh Kumar, Principal</footer></blockquote>
+            <blockquote class="ph-test-card"><p>"My child thrived creatively and academically."</p><footer>— Ms Priya Sharma, Teacher</footer></blockquote>
+            <blockquote class="ph-test-card"><p>"Transparent updates and easy admissions."</p><footer>— Amit Patel, Parent</footer></blockquote>
+          </div>
         </div>
+      </div>
     </section>
 
-    <section class="home-section home-section--soft home-bleed">
-        <div class="container">
-            <div class="home-section-head">
-                <span class="section-eyebrow">Success stories</span>
-                <h2 class="section-heading">Trusted by administrators, teachers, and parents who value a better school experience.</h2>
-                <p class="section-copy">
-                    Real feedback from school communities who have seen the difference better communication and better systems can make.
-                </p>
-            </div>
-
-            <div class="home-testimonial-grid">
-                <% successStories.forEach((story, index) => { %>
-                    <article class="home-testimonial-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
-                        <div class="home-stars" aria-hidden="true">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <p class="home-testimonial-quote">"<%= story.quote %>"</p>
-                        <div class="home-testimonial-meta">
-                            <div class="home-avatar"><%= story.initials %></div>
-                            <div>
-                                <strong><%= story.name %></strong>
-                                <span><%= story.role %></span>
-                            </div>
-                        </div>
-                    </article>
-                <% }); %>
-            </div>
+    <section class="ph-news" aria-labelledby="ph-news-heading">
+      <div class="container-wide">
+        <h2 id="ph-news-heading">Latest News</h2>
+        <div class="ph-news-grid">
+          <article class="ph-news-card"><img src="/img/svg/news-1.svg" alt=""><h3>School reopens for new session</h3><p>Important dates and updates for parents.</p></article>
+          <article class="ph-news-card"><img src="/img/svg/news-2.svg" alt=""><h3>Sports day highlights</h3><p>Celebrating student achievements.</p></article>
+          <article class="ph-news-card"><img src="/img/svg/news-3.svg" alt=""><h3>Library expansion</h3><p>New resources to support deep learning.</p></article>
         </div>
+      </div>
     </section>
 
-    <section class="home-section home-bleed">
-        <div class="container">
-            <div class="home-section-head">
-                <span class="section-eyebrow">Insights and resources</span>
-                <h2 class="section-heading">Latest updates, stories, and ideas from the school community.</h2>
-                <p class="section-copy">
-                    Keep parents and visitors engaged with helpful articles, campus updates, and timely resources.
-                </p>
-            </div>
-
-            <% if (featuredBlogs.length) { %>
-                <div class="home-blog-grid">
-                    <% featuredBlogs.forEach((blog, index) => { %>
-                        <article class="home-blog-card home-reveal" style="--delay: <%= 0.08 * (index + 1) %>s;">
-                            <div class="home-blog-media">
-                                <% if (blog.image) { %>
-                                    <img src="/uploads/images/<%= blog.image %>" alt="<%= blog.title %>">
-                                <% } else { %>
-                                    <div class="home-blog-placeholder">
-                                        <span>School insights</span>
-                                    </div>
-                                <% } %>
-                            </div>
-                            <div class="home-blog-body">
-                                <div class="home-blog-meta">
-                                    <span><i class="fas fa-user"></i> <%= blog.author && blog.author.name ? blog.author.name : 'School Team' %></span>
-                                    <span><i class="fas fa-calendar"></i> <%= moment(blog.createdAt || blog.date).format('MMM D, YYYY') %></span>
-                                </div>
-                                <h3><%= blog.title %></h3>
-                                <p><%= blog.content.substring(0, 130) %>...</p>
-                                <a href="/blog/<%= blog._id %>" class="home-inline-link">
-                                    Read article
-                                    <i class="fas fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        </article>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <div class="home-empty-panel home-reveal">
-                    <strong>No articles published yet.</strong>
-                    <p>As blog posts are added, this section will become a polished content hub for families and visitors.</p>
-                    <a href="/blog" class="home-inline-link">
-                        Visit the blog
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            <% } %>
-
-            <div class="home-blog-actions">
-                <a href="/blog" class="home-btn home-btn--secondary">View all articles</a>
-            </div>
+    <section class="ph-final" aria-labelledby="ph-final-heading">
+      <div class="container-wide">
+        <div class="ph-final-cta">
+          <h2 id="ph-final-heading">Ready To Join Our School Community?</h2>
+          <div class="ph-final-actions"><a class="btn btn-primary" href="/auth/register">Apply Now</a><a class="btn btn-ghost" href="/contact">Contact Admissions</a></div>
         </div>
+      </div>
     </section>
+  </main>
 
-    <section class="home-final-cta home-bleed">
-        <div class="container">
-            <div class="home-final-cta-card home-reveal">
-                <div class="home-final-copy">
-                    <span class="section-eyebrow section-eyebrow--light">Premium, clean, and conversion-focused</span>
-                    <h2>Ready to present your school with more confidence and clarity?</h2>
-                    <p>
-                        Create a stronger first impression, guide families toward the next step, and turn the homepage
-                        into a more effective admissions and engagement tool.
-                    </p>
-                </div>
-                <div class="home-final-actions">
-                    <a href="/auth/register" class="home-btn home-btn--light">Get started</a>
-                    <a href="/contact" class="home-btn home-btn--ghost-light">Schedule a conversation</a>
-                </div>
-            </div>
-        </div>
-    </section>
+  <footer class="ph-footer" role="contentinfo">
+    <div class="container-wide ph-footer-grid">
+      <div class="ph-footer-brand"><strong>International School</strong><p>Premium education for modern learners.</p></div>
+      <div><h4>Quick Links</h4><a href="/admissions">Admissions</a><a href="/programs">Programs</a></div>
+      <div><h4>Contact</h4><p>Phone: +1 234 567 890</p><p>Email: info@school.example</p></div>
+      <div><h4>Social</h4><p>Follow us on social networks</p></div>
+    </div>
+    <div class="ph-footer-bottom">© <%= new Date().getFullYear() %> International School. All rights reserved.</div>
+  </footer>
+
+  <script src="/js/homepage.js" defer></script>
 </div>

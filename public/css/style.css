@@ -1,8 +1,9 @@
 /* Global Styles */
 :root {
-    --brand: #4f46e5;
-    --brand-600: #4338ca;
-    --brand-100: #eef2ff;
+    --brand: #0b4f76; /* premium navy */
+    --brand-600: #083a57;
+    --brand-gold: #d2a24f;
+    --brand-100: #eef6fb;
     --body-bg: #f8f9fa;
     --navbar-height: 70px;
     /* Spacing scale */
@@ -101,7 +102,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }
 
 /* Login button: modern gradient with soft shadow and larger hit target */
 .btn-auth-cta {
-    background: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
+    background: linear-gradient(90deg, var(--brand), var(--brand-600));
     border: none;
     color: #fff;
     font-weight: 700;
@@ -139,8 +140,14 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }
 
 /* Button system: map home-btn to Bootstrap-friendly look */
 .home-btn { font-weight: 800; letter-spacing: -0.01em; }
-.home-btn--primary { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-600) 100%); color: #fff; border: none; }
-.home-btn--secondary { background: #fff; color: var(--brand-600); border: 1px solid rgba(15,23,42,0.06); }
+.home-btn--primary { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-600) 100%); color: #fff; border: none; box-shadow: 0 20px 50px rgba(8,58,87,0.18); }
+.home-btn--secondary { background: rgba(255,255,255,0.95); color: var(--brand-600); border: 1px solid rgba(8,58,87,0.06); }
+
+/* Navbar: transparent until scrolled */
+.navbar { background: transparent; transition: background-color 220ms ease, box-shadow 220ms ease, padding 220ms ease; }
+.navbar.scrolled { background-color: rgba(255,255,255,0.98) !important; box-shadow: 0 10px 30px rgba(6,14,26,0.08); padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.navbar .navbar-logo { max-height: 46px; }
+.navbar .brand-text { color: var(--brand-600); }
 
 
 /* Dashboard Stats */
@@ -227,8 +234,22 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-serif); }
 
 /* Footer */
 footer {
-    background-color: #0f172a;
+    background-color: #071524; /* deeper navy */
     color: #cbd5e1;
+}
+
+/* Premium footer layout helpers */
+.footer-top { padding: 3.5rem 0 2rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.footer-columns { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1.2rem; }
+.footer-column h5 { color: #fff; margin-bottom: 0.8rem; }
+.footer-column a { color: rgba(203,213,225,0.9); display: block; margin-bottom: 0.45rem; }
+
+@media (max-width: 991.98px) {
+    .footer-columns { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width: 575.98px) {
+    .footer-columns { grid-template-columns: 1fr; }
 }
 
 /* Prevent horizontal overflow globally (guard against layout regressions) */
