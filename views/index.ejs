@@ -145,49 +145,11 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 <div class="home-page">
   <!-- New premium homepage (completely rebuilt) -->
   <link rel="stylesheet" href="/css/homepage.css">
+  <script>try{ if(document && document.body) document.body.classList.add('home-page'); }catch(e){}</script>
 
-  <header class="ph-nav" role="navigation" aria-label="Primary">
-    <div class="container-wide ph-nav-inner">
-      <a href="/" class="ph-brand" aria-label="School homepage">
-        <svg width="140" height="28" viewBox="0 0 140 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="140" height="28" rx="6" fill="#0B1F3A"></rect>
-          <text x="18" y="19" fill="#F59E0B" font-family="Poppins,Inter, sans-serif" font-weight="700" font-size="12">International School</text>
-        </svg>
-      </a>
-
-      <nav class="ph-links" aria-label="Main menu">
-        <a class="ph-link" href="/">Home</a>
-        <a class="ph-link" href="/about">About</a>
-        <a class="ph-link" href="/admissions">Admissions</a>
-        <a class="ph-link" href="/academics">Academics</a>
-        <a class="ph-link" href="/student-life">Student Life</a>
-        <a class="ph-link" href="/blog">Blog</a>
-        <a class="ph-link" href="/contact">Contact</a>
-      </nav>
-
-      <div class="ph-actions">
-        <a href="/auth/login" class="btn btn-ghost">Login</a>
-        <a href="/auth/register" class="btn btn-primary">Register</a>
-        <button class="ph-hamburger" aria-label="Open menu" aria-controls="ph-offcanvas" aria-expanded="false">☰</button>
-      </div>
-    </div>
-  </header>
-
-  <div id="ph-offcanvas" class="ph-offcanvas" aria-hidden="true">
-    <div class="ph-offcanvas-inner">
-      <button class="ph-offcanvas-close" aria-label="Close menu">✕</button>
-      <nav class="ph-offcanvas-nav">
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/admissions">Admissions</a>
-        <a href="/academics">Academics</a>
-        <a href="/student-life">Student Life</a>
-        <a href="/blog">Blog</a>
-        <a href="/contact">Contact</a>
-        <div style="margin-top:1rem"><a class="btn btn-primary" href="/auth/register">Register</a></div>
-      </nav>
-    </div>
-  </div>
+  <!-- Header/navigation is provided by the shared layout partial (partials/navbar.ejs).
+       Removed the duplicate `ph-nav` and `ph-offcanvas` from the homepage to avoid two navbars
+       rendering simultaneously. The homepage will continue to use the layout's Bootstrap navbar. -->
 
   <main>
     <section class="ph-hero" aria-labelledby="ph-hero-heading">

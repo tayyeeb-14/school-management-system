@@ -3,9 +3,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // Mark body as homepage so layout styles can react
   try{ document.body.classList.add('home-page'); }catch(e){}
 
-  // Hide the layout navbar if present (prevent duplicate navs)
-  const layoutNav = document.querySelector('nav.navbar');
-  if(layoutNav){ layoutNav.style.display = 'none'; }
+  // (Do not hide the layout navbar) Keep single navigation from layout partial
 
   // Navbar scroll background for the homepage nav (ph-nav preferred)
   const navbar = document.querySelector('.ph-nav') || document.querySelector('.navbar');
