@@ -166,112 +166,128 @@ const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
 
         <div class="ph-hero-art" aria-hidden="true">
           <img src="/img/svg/campus-illustration.svg" alt="Campus illustration">
-        </div>
-      </div>
+            <!-- New premium homepage (full redesign). Styles in /css/homepage.css -->
+            <link rel="stylesheet" href="/css/homepage.css">
 
-      <div class="container-wide ph-trust">
-        <div class="ph-trust-grid">
-          <div class="ph-trust-card"><strong>1200+</strong><span>Students</span></div>
-          <div class="ph-trust-card"><strong>85+</strong><span>Teachers</span></div>
-          <div class="ph-trust-card"><strong>45+</strong><span>Classes</span></div>
-          <div class="ph-trust-card"><strong>25+</strong><span>Activities</span></div>
-        </div>
-      </div>
-    </section>
+            <main class="hp-main">
+              <header class="hp-hero" role="banner" aria-label="Homepage hero">
+                <nav class="hp-nav container-wide" aria-label="Primary navigation">
+                  <a class="hp-logo" href="/">
+                    <img src="/img/logo-horizontal.svg" alt="MySchool Portal">
+                  </a>
+                  <ul class="hp-nav-list">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/admissions">Admissions</a></li>
+                    <li><a href="/programs">Programs</a></li>
+                    <li><a href="/blog">News</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                  </ul>
+                  <div class="hp-nav-actions">
+                    <a class="btn btn-ghost" href="/auth/login">Login</a>
+                    <a class="btn btn-primary" href="/auth/register">Apply</a>
+                    <button class="hp-mobile-toggle" aria-label="Toggle menu">☰</button>
+                  </div>
+                </nav>
 
-    <section class="ph-why" aria-labelledby="ph-why-heading">
-      <div class="container-wide">
-        <h2 id="ph-why-heading">Why Choose Us</h2>
-        <div class="ph-why-grid">
-          <article class="ph-card"><img src="/img/svg/icon-faculty.svg" alt="Faculty icon"><h3>Experienced Faculty</h3><p>Dedicated educators focused on personalised growth.</p></article>
-          <article class="ph-card"><img src="/img/svg/icon-classroom.svg" alt="Classroom icon"><h3>Smart Classrooms</h3><p>Technology-led learning environments that engage students.</p></article>
-          <article class="ph-card"><img src="/img/svg/icon-safety.svg" alt="Safety icon"><h3>Safe Campus</h3><p>Secure, caring spaces that nurture wellbeing.</p></article>
-          <article class="ph-card"><img src="/img/svg/icon-sports.svg" alt="Sports icon"><h3>Sports Excellence</h3><p>Comprehensive physical education and competitive teams.</p></article>
-          <article class="ph-card"><img src="/img/svg/icon-arts.svg" alt="Arts icon"><h3>Arts & Creativity</h3><p>Structured programs to build creativity and expression.</p></article>
-          <article class="ph-card"><img src="/img/svg/icon-future.svg" alt="Future icon"><h3>Future Ready</h3><p>Skills-focused learning to prepare for modern careers.</p></article>
-        </div>
-      </div>
-    </section>
+                <div class="hp-hero-inner container-wide">
+                  <div class="hp-hero-copy">
+                    <p class="hp-kicker">Admissions Open — 2026</p>
+                    <h1 class="hp-title">A World-Class Education. A Nurturing Community.</h1>
+                    <p class="hp-sub">Rigorous academics, exceptional faculty and a campus where every student is known and encouraged to thrive.</p>
+                    <div class="hp-ctas">
+                      <a class="btn btn-primary" href="/auth/register">Apply Now</a>
+                      <a class="btn btn-ghost" href="/contact">Visit Campus</a>
+                    </div>
+                  </div>
 
-    <section class="ph-programs" aria-labelledby="ph-programs-heading">
-      <div class="container-wide">
-        <h2 id="ph-programs-heading">Academic Programs</h2>
-        <div class="ph-program-grid">
-          <article class="ph-program"><h3>Primary School</h3><p>Foundations in literacy, numeracy and curiosity.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
-          <article class="ph-program"><h3>Middle School</h3><p>Exploratory learning and structured growth.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
-          <article class="ph-program"><h3>Secondary School</h3><p>Subject depth and critical thinking development.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
-          <article class="ph-program"><h3>Senior Secondary</h3><p>Stream-focused mentoring and college readiness.</p><a class="btn btn-ghost" href="/programs">Learn more</a></article>
-        </div>
-      </div>
-    </section>
+                  <div class="hp-hero-art" aria-hidden="true">
+                    <img src="/img/illustrations/hero-school.svg" alt="Students on campus">
+                  </div>
+                </div>
+              </header>
 
-    <section class="ph-campus" aria-labelledby="ph-campus-heading">
-      <div class="container-wide">
-        <h2 id="ph-campus-heading">Campus Experience</h2>
-        <div class="ph-gallery">
-          <div class="ph-gallery-item"><img src="/img/svg/gallery-1.svg" alt="Lab"></div>
-          <div class="ph-gallery-item"><img src="/img/svg/gallery-2.svg" alt="Library"></div>
-          <div class="ph-gallery-item"><img src="/img/svg/gallery-3.svg" alt="Sports"></div>
-          <div class="ph-gallery-item"><img src="/img/svg/gallery-4.svg" alt="Events"></div>
-        </div>
-      </div>
-    </section>
+              <section class="hp-trust container-wide">
+                <ul class="trust-list">
+                  <li><strong>1,200+</strong><span>Students</span></li>
+                  <li><strong>85</strong><span>Faculty</span></li>
+                  <li><strong>45</strong><span>Classes</span></li>
+                  <li><strong>25+</strong><span>Clubs & Activities</span></li>
+                </ul>
+              </section>
 
-    <section class="ph-steps" aria-labelledby="ph-steps-heading">
-      <div class="container-wide">
-        <h2 id="ph-steps-heading">Admission Process</h2>
-        <ol class="ph-steps-list">
-          <li><strong>1</strong><span>Submit Application</span></li>
-          <li><strong>2</strong><span>Document Verification</span></li>
-          <li><strong>3</strong><span>Interaction</span></li>
-          <li><strong>4</strong><span>Admission Confirmation</span></li>
-        </ol>
-      </div>
-    </section>
+              <section class="hp-programs container-wide">
+                <h2>Academic Programs</h2>
+                <div class="program-grid">
+                  <article class="program-card">
+                    <img src="/img/illustrations/icon-primary.svg" alt="Primary">
+                    <h3>Primary</h3>
+                    <p>Foundational learning designed to inspire curiosity and confidence.</p>
+                    <a class="btn btn-ghost" href="/programs">Learn more</a>
+                  </article>
+                  <article class="program-card">
+                    <img src="/img/illustrations/icon-secondary.svg" alt="Secondary">
+                    <h3>Secondary</h3>
+                    <p>Deepening subject knowledge with skill-based, inquiry-led lessons.</p>
+                    <a class="btn btn-ghost" href="/programs">Learn more</a>
+                  </article>
+                  <article class="program-card">
+                    <img src="/img/illustrations/icon-senior.svg" alt="Senior">
+                    <h3>Senior Secondary</h3>
+                    <p>College-prep guidance and specialist instruction for future readiness.</p>
+                    <a class="btn btn-ghost" href="/programs">Learn more</a>
+                  </article>
+                  <article class="program-card">
+                    <img src="/img/illustrations/icon-co.svg" alt="Co-curricular">
+                    <h3>Co-curricular</h3>
+                    <p>Arts, sports and leadership to build well-rounded learners.</p>
+                    <a class="btn btn-ghost" href="/programs">Learn more</a>
+                  </article>
+                </div>
+              </section>
 
-    <section class="ph-testimonials" aria-labelledby="ph-testimonials-heading">
-      <div class="container-wide">
-        <h2 id="ph-testimonials-heading">Testimonials</h2>
-        <div class="ph-test-slider" id="ph-test-slider">
-          <div class="ph-test-track">
-            <blockquote class="ph-test-card"><p>"Excellent communication and a caring faculty."</p><footer>— Dr Rajesh Kumar, Principal</footer></blockquote>
-            <blockquote class="ph-test-card"><p>"My child thrived creatively and academically."</p><footer>— Ms Priya Sharma, Teacher</footer></blockquote>
-            <blockquote class="ph-test-card"><p>"Transparent updates and easy admissions."</p><footer>— Amit Patel, Parent</footer></blockquote>
-          </div>
-        </div>
-      </div>
-    </section>
+              <section class="hp-testimonials container-wide">
+                <h2>Voices from our community</h2>
+                <div class="testimonials-grid">
+                  <figure class="test-card">
+                    <blockquote>"An environment that balances academic excellence with kindness and growth."</blockquote>
+                    <figcaption>— Dr. Rajesh Kumar, Principal</figcaption>
+                  </figure>
+                  <figure class="test-card">
+                    <blockquote>"My child has flourished in a supportive and stimulating setting."</blockquote>
+                    <figcaption>— Ms. Priya Sharma, Teacher</figcaption>
+                  </figure>
+                  <figure class="test-card">
+                    <blockquote>"The communication and academic guidance are outstanding."</blockquote>
+                    <figcaption>— Amit Patel, Parent</figcaption>
+                  </figure>
+                </div>
+              </section>
 
-    <section class="ph-news" aria-labelledby="ph-news-heading">
-      <div class="container-wide">
-        <h2 id="ph-news-heading">Latest News</h2>
-        <div class="ph-news-grid">
-          <article class="ph-news-card"><img src="/img/svg/news-1.svg" alt=""><h3>School reopens for new session</h3><p>Important dates and updates for parents.</p></article>
-          <article class="ph-news-card"><img src="/img/svg/news-2.svg" alt=""><h3>Sports day highlights</h3><p>Celebrating student achievements.</p></article>
-          <article class="ph-news-card"><img src="/img/svg/news-3.svg" alt=""><h3>Library expansion</h3><p>New resources to support deep learning.</p></article>
-        </div>
-      </div>
-    </section>
+              <footer class="hp-footer">
+                <div class="container-wide footer-grid">
+                  <div class="brand">
+                    <img src="/img/logo-horizontal.svg" alt="MySchool">
+                    <p>World-class education rooted in character, curiosity and care.</p>
+                  </div>
+                  <div>
+                    <h4>Admissions</h4>
+                    <a href="/admissions">Apply</a>
+                    <a href="/contact">Visit</a>
+                  </div>
+                  <div>
+                    <h4>Quick Links</h4>
+                    <a href="/programs">Programs</a>
+                    <a href="/blog">News</a>
+                  </div>
+                  <div>
+                    <h4>Contact</h4>
+                    <p>Phone: +1 234 567 890</p>
+                    <p>Email: info@school.example</p>
+                  </div>
+                </div>
+                <div class="container-wide footer-bottom">© <%= new Date().getFullYear() %> MySchool Portal. All rights reserved.</div>
+              </footer>
+            </main>
 
-    <section class="ph-final" aria-labelledby="ph-final-heading">
-      <div class="container-wide">
-        <div class="ph-final-cta">
-          <h2 id="ph-final-heading">Ready To Join Our School Community?</h2>
-          <div class="ph-final-actions"><a class="btn btn-primary" href="/auth/register">Apply Now</a><a class="btn btn-ghost" href="/contact">Contact Admissions</a></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="ph-footer" role="contentinfo">
-    <div class="container-wide ph-footer-grid">
-      <div class="ph-footer-brand"><strong>International School</strong><p>Premium education for modern learners.</p></div>
-      <div><h4>Quick Links</h4><a href="/admissions">Admissions</a><a href="/programs">Programs</a></div>
-      <div><h4>Contact</h4><p>Phone: +1 234 567 890</p><p>Email: info@school.example</p></div>
-      <div><h4>Social</h4><p>Follow us on social networks</p></div>
-    </div>
-    <div class="ph-footer-bottom">© <%= new Date().getFullYear() %> International School. All rights reserved.</div>
-  </footer>
-
-  <script src="/js/homepage.js" defer></script>
-</div>
+            <link rel="stylesheet" href="/css/homepage.css">
+            <script src="/js/homepage.js" defer></script>

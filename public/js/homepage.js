@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // (Do not hide the layout navbar) Keep single navigation from layout partial
 
   // Navbar scroll background for the homepage nav (ph-nav preferred)
-  const navbar = document.querySelector('.ph-nav') || document.querySelector('.navbar');
+  const navbar = document.querySelector('.hp-nav') || document.querySelector('.navbar');
   if(navbar){
     const check = () => {
       if(window.scrollY > 20) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
@@ -28,18 +28,16 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // Simple testimonial slider (ph-test-track)
-  const track = document.querySelector('.ph-test-track');
+  const track = document.querySelector('.testimonials-grid');
   if(track){
-    let idx = 0;
-    const cards = Array.from(track.children);
-    const total = cards.length || 0;
-    const show = () => {
-      if(total === 0) return;
-      const w = cards[0].getBoundingClientRect().width + 12; // gap
-      track.style.transform = `translateX(-${idx * w}px)`;
-    };
-    setInterval(()=>{ if(total>0){ idx = (idx + 1) % total; show(); } }, 4200);
-    window.addEventListener('resize', show);
-    setTimeout(show,250);
+    // keep testimonials static for now
+  }
+
+  // Mobile nav toggle for hp-nav
+  const mobileToggle = document.querySelector('.hp-mobile-toggle');
+  const navList = document.querySelector('.hp-nav-list');
+  if(mobileToggle && navList){
+    mobileToggle.addEventListener('click', ()=>{ navList.classList.toggle('open'); });
+  }
   }
 });

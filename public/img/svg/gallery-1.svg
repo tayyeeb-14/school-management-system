@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
-  <rect width="100%" height="100%" fill="#fff"/>
-  <rect x="10" y="10" width="380" height="200" rx="12" fill="#E6F0FF"/>
-  <text x="20" y="250" font-size="16" fill="#0B1F3A">Lab</text>
-</svg>
