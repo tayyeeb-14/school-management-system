@@ -69,225 +69,225 @@ const platformBenefits = [
         copy: 'Parents, teachers, and students stay connected across phones, tablets, and desktops with ease.'
     },
     {
-        icon: 'fa-headset',
-        title: 'Dedicated support',
-        copy: 'Implementation guidance, onboarding help, and day-to-day support that keeps adoption smooth.'
-    },
-    {
-        icon: 'fa-gears',
-        title: 'Easy integration',
-        copy: 'Flexible processes and practical migration paths that fit the way schools already operate.'
-    },
-    {
-        icon: 'fa-chart-line',
-        title: 'Proven results',
-        copy: 'Better communication, stronger accountability, and less administrative overhead across the campus.'
-    },
-    {
-        icon: 'fa-sack-dollar',
-        title: 'Transparent value',
-        copy: 'Clear outcomes, sensible cost efficiency, and visible returns through better school operations.'
+      icon: 'fa-headset',
+      title: 'Dedicated support',
+      copy: 'Implementation guidance, onboarding help, and day-to-day support that keeps adoption smooth.'
     }
-];
-
-const successStories = [
-    {
-        initials: 'DR',
-        name: 'Dr. Rajesh Kumar',
-        role: 'Principal, City High School',
-        quote: 'This platform has revolutionized how we communicate with parents. Attendance tracking and fee management alone saved us 15 hours per week.'
-    },
-    {
-        initials: 'MP',
-        name: 'Ms. Priya Sharma',
-        role: 'Teacher, Delhi Public School',
-        quote: 'Students love the digital classroom experience. Assignment submission and faster feedback have improved engagement and performance.'
-    },
-    {
-        initials: 'AP',
-        name: 'Amit Patel',
-        role: 'Parent, Mumbai Academy',
-        quote: 'We receive timely updates about progress and behaviour. The transparency and communication have been a real advantage for our family.'
-    }
-];
-
-const trustMetrics = [
-    {
-        value: parseInt(stats.students || 1200, 10),
-        suffix: '+',
-        label: 'Students thriving',
-        copy: 'A vibrant learning community shaped by strong academics and personal growth.'
-    },
-    {
-        value: parseInt(stats.teachers || 85, 10),
-        suffix: '',
-        label: 'Qualified teachers',
-        copy: 'Experienced educators bringing consistency, care, and subject depth to every classroom.'
-    },
-    {
-        value: parseInt(stats.classes || 45, 10),
-        suffix: '',
-        label: 'Active classes',
-        copy: 'Structured teaching groups designed to support focus, progression, and student attention.'
-    },
-    {
-        value: parseInt(stats.activities || 25, 10),
-        suffix: '+',
-        label: 'Clubs and activities',
-        copy: 'A richer school life through sports, arts, leadership, and co-curricular experiences.'
-    }
-];
-
-const latestNotices = Array.isArray(notices) ? notices.slice(0, 3) : [];
-const featuredBlogs = Array.isArray(blogs) ? blogs.slice(0, 3) : [];
+  ];
 %>
 
-<div class="home-page">
-  <!-- New premium homepage (completely rebuilt) -->
-  <link rel="stylesheet" href="/css/homepage.css">
-  <script>try{ if(document && document.body) document.body.classList.add('home-page'); }catch(e){}</script>
+<% layout('layouts/main') -%>
 
-  <!-- Header/navigation is provided by the shared layout partial (partials/navbar.ejs).
-       Removed the duplicate `ph-nav` and `ph-offcanvas` from the homepage to avoid two navbars
-       rendering simultaneously. The homepage will continue to use the layout's Bootstrap navbar. -->
+  <!-- Premium homepage: full redesign. Uses layout's navbar/footer (no duplicates). -->
+        <link rel="stylesheet" href="/css/homepage.css">
+        <script>try{ document && document.body && document.body.classList.add('home-page'); }catch(e){}
+        </script>
 
-  <main>
-    <section class="ph-hero" aria-labelledby="ph-hero-heading">
-      <div class="container-wide ph-hero-inner">
-        <div class="ph-hero-copy">
-          <div class="ph-badge">Admissions Open 2026</div>
-          <h1 id="ph-hero-heading">Inspiring Excellence. Building Future Leaders.</h1>
-          <p class="ph-lead">A modern international curriculum, exceptional faculty, and a campus that nurtures curiosity and character.</p>
-          <div class="ph-ctas">
-            <a class="btn btn-primary" href="/auth/register">Apply Now</a>
-            <a class="btn btn-ghost" href="/contact">Book Campus Visit</a>
-          </div>
-        </div>
+        <main class="hp-main">
+          <!-- HERO: full viewport height, dark overlay, strong CTA -->
+          <section class="hp-hero d-flex align-items-center vh-100">
+            <div class="container-wide hp-hero-inner">
+              <div class="hp-hero-copy">
+                <span class="hp-kicker">Admissions Open</span>
+                <h1 class="hp-title">A World-Class Education. A Caring Global Community.</h1>
+                <p class="hp-sub">Modern campus, rigorous international curriculum and personalised guidance to prepare students for excellence.</p>
+                <div class="hp-ctas">
+                  <a href="/auth/register" class="btn btn-primary btn-lg">Apply Now</a>
+                  <a href="/contact" class="btn btn-outline-light btn-lg">Schedule a Visit</a>
+                </div>
+              </div>
 
-        <div class="ph-hero-art" aria-hidden="true">
-          <img src="/img/svg/campus-illustration.svg" alt="Campus illustration">
-            <!-- New premium homepage (full redesign). Styles in /css/homepage.css -->
-            <link rel="stylesheet" href="/css/homepage.css">
+              <div class="hp-hero-art text-end" aria-hidden="true">
+                <img src="/img/photography/hero-campus.svg" alt="School campus at sunrise">
+              </div>
+            </div>
+          </section>
 
-            <main class="hp-main">
-              <header class="hp-hero" role="banner" aria-label="Homepage hero">
-                <nav class="hp-nav container-wide" aria-label="Primary navigation">
-                  <a class="hp-logo" href="/">
-                    <img src="/img/logo-horizontal.svg" alt="MySchool Portal">
-                  </a>
-                  <ul class="hp-nav-list">
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/admissions">Admissions</a></li>
-                    <li><a href="/programs">Programs</a></li>
-                    <li><a href="/blog">News</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                  </ul>
-                  <div class="hp-nav-actions">
-                    <a class="btn btn-ghost" href="/auth/login">Login</a>
-                    <a class="btn btn-primary" href="/auth/register">Apply</a>
-                    <button class="hp-mobile-toggle" aria-label="Toggle menu">☰</button>
+          <!-- STATISTICS -->
+          <section class="py-4 hp-stats">
+            <div class="container-wide d-flex flex-wrap justify-content-between align-items-center">
+              <div class="stat text-center">
+                <div class="stat-value">1200+</div>
+                <div class="stat-label">Students</div>
+              </div>
+              <div class="stat text-center">
+                <div class="stat-value">85+</div>
+                <div class="stat-label">Teachers</div>
+              </div>
+              <div class="stat text-center">
+                <div class="stat-value">45+</div>
+                <div class="stat-label">Classes</div>
+              </div>
+              <div class="stat text-center">
+                <div class="stat-value">25+</div>
+                <div class="stat-label">Activities</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- WHY CHOOSE US: 6 equal height premium cards -->
+          <section class="py-5">
+            <div class="container-wide">
+              <h2 class="mb-4">Why Choose Us</h2>
+              <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-chalkboard-user fa-2x text-primary"></i></div>
+                    <h3 class="h6">Experienced Faculty</h3>
                   </div>
-                </nav>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-book-open-reader fa-2x text-primary"></i></div>
+                    <h3 class="h6">Rigorous Curriculum</h3>
+                  </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-flask fa-2x text-primary"></i></div>
+                    <h3 class="h6">STEM & Innovation</h3>
+                  </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-music fa-2x text-primary"></i></div>
+                    <h3 class="h6">Arts & Culture</h3>
+                  </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-users-line fa-2x text-primary"></i></div>
+                    <h3 class="h6">Community & Service</h3>
+                  </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                  <div class="card program-card h-100 text-center p-3">
+                    <div class="mb-2"><i class="fa-solid fa-graduation-cap fa-2x text-primary"></i></div>
+                    <h3 class="h6">University Guidance</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
 
-                <div class="hp-hero-inner container-wide">
-                  <div class="hp-hero-copy">
-                    <p class="hp-kicker">Admissions Open — 2026</p>
-                    <h1 class="hp-title">A World-Class Education. A Nurturing Community.</h1>
-                    <p class="hp-sub">Rigorous academics, exceptional faculty and a campus where every student is known and encouraged to thrive.</p>
-                    <div class="hp-ctas">
-                      <a class="btn btn-primary" href="/auth/register">Apply Now</a>
-                      <a class="btn btn-ghost" href="/contact">Visit Campus</a>
+          <!-- ACADEMIC PROGRAMS -->
+          <section class="py-5 bg-light">
+            <div class="container-wide">
+              <h2 class="mb-4">Academic Programs</h2>
+              <div class="row program-grid">
+                <div class="col-6 col-md-3">
+                  <div class="card program-card text-center p-3">
+                    <img src="/img/photography/program-primary.svg" alt="Primary" class="mb-2">
+                    <h3 class="h6">Primary</h3>
+                    <p class="small text-muted">Foundational learning and joyful discovery.</p>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card program-card text-center p-3">
+                    <img src="/img/photography/program-secondary.svg" alt="Secondary" class="mb-2">
+                    <h3 class="h6">Secondary</h3>
+                    <p class="small text-muted">Depth of study with practical skills.</p>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card program-card text-center p-3">
+                    <img src="/img/photography/program-senior.svg" alt="Senior" class="mb-2">
+                    <h3 class="h6">Senior Secondary</h3>
+                    <p class="small text-muted">Pre-university pathways and mentorship.</p>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card program-card text-center p-3">
+                    <img src="/img/photography/program-cocurricular.svg" alt="Co-curricular" class="mb-2">
+                    <h3 class="h6">Co-curricular</h3>
+                    <p class="small text-muted">Arts, sports and leadership experiences.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CAMPUS LIFE GALLERY -->
+          <section class="py-5">
+            <div class="container-wide">
+              <h2 class="mb-4">Campus Life</h2>
+              <div class="row g-3 gallery-grid">
+                <div class="col-6 col-md-3"><figure class="card card-hover overflow-hidden"><img src="/img/photography/gallery-1.svg" alt="Students in courtyard"></figure></div>
+                <div class="col-6 col-md-3"><figure class="card card-hover overflow-hidden"><img src="/img/photography/gallery-2.svg" alt="Library learning"></figure></div>
+                <div class="col-6 col-md-3"><figure class="card card-hover overflow-hidden"><img src="/img/photography/gallery-3.svg" alt="Sports facilities"></figure></div>
+                <div class="col-6 col-md-3"><figure class="card card-hover overflow-hidden"><img src="/img/photography/gallery-4.svg" alt="Arts and music"></figure></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- TESTIMONIALS -->
+          <section class="py-5 bg-light hp-testimonials">
+            <div class="container-wide">
+              <h2 class="mb-4">Testimonials</h2>
+              <div class="testimonials-grid">
+                <div class="test-card card p-3">
+                  <blockquote class="mb-2">"Our daughter has flourished academically and socially — the community is exceptional."</blockquote>
+                  <figcaption class="small text-muted">— Parent</figcaption>
+                </div>
+                <div class="test-card card p-3">
+                  <blockquote class="mb-2">"Collaborative teaching and excellent facilities make lessons genuinely engaging."</blockquote>
+                  <figcaption class="small text-muted">— Teacher</figcaption>
+                </div>
+                <div class="test-card card p-3">
+                  <blockquote class="mb-2">"I felt supported through my university applications — the counselors were thorough and encouraging."</blockquote>
+                  <figcaption class="small text-muted">— Student</figcaption>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- BLOG -->
+          <section class="py-5">
+            <div class="container-wide">
+              <h2 class="mb-4">From Our Blog</h2>
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <article class="card">
+                    <img src="/img/photography/blog-1.svg" class="card-img-top" alt="Blog: Global learning">
+                    <div class="card-body">
+                      <h5 class="card-title">Preparing Students for a Global Future</h5>
+                      <p class="card-text small text-muted">Insights into cultivating global citizens through inquiry and reflection.</p>
                     </div>
-                  </div>
-
-                  <div class="hp-hero-art" aria-hidden="true">
-                    <img src="/img/illustrations/hero-school.svg" alt="Students on campus">
-                  </div>
-                </div>
-              </header>
-
-              <section class="hp-trust container-wide">
-                <ul class="trust-list">
-                  <li><strong>1,200+</strong><span>Students</span></li>
-                  <li><strong>85</strong><span>Faculty</span></li>
-                  <li><strong>45</strong><span>Classes</span></li>
-                  <li><strong>25+</strong><span>Clubs & Activities</span></li>
-                </ul>
-              </section>
-
-              <section class="hp-programs container-wide">
-                <h2>Academic Programs</h2>
-                <div class="program-grid">
-                  <article class="program-card">
-                    <img src="/img/illustrations/icon-primary.svg" alt="Primary">
-                    <h3>Primary</h3>
-                    <p>Foundational learning designed to inspire curiosity and confidence.</p>
-                    <a class="btn btn-ghost" href="/programs">Learn more</a>
-                  </article>
-                  <article class="program-card">
-                    <img src="/img/illustrations/icon-secondary.svg" alt="Secondary">
-                    <h3>Secondary</h3>
-                    <p>Deepening subject knowledge with skill-based, inquiry-led lessons.</p>
-                    <a class="btn btn-ghost" href="/programs">Learn more</a>
-                  </article>
-                  <article class="program-card">
-                    <img src="/img/illustrations/icon-senior.svg" alt="Senior">
-                    <h3>Senior Secondary</h3>
-                    <p>College-prep guidance and specialist instruction for future readiness.</p>
-                    <a class="btn btn-ghost" href="/programs">Learn more</a>
-                  </article>
-                  <article class="program-card">
-                    <img src="/img/illustrations/icon-co.svg" alt="Co-curricular">
-                    <h3>Co-curricular</h3>
-                    <p>Arts, sports and leadership to build well-rounded learners.</p>
-                    <a class="btn btn-ghost" href="/programs">Learn more</a>
                   </article>
                 </div>
-              </section>
-
-              <section class="hp-testimonials container-wide">
-                <h2>Voices from our community</h2>
-                <div class="testimonials-grid">
-                  <figure class="test-card">
-                    <blockquote>"An environment that balances academic excellence with kindness and growth."</blockquote>
-                    <figcaption>— Dr. Rajesh Kumar, Principal</figcaption>
-                  </figure>
-                  <figure class="test-card">
-                    <blockquote>"My child has flourished in a supportive and stimulating setting."</blockquote>
-                    <figcaption>— Ms. Priya Sharma, Teacher</figcaption>
-                  </figure>
-                  <figure class="test-card">
-                    <blockquote>"The communication and academic guidance are outstanding."</blockquote>
-                    <figcaption>— Amit Patel, Parent</figcaption>
-                  </figure>
+                <div class="col-12 col-md-4">
+                  <article class="card">
+                    <img src="/img/photography/blog-2.svg" class="card-img-top" alt="Blog: Project learning">
+                    <div class="card-body">
+                      <h5 class="card-title">Project-Based Learning in Practice</h5>
+                      <p class="card-text small text-muted">How project work builds problem-solving and collaboration skills.</p>
+                    </div>
+                  </article>
                 </div>
-              </section>
-
-              <footer class="hp-footer">
-                <div class="container-wide footer-grid">
-                  <div class="brand">
-                    <img src="/img/logo-horizontal.svg" alt="MySchool">
-                    <p>World-class education rooted in character, curiosity and care.</p>
-                  </div>
-                  <div>
-                    <h4>Admissions</h4>
-                    <a href="/admissions">Apply</a>
-                    <a href="/contact">Visit</a>
-                  </div>
-                  <div>
-                    <h4>Quick Links</h4>
-                    <a href="/programs">Programs</a>
-                    <a href="/blog">News</a>
-                  </div>
-                  <div>
-                    <h4>Contact</h4>
-                    <p>Phone: +1 234 567 890</p>
-                    <p>Email: info@school.example</p>
-                  </div>
+                <div class="col-12 col-md-4">
+                  <article class="card">
+                    <img src="/img/photography/blog-3.svg" class="card-img-top" alt="Blog: Wellbeing">
+                    <div class="card-body">
+                      <h5 class="card-title">Wellbeing as a Foundation for Learning</h5>
+                      <p class="card-text small text-muted">Practical strategies that support student mental health and resilience.</p>
+                    </div>
+                  </article>
                 </div>
-                <div class="container-wide footer-bottom">© <%= new Date().getFullYear() %> MySchool Portal. All rights reserved.</div>
-              </footer>
-            </main>
+              </div>
+            </div>
+          </section>
 
-            <link rel="stylesheet" href="/css/homepage.css">
-            <script src="/js/homepage.js" defer></script>
+          <!-- FINAL CTA -->
+          <section class="py-5 text-center hp-final-cta">
+            <div class="container-wide">
+              <h2>Ready to join?</h2>
+              <p class="text-muted">Apply now or book a campus visit — places are limited.</p>
+              <a href="/auth/register" class="btn btn-primary btn-lg me-2">Apply Now</a>
+              <a href="/contact" class="btn btn-outline-primary btn-lg">Book Visit</a>
+            </div>
+          </section>
+
+        </main>
+
+        <link rel="stylesheet" href="/css/homepage.css">
+        <script src="/js/homepage.js" defer></script>
