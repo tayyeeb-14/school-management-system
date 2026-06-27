@@ -33,7 +33,7 @@
                 <div class="dashboard-sidebar-content">
                     <!-- User Profile Summary -->
                     <div class="text-center p-4">
-                    <% const avatarSrc = (user && user.photo && user.photo !== 'default.jpg') ? ('/uploads/images/' + user.photo) : '/img/testimonial1.jpg'; %>
+                    <% const avatarSrc = (user && user.photo && user.photo !== 'default.jpg') ? ('/uploads/images/' + user.photo) : '/img/Admin.png'; %>
                     <img src="<%= avatarSrc %>" class="rounded-circle mb-3" alt="Profile Photo" width="100">
                         <h5 class="mb-1"><%= user.name %></h5>
                         <p class="text-muted"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></p>

@@ -13,9 +13,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-        <!-- Custom CSS -->
-        <link href="/css/style.css" rel="stylesheet">
-        <!-- Removed premium design system links (reset to base styles) -->
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    <!-- Page-specific CSS -->
+    <% if (typeof title !== 'undefined' && title === 'About Us') { %>
+    <link href="/css/about.css" rel="stylesheet">
+    <% } %>
+    <!-- Removed premium design system links (reset to base styles) -->
     <meta name="theme-color" content="#4f46e5">
 </head>
 <body>
