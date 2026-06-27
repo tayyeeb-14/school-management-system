@@ -1,1 +1,43 @@
-/* Homepage CSS intentionally cleared. */
+/* Homepage-specific styles for the demo note. */
+.home-demo-wrapper {
+  min-height: calc(100vh - 160px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem 2rem;
+  background: #f8fafc;
+}
+
+.home-demo-card {
+  width: 100%;
+  max-width: 980px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.home-demo-note {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  line-height: 1.85;
+  color: #0f172a;
+}
+
+.home-demo-sub {
+  margin: 0;
+  font-size: 1rem;
+  color: #475569;
+}
+
+@media (max-width: 768px) {
+  .home-demo-wrapper {
+    padding: 2rem 0.75rem 1.5rem;
+  }
+
+  .home-demo-card {
+    padding: 1.75rem 1.2rem;
+  }
+}
+
