@@ -1,39 +1,46 @@
-<footer class="bg-dark text-light py-4 mt-5">
+<footer class="site-footer">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <h5 class="d-flex align-items-center"><img src="/img/logo-horizontal.svg" alt="MySchool Portal" style="height:36px; object-fit:contain; margin-right:10px;"/>MySchool Portal</h5>
-                <p>Empowering education through technology. Our school management system helps create a better learning environment for students, teachers, and administrators.</p>
-            </div>
-            <div class="col-md-4">
-                <h5>Quick Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="/" class="text-light"><i class="fas fa-angle-right me-2"></i>Home</a></li>
-                    <li><a href="/about" class="text-light"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
-                    <li><a href="/contact" class="text-light"><i class="fas fa-angle-right me-2"></i>Contact</a></li>
-                    <li><a href="/blog" class="text-light"><i class="fas fa-angle-right me-2"></i>Blog</a></li>
-                </ul>
-            </div>
-            <div class="col-md-4">
-                <h5>Contact Info</h5>
-                <ul class="list-unstyled">
-                    <li><i class="fas fa-map-marker-alt me-2"></i>123 School Street, City, Country</li>
-                    <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
-                    <li><i class="fas fa-envelope me-2"></i>info@myschool.com</li>
-                </ul>
-                <div class="social-links mt-3">
-                    <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
-                    <a href="#" class="text-light me-3"><i class="fab fa-twitter fa-lg"></i></a>
-                    <a href="#" class="text-light me-3"><i class="fab fa-instagram fa-lg"></i></a>
-                    <a href="#" class="text-light"><i class="fab fa-linkedin fa-lg"></i></a>
+        <div class="footer-top">
+            <div class="footer-columns">
+                <div class="footer-column footer-brand-column">
+                    <a href="/" class="footer-brand-link">
+                        <img src="/img/logo/logo.png" alt="MySchool Portal logo" class="footer-logo">
+                        <span class="footer-brand-title">MySchool Portal</span>
+                    </a>
+                    <p class="footer-copy">Empowering education through technology with a premium school management experience designed for students, teachers, and administrators.</p>
+                </div>
+                <div class="footer-column">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-list">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/admissions">Admissions</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Contact</h5>
+                    <ul class="footer-list footer-contact">
+                        <li><span>Ratabari, Karimganj, Assam</span></li>
+                        <li><span>+91 6900601989</span></li>
+                        <li><span>info@myschool.com</span></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h5>Connect</h5>
+                    <p class="footer-copy">Follow us for campus updates, news, and student stories.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
-        <hr class="mt-4">
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <p class="mb-0">&copy; <%= new Date().getFullYear() %> MySchool Portal. All rights reserved.</p>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; <%= new Date().getFullYear() %> MySchool Portal. All rights reserved.</p>
         </div>
     </div>
 </footer>
