@@ -509,7 +509,7 @@ footer a:hover { color: var(--brand) !important; }
 .navbar .nav-link { padding: 0.55rem 0.6rem; font-weight:600; color: rgba(15,23,42,0.75); }
 .navbar .btn { padding: 0.45rem 0.9rem; border-radius: 10px; }
 
-/* Make navbar content wrap on narrower breakpoints to avoid horizontal overflow */
+/* Keep the navbar in a single horizontal row on tablet and larger viewports */
 .navbar .navbar-collapse {
     display: flex !important;
     align-items: center;
@@ -517,16 +517,41 @@ footer a:hover { color: var(--brand) !important; }
 }
 .navbar .navbar-nav {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 0.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.25rem 0.8rem;
 }
 .navbar .navbar-nav .nav-item { white-space: nowrap; }
 .navbar .d-flex.align-items-center { flex-shrink: 0; }
 
-@media (max-width: 991.98px) {
-    /* ensure buttons tuck below nav links on smaller screens */
-    .navbar .navbar-collapse { gap: 0.6rem; }
-    .navbar .d-flex.align-items-center { margin-left: 0.5rem; }
+@media (min-width: 768px) and (max-width: 1024px) {
+    .navbar .container { align-items: center; }
+    .navbar .navbar-collapse {
+        display: flex !important;
+        flex: 1 1 auto;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+    .navbar .navbar-nav {
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 0.2rem 0.8rem;
+        margin-right: auto;
+        min-width: 0;
+    }
+    .navbar .navbar-nav .nav-item { white-space: nowrap; }
+    .navbar .d-flex.align-items-center {
+        display: flex !important;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+    .navbar .navbar-toggler { display: none !important; }
 }
 
 /* Force navbar expand breakpoint at lg (simulate navbar-expand-lg regardless of HTML classes)
@@ -538,7 +563,7 @@ footer a:hover { color: var(--brand) !important; }
     .navbar .brand-text { display: none !important; }
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 767.98px) {
     .navbar .navbar-collapse { display: none !important; width: 100%; }
     .navbar .navbar-collapse.show { display: block !important; }
     .navbar .navbar-toggler { display: block !important; }
