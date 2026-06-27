@@ -1,46 +1,237 @@
-<div class="py-5">
-  <div class="container">
-    <h1 class="display-4 mb-3"><%= title %></h1>
+<%- contentFor('body') %>
 
+<!-- Hero Section -->
+<div class="contact-hero">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="contact-hero-content">
+          <div class="contact-hero-badge">
+            <i class="fas fa-envelope me-2"></i> CONTACT US
+          </div>
+          <h1>Let's Start a Conversation</h1>
+          <p>Have questions about admissions, academics, or school life? Our team is here to help you. Reach out and let us know how we can assist you on your educational journey.</p>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="contact-hero-image">
+          <img src="/img/1.png" alt="School Office">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Section with Form and Info -->
+<section class="contact-section">
+  <div class="container">
     <% if (success_msg) { %>
-      <div class="alert alert-success"><%= success_msg %></div>
+      <div class="alert-success">
+        <i class="fas fa-check-circle me-2"></i> <%= success_msg %>
+      </div>
     <% } %>
     <% if (error_msg) { %>
-      <div class="alert alert-danger"><%= error_msg %></div>
+      <div class="alert-danger">
+        <i class="fas fa-exclamation-circle me-2"></i> <%= error_msg %>
+      </div>
     <% } %>
 
-    <div class="row">
-      <div class="col-md-8">
+    <div class="contact-container">
+      <!-- Contact Form -->
+      <div class="contact-form-card">
+        <h2>Send us a Message</h2>
+        <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+
         <form action="/contact" method="POST">
-          <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="name" 
+              name="name" 
+              placeholder="Your full name"
+              required
+            >
           </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="email" 
+              name="email" 
+              placeholder="your.email@example.com"
+              required
+            >
           </div>
-          <div class="mb-3">
-            <label for="message" class="form-label">Message</label>
-            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea 
+              class="form-control" 
+              id="message" 
+              name="message" 
+              placeholder="Tell us more about your inquiry..."
+              required
+            ></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-paper-plane me-1"></i> Send Message
+
+          <button type="submit" class="form-btn">
+            <i class="fas fa-paper-plane"></i> Send Message
           </button>
         </form>
       </div>
 
-      <div class="col-md-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Contact Info</h5>
-            <p class="mb-1"><strong>Email:</strong> info@myschool.edu</p>
-            <p class="mb-1"><strong>Phone:</strong> +1 (555) 123-4567</p>
-            <p class="mb-0"><strong>Address:</strong> 123 Education Lane, City, Country</p>
+      <!-- Contact Information -->
+      <div>
+        <h2 style="font-size: 1.8rem; color: var(--brand); margin-bottom: 2rem; font-weight: 700;">Quick Contact</h2>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div class="contact-info-content">
+            <h4>Location</h4>
+            <p>Ratabari, Karimganj<br>Assam, India</p>
+          </div>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">
+            <i class="fas fa-phone"></i>
+          </div>
+          <div class="contact-info-content">
+            <h4>Phone</h4>
+            <p><a href="tel:+916900601989" style="color: #64748b; text-decoration: none;">+91 6900601989</a></p>
+          </div>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="contact-info-content">
+            <h4>Email</h4>
+            <p><a href="mailto:info@myschool.com" style="color: #64748b; text-decoration: none;">info@myschool.com</a></p>
+          </div>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="contact-info-content">
+            <h4>Office Hours</h4>
+            <p>Monday - Friday: 9:00 AM - 5:00 PM<br>Saturday: 10:00 AM - 2:00 PM<br>Sunday: Closed</p>
           </div>
         </div>
       </div>
     </div>
-
   </div>
-</div>
+</section>
+
+<!-- Google Map Section -->
+<section class="map-section">
+  <div class="map-container">
+    <h2>Visit Our Campus</h2>
+    <div class="map-wrapper">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3626.5577777778!2d91.13938972346854!3d24.863897171097587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x375225b0f0e0e0e1%3A0x0!2sRatabari%2C%20Karimganj%2C%20Assam!5e0!3m2!1sen!2sin!4v1234567890123" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+  <div class="faq-container">
+    <div class="faq-header">
+      <h2>Frequently Asked Questions</h2>
+      <p>Find answers to common questions about our school and admissions process.</p>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>How can I apply to the school?</span>
+        <div class="faq-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          You can apply to our school through the online application portal available on our website. Simply fill out the registration form, submit the required documents, and our admissions team will contact you within 3-5 business days. Alternatively, you can visit our admissions office during working hours for assistance.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>What documents are required for admission?</span>
+        <div class="faq-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Required documents typically include: birth certificate, previous academic records, health examination report, passport-size photographs (4), parent/guardian identification, proof of residence, and a completed application form. For transfer students, we also require the original transfer certificate from the previous school. Please contact our admissions office for a complete checklist.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>When does the admission process start?</span>
+        <div class="faq-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Our admission process typically begins in December for the following academic year. Early applications are encouraged as seats fill up quickly. The final admission deadline is usually in March, depending on availability. Special admissions may be available throughout the year for students seeking transfer admission. Contact our office for specific dates and timelines.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>Can I schedule a campus visit?</span>
+        <div class="faq-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          Absolutely! We encourage parents and students to visit our campus. You can schedule a campus tour by contacting our admissions office at +91 6900601989 or emailing info@myschool.com. Tours are available Monday through Friday from 10:00 AM to 3:00 PM. We can arrange guided tours showcasing our facilities, classrooms, sports complex, library, and other important areas.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <h2>Ready to Visit Our Campus?</h2>
+  <p>Book a campus visit or contact our admissions team today to learn more about what we offer and how we can help shape your child's future.</p>
+  <div class="cta-buttons">
+    <button class="cta-btn cta-btn-primary" onclick="document.getElementById('name').focus(); document.querySelector('.contact-form-card').scrollIntoView({ behavior: 'smooth' });">
+      <i class="fas fa-calendar"></i> Book a Visit
+    </button>
+    <button class="cta-btn cta-btn-secondary" onclick="window.location.href='/admissions';">
+      <i class="fas fa-pen-fancy"></i> Apply Now
+    </button>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.faq-item').forEach(item => {
+  const question = item.querySelector('.faq-question');
+  question.addEventListener('click', () => {
+    item.classList.toggle('active');
+  });
+});
+</script>
