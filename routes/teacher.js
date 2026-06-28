@@ -10,6 +10,7 @@ const Blog = require('../models/Blog');
 const Attendance = require('../models/Attendance');
 const Salary = require('../models/Salary');
 const User = require('../models/User');
+const Notice = require('../models/Notice');
 const TimetableSlot = require('../models/Timetable');
 const upload = require('../config/multer');
 const { EXAM_BY_KEY, EXAM_CONFIG, isMarksheetComplete, calculateFinalResult } = require('../utils/marks');
@@ -1027,5 +1028,212 @@ router.get('/check-shift', async (req, res) => {
         res.status(500).render('error', { error: 'Server Error' });
     }
 });
+
+// Notices - Read-only for teachers
+router.get('/notices', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const classIds = teacher.classIds.map((item) => item._id);
+
+        // Get all notices: general notices + class-specific notices for teacher's classes
+        const notices = await Notice.find({
+            $or: [
+                { forClass: 'all' },
+                { classId: { $in: classIds } }
+            ]
+        })
+            .populate('createdBy', 'name')
+            .populate('classId', 'name')
+            .sort({ date: -1 });
+
+        res.render('teacher/notices', {
+            title: 'Notices',
+            teacher,
+            notices
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Attendance History - View past attendance records marked by this teacher
+router.get('/attendance-history', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const classIds = teacher.classIds.map((item) => item._id);
+        const selectedClassId = req.query.classId || (classIds[0] ? String(classIds[0]) : '');
+        const filterMonth = req.query.month || toMonthKey(new Date());
+
+        let attendanceRecords = [];
+        let selectedClassName = '';
+
+        if (selectedClassId) {
+            const classAllowed = classIds.some((item) => String(item) === String(selectedClassId));
+            if (!classAllowed) {
+                req.flash('error_msg', 'Access denied for selected class');
+                return res.redirect('/teacher/attendance-history');
+            }
+
+            const classDoc = await Class.findById(selectedClassId).select('name');
+            selectedClassName = classDoc?.name || 'Unknown Class';
+
+            // Parse month filter
+            const [year, month] = filterMonth.split('-').map(Number);
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0, 23, 59, 59);
+
+            attendanceRecords = await Attendance.find({
+                classId: selectedClassId,
+                markedBy: teacher._id,
+                date: { $gte: startDate, $lte: endDate }
+            })
+                .populate('classId', 'name')
+                .sort({ date: -1 });
+        }
+
+        const months = getMonthOptions();
+
+        res.render('teacher/attendance-history', {
+            title: 'Attendance History',
+            teacher,
+            classes: teacher.classIds,
+            selectedClassId,
+            selectedClassName,
+            attendanceRecords,
+            filterMonth,
+            months
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Shifts History - View all teacher's check-in/out records
+router.get('/shifts-history', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const filterMonth = req.query.month || toMonthKey(new Date());
+
+        // Parse month filter
+        const [year, month] = filterMonth.split('-').map(Number);
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59);
+
+        const shifts = await TeacherShift.find({
+            teacherId: teacher._id,
+            date: { $gte: startDate, $lte: endDate }
+        }).sort({ date: -1 });
+
+        // Calculate statistics
+        const stats = {
+            totalDays: shifts.length,
+            checkedInDays: shifts.filter((s) => s.checkInAt).length,
+            checkedOutDays: shifts.filter((s) => s.checkOutAt).length,
+            totalHours: shifts.reduce((sum, s) => sum + (s.durationMinutes || 0), 0) / 60,
+            averageHoursPerDay: 0
+        };
+        if (stats.checkedOutDays > 0) {
+            stats.averageHoursPerDay = stats.totalHours / stats.checkedOutDays;
+        }
+
+        const months = getMonthOptions();
+
+        res.render('teacher/shifts-history', {
+            title: 'Shifts History',
+            teacher,
+            shifts,
+            stats,
+            filterMonth,
+            months
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Results/Marksheet - View marks entered for all students
+router.get('/results', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const classIds = teacher.classIds.map((item) => item._id);
+
+        // Get all students from assigned classes
+        const students = await Student.find({
+            classId: { $in: classIds },
+            status: 'approved'
+        })
+            .populate('userId', 'name')
+            .populate('classId', 'name')
+            .sort({ 'classId.name': 1, rollNo: 1 });
+
+        // Build results data
+        const results = students.map((student) => {
+            const completion = isMarksheetComplete(student);
+            const finalResult = calculateFinalResult(student);
+            return {
+                student,
+                completion,
+                finalResult,
+                marksCount: (student.marks || []).length
+            };
+        });
+
+        // Statistics
+        const stats = {
+            totalStudents: results.length,
+            completeMarksheets: results.filter((r) => r.completion.complete).length,
+            incompleteMarksheets: results.filter((r) => !r.completion.complete).length,
+            averagePercentage: results.length > 0 
+                ? (results.reduce((sum, r) => sum + (r.finalResult.overallPercentage || 0), 0) / results.length).toFixed(2)
+                : 0
+        };
+
+        res.render('teacher/results', {
+            title: 'Student Results',
+            teacher,
+            results,
+            stats
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Helper function to get month options
+function getMonthOptions() {
+    const months = [];
+    const today = new Date();
+    for (let i = 0; i < 12; i++) {
+        const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+        months.push({ key, label });
+    }
+    return months;
+}
 
 module.exports = router;

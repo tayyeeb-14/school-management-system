@@ -1,0 +1,138 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Shifts History</h3>
+        <p class="text-muted mb-0">Your check-in and check-out records.</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Total Working Days</small>
+                <h4 class="mb-0"><%= stats.totalDays %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Total Hours</small>
+                <h4 class="mb-0"><%= stats.totalHours.toFixed(1) %>h</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Average Hours/Day</small>
+                <h4 class="mb-0"><%= stats.averageHoursPerDay.toFixed(1) %>h</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body text-center">
+                <small class="text-muted d-block mb-1">Check-Out Rate</small>
+                <h4 class="mb-0"><%= stats.totalDays > 0 ? Math.round((stats.checkedOutDays / stats.totalDays) * 100) : 0 %>%</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Month Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/teacher/shifts-history" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="month" class="form-label">Select Month</label>
+                <select name="month" id="month" class="form-select" onchange="this.form.submit()">
+                    <% if (months && months.length > 0) { %>
+                        <% months.forEach((m) => { %>
+                            <option value="<%= m.key %>" <%= filterMonth === m.key ? 'selected' : '' %>>
+                                <%= m.label %>
+                            </option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Shifts Table -->
+<% if (shifts && shifts.length > 0) { %>
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Shift Records - <%= filterMonth %></h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% shifts.forEach((shift) => { %>
+                            <% const hasCheckedIn = !!shift.checkInAt; %>
+                            <% const hasCheckedOut = !!shift.checkOutAt; %>
+                            <% const duration = shift.durationMinutes ? Math.floor(shift.durationMinutes / 60) + 'h ' + (shift.durationMinutes % 60) + 'm' : '-'; %>
+                            <tr>
+                                <td>
+                                    <strong><%= new Date(shift.date).toLocaleDateString('en-IN') %></strong>
+                                </td>
+                                <td>
+                                    <small class="text-muted"><%= new Date(shift.date).toLocaleDateString('en-IN', { weekday: 'short' }) %></small>
+                                </td>
+                                <td>
+                                    <% if (shift.checkInAt) { %>
+                                        <span class="badge bg-success">
+                                            <%= new Date(shift.checkInAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (shift.checkOutAt) { %>
+                                        <span class="badge bg-danger">
+                                            <%= new Date(shift.checkOutAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %>
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <strong><%= duration %></strong>
+                                </td>
+                                <td>
+                                    <% if (hasCheckedIn && hasCheckedOut) { %>
+                                        <span class="badge bg-success">Complete</span>
+                                    <% } else if (hasCheckedIn) { %>
+                                        <span class="badge bg-warning text-dark">In Progress</span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">Not Started</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i>
+        <strong>No Shifts Found</strong>
+        <p class="mb-0 mt-2">No shift records found for <%= filterMonth %>.</p>
+    </div>
+<% } %>

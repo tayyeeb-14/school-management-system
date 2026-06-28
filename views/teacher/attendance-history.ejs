@@ -1,0 +1,109 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Attendance History</h3>
+        <p class="text-muted mb-0">Review attendance records you have marked.</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/teacher/attendance-history" class="row g-3">
+            <div class="col-md-6">
+                <label for="classId" class="form-label">Select Class</label>
+                <select name="classId" id="classId" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Select Class --</option>
+                    <% if (classes && classes.length > 0) { %>
+                        <% classes.forEach((cls) => { %>
+                            <option value="<%= cls._id %>" <%= selectedClassId === String(cls._id) ? 'selected' : '' %>>
+                                <%= cls.name %>
+                            </option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="month" class="form-label">Select Month</label>
+                <select name="month" id="month" class="form-select" onchange="this.form.submit()">
+                    <% if (months && months.length > 0) { %>
+                        <% months.forEach((m) => { %>
+                            <option value="<%= m.key %>" <%= filterMonth === m.key ? 'selected' : '' %>>
+                                <%= m.label %>
+                            </option>
+                        <% }) %>
+                    <% } %>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% if (selectedClassId && attendanceRecords && attendanceRecords.length > 0) { %>
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                Attendance Records - <%= selectedClassName %>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Students</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% attendanceRecords.forEach((record) => { %>
+                            <% const total = record.entries.length; %>
+                            <% const present = record.entries.filter((e) => e.status === 'present').length; %>
+                            <% const absent = total - present; %>
+                            <% const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0; %>
+                            <tr>
+                                <td>
+                                    <strong><%= new Date(record.date).toLocaleDateString('en-IN') %></strong>
+                                    <br/>
+                                    <small class="text-muted"><%= new Date(record.date).toLocaleDateString('en-IN', { weekday: 'short' }) %></small>
+                                </td>
+                                <td><strong><%= total %></strong></td>
+                                <td>
+                                    <span class="badge bg-success"><%= present %></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger"><%= absent %></span>
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar <%= percentage >= 75 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger' %>" 
+                                             role="progressbar" 
+                                             style="width: <%= percentage %>%"
+                                             aria-valuenow="<%= percentage %>" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            <%= percentage %>%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } else if (selectedClassId) { %>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i>
+        <strong>No Records Found</strong>
+        <p class="mb-0 mt-2">No attendance records found for <%= selectedClassName %> in <%= filterMonth %>.</p>
+    </div>
+<% } else { %>
+    <div class="alert alert-warning" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Select a Class</strong>
+        <p class="mb-0 mt-2">Please select a class to view attendance history.</p>
+    </div>
+<% } %>

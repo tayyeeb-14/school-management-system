@@ -1,0 +1,106 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Notices</h3>
+        <p class="text-muted mb-0">Important announcements and notifications.</p>
+    </div>
+</div>
+
+<% if (notices && notices.length > 0) { %>
+    <div class="notices-list">
+        <% notices.forEach((notice) => { %>
+            <div class="card mb-3 border-start" style="border-left: 5px solid <%= 
+                notice.category === 'exam' ? '#dc3545' :
+                notice.category === 'event' ? '#0d6efd' :
+                notice.category === 'holiday' ? '#198754' :
+                '#6c757d'
+            %>">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h5 class="card-title mb-1"><%= notice.title %></h5>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt"></i>
+                                <%= new Date(notice.date).toLocaleDateString('en-IN', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </small>
+                        </div>
+                        <span class="badge <%= 
+                            notice.category === 'exam' ? 'bg-danger' :
+                            notice.category === 'event' ? 'bg-primary' :
+                            notice.category === 'holiday' ? 'bg-success' :
+                            'bg-secondary'
+                        %>">
+                            <%= notice.category.charAt(0).toUpperCase() + notice.category.slice(1) %>
+                        </span>
+                    </div>
+
+                    <% if (notice.description) { %>
+                        <p class="card-text mb-2"><%= notice.description %></p>
+                    <% } %>
+
+                    <div class="notice-meta small text-muted">
+                        <span>
+                            <i class="fas fa-user"></i>
+                            Posted by: <strong><%= notice.createdBy?.name || 'Admin' %></strong>
+                        </span>
+                        <% if (notice.forClass === 'all') { %>
+                            <span class="ms-3">
+                                <i class="fas fa-globe"></i>
+                                For: <strong>All Classes</strong>
+                            </span>
+                        <% } else if (notice.classId) { %>
+                            <span class="ms-3">
+                                <i class="fas fa-book"></i>
+                                For: <strong><%= notice.classId?.name %></strong>
+                            </span>
+                        <% } %>
+                    </div>
+
+                    <% if (notice.file) { %>
+                        <div class="mt-3">
+                            <a href="/uploads/documents/<%= notice.file %>" class="btn btn-sm btn-outline-primary" download>
+                                <i class="fas fa-download"></i> Download Attachment
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i>
+        <strong>No Notices</strong>
+        <p class="mb-0 mt-2">There are no notices for you at the moment. Check back later for updates.</p>
+    </div>
+<% } %>
+
+<style>
+    .notices-list {
+        margin-top: 1rem;
+    }
+
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .notice-meta span {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+        color: #333;
+        font-weight: 600;
+    }
+</style>

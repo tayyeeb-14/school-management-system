@@ -1,0 +1,145 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Student Results</h3>
+        <p class="text-muted mb-0">View marks and results for all students in your classes.</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Total Students</small>
+                <h4 class="mb-0"><%= stats.totalStudents %></h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Complete Marksheets</small>
+                <h4 class="mb-0"><%= stats.completeMarksheets %></h4>
+                <small class="text-white-50">
+                    <%= stats.totalStudents > 0 ? Math.round((stats.completeMarksheets / stats.totalStudents) * 100) : 0 %>%
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Average Percentage</small>
+                <h4 class="mb-0"><%= stats.averagePercentage %>%</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Table -->
+<% if (results && results.length > 0) { %>
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Student Marks Summary</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Roll No</th>
+                            <th>Student Name</th>
+                            <th>Class</th>
+                            <th>Marks Entered</th>
+                            <th>Status</th>
+                            <th>Overall %</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach((result) => { %>
+                            <tr>
+                                <td>
+                                    <strong><%= result.student.rollNo || '-' %></strong>
+                                </td>
+                                <td>
+                                    <%= result.student.userId?.name || '-' %>
+                                </td>
+                                <td>
+                                    <%= result.student.classId?.name || '-' %>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-check"></i> <%= result.marksCount %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if (result.completion.complete) { %>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle"></i> Complete
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-exclamation-triangle"></i> Incomplete
+                                            <% if (result.completion.missing && result.completion.missing.length > 0) { %>
+                                                <small class="d-block mt-1">
+                                                    Missing: <%= result.completion.missing.slice(0, 2).join(', ') %><% if (result.completion.missing.length > 2) { %> +<%= result.completion.missing.length - 2 %><% } %>
+                                                </small>
+                                            <% } %>
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <%= Number(result.finalResult.overallPercentage || 0).toFixed(2) %>%
+                                    </strong>
+                                </td>
+                                <td>
+                                    <span class="badge <%= 
+                                        result.finalResult.overallGrade === 'A' ? 'bg-success' :
+                                        result.finalResult.overallGrade === 'B' ? 'bg-info' :
+                                        result.finalResult.overallGrade === 'C' ? 'bg-warning' :
+                                        'bg-danger'
+                                    %>">
+                                        <strong><%= result.finalResult.overallGrade %></strong>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-4">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">Grade Scale</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                        <small class="text-muted">Grade A:</small> <strong>90% and above</strong>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <small class="text-muted">Grade B:</small> <strong>80% - 89%</strong>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <small class="text-muted">Grade C:</small> <strong>70% - 79%</strong>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <small class="text-muted">Grade D:</small> <strong>Below 70%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i>
+        <strong>No Students Found</strong>
+        <p class="mb-0 mt-2">No students found in your assigned classes. Results will appear once students are enrolled.</p>
+    </div>
+<% } %>

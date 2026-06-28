@@ -30,9 +30,33 @@
         </a>
     </li>
     <li>
+        <a href="/teacher/results" class="<%= path === '/teacher/results' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+            <span class="menu-label">Results</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/attendance-history" class="<%= path === '/teacher/attendance-history' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-calendar-check"></i></span>
+            <span class="menu-label">Attendance History</span>
+        </a>
+    </li>
+    <li>
         <a href="/teacher/salary" class="<%= path.startsWith('/teacher/salary') ? 'active' : '' %>">
             <span class="menu-icon"><i class="fas fa-wallet"></i></span>
             <span class="menu-label">Salary</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/shifts-history" class="<%= path === '/teacher/shifts-history' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-history"></i></span>
+            <span class="menu-label">Shifts History</span>
+        </a>
+    </li>
+    <li>
+        <a href="/teacher/notices" class="<%= path === '/teacher/notices' ? 'active' : '' %>">
+            <span class="menu-icon"><i class="fas fa-bell"></i></span>
+            <span class="menu-label">Notices</span>
         </a>
     </li>
     <li>
