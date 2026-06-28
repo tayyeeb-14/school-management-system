@@ -31,7 +31,14 @@
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label">Class</label>
-            <input name="class" class="form-control" value="<%= student.classId ? student.classId.name : '' %>" required>
+            <select name="classId" class="form-select" data-class-select required>
+                <option value="">Select class</option>
+                <% classes.forEach((classItem) => { %>
+                    <option value="<%= classItem._id %>" <%= student.classId && String(student.classId._id) === String(classItem._id) ? 'selected' : '' %>>
+                        <%= classItem.name %>
+                    </option>
+                <% }) %>
+            </select>
         </div>
     </div>
 

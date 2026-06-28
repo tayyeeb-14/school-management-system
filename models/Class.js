@@ -4,7 +4,18 @@ const classSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        trim: true
+    },
+    active: {
+        type: Boolean,
+        default: true,
+        index: true
+    },
+    order: {
+        type: Number,
+        min: 1,
+        default: 1
     },
     teacherId: {
         type: mongoose.Schema.Types.ObjectId,

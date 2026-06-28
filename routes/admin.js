@@ -29,6 +29,14 @@ const {
 } = require('../utils/fee');
 const TimetableSlot = require('../models/Timetable');
 const Subject = require('../models/Subject');
+const {
+    findActiveClass,
+    findClassByName,
+    getActiveClasses,
+    getAllClasses,
+    getNextClassOrder,
+    normalizeClassName
+} = require('../utils/classes');
 
 // API: list subjects
 router.get('/subjects', async (req, res) => {
@@ -38,6 +46,22 @@ router.get('/subjects', async (req, res) => {
     } catch (error) {
         console.error('Failed to list subjects', error);
         res.status(500).json({ ok: false, error: 'Failed to load subjects' });
+    }
+});
+
+// API: list classes - centralized class management
+router.get('/api/classes', async (req, res) => {
+    try {
+        const { active } = req.query;
+        const filter = {};
+        if (active === 'true') {
+            filter.active = true;
+        }
+        const classes = await Class.find(filter).sort({ order: 1, name: 1 }).lean();
+        res.json({ ok: true, classes });
+    } catch (error) {
+        console.error('Failed to list classes', error);
+        res.status(500).json({ ok: false, error: 'Failed to load classes' });
     }
 });
 
@@ -101,6 +125,95 @@ function toStartOfDay(dateInput = new Date()) {
     return date;
 }
 
+// Central Class Management
+router.get('/classes', async (req, res) => {
+    try {
+        const classes = await getAllClasses();
+        res.render('admin/classes/index', {
+            title: 'Class Management',
+            classes
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+router.post('/classes', async (req, res) => {
+    try {
+        const name = normalizeClassName(req.body.name);
+        if (!name) {
+            req.flash('error_msg', 'Class name is required');
+            return res.redirect('/admin/classes');
+        }
+
+        if (await findClassByName(name)) {
+            req.flash('error_msg', 'Class name already exists');
+            return res.redirect('/admin/classes');
+        }
+
+        await Class.create({
+            name,
+            active: true,
+            order: await getNextClassOrder()
+        });
+
+        req.flash('success_msg', 'Class added successfully');
+        res.redirect('/admin/classes');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error adding class');
+        res.redirect('/admin/classes');
+    }
+});
+
+router.put('/classes/:id', async (req, res) => {
+    try {
+        const name = normalizeClassName(req.body.name);
+        const classDoc = await Class.findById(req.params.id);
+        if (!classDoc) {
+            req.flash('error_msg', 'Class not found');
+            return res.redirect('/admin/classes');
+        }
+        if (!name) {
+            req.flash('error_msg', 'Class name is required');
+            return res.redirect('/admin/classes');
+        }
+        if (await findClassByName(name, classDoc._id)) {
+            req.flash('error_msg', 'Class name already exists');
+            return res.redirect('/admin/classes');
+        }
+
+        classDoc.name = name;
+        await classDoc.save();
+        req.flash('success_msg', 'Class renamed successfully');
+        res.redirect('/admin/classes');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error renaming class');
+        res.redirect('/admin/classes');
+    }
+});
+
+router.post('/classes/:id/toggle-active', async (req, res) => {
+    try {
+        const classDoc = await Class.findById(req.params.id);
+        if (!classDoc) {
+            req.flash('error_msg', 'Class not found');
+            return res.redirect('/admin/classes');
+        }
+
+        classDoc.active = !classDoc.active;
+        await classDoc.save();
+        req.flash('success_msg', `Class ${classDoc.active ? 'activated' : 'deactivated'} successfully`);
+        res.redirect('/admin/classes');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error updating class status');
+        res.redirect('/admin/classes');
+    }
+});
+
 // Admin Dashboard
 router.get('/dashboard', async (req, res) => {
     try {
@@ -160,8 +273,15 @@ router.get('/students', async (req, res) => {
 });
 
 // Add Student Form
-router.get('/students/new', (req, res) => {
-    res.render('admin/students/new', { title: 'Add New Student' });
+router.get('/students/new', async (req, res) => {
+    try {
+        const classes = await getActiveClasses();
+        res.render('admin/students/new', { title: 'Add New Student', classes });
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error loading student form');
+        res.redirect('/admin/students');
+    }
 });
 
 // Add Student
@@ -176,17 +296,17 @@ router.post('/students', (req, res, next) => {
     });
 }, async (req, res) => {
     try {
-        const { username, password, name, email, class: className, rollNo, phone, fatherName } = req.body;
+        const { username, password, name, email, classId, rollNo, phone, fatherName } = req.body;
         // Basic validation
-        if (!username || !password || !name || !email || !className || !rollNo) {
+        if (!username || !password || !name || !email || !classId || !rollNo) {
             req.flash('error_msg', 'Please fill in all required fields');
             return res.redirect('/admin/students/new');
         }
 
-        // Find or create class (moved earlier so we can check rollNo per class)
-        let classDoc = await Class.findOne({ name: className });
+        const classDoc = await findActiveClass(classId);
         if (!classDoc) {
-            classDoc = await Class.create({ name: className });
+            req.flash('error_msg', 'Please select an active class');
+            return res.redirect('/admin/students/new');
         }
 
         // Check for duplicate username globally
@@ -339,7 +459,8 @@ router.get('/students/:id/edit', async (req, res) => {
 
         res.render('admin/students/edit', {
             title: 'Edit Student',
-            student
+            student,
+            classes: await getActiveClasses()
         });
     } catch (error) {
         console.error(error);
@@ -669,7 +790,7 @@ router.get('/timetable/slot/:id', async (req, res) => {
 // Update Student
 router.put('/students/:id', upload.single('photo'), async (req, res) => {
     try {
-        const { name, email, phone, class: className, rollNo, fatherName } = req.body;
+        const { name, email, phone, classId, rollNo, fatherName } = req.body;
         const studentId = req.params.id;
 
         const student = await Student.findById(studentId).populate('userId');
@@ -678,10 +799,10 @@ router.put('/students/:id', upload.single('photo'), async (req, res) => {
             return res.redirect('/admin/students');
         }
 
-        // Find or create class
-        let classDoc = await Class.findOne({ name: className });
+        const classDoc = await findActiveClass(classId);
         if (!classDoc) {
-            classDoc = await Class.create({ name: className });
+            req.flash('error_msg', 'Please select an active class');
+            return res.redirect(`/admin/students/${studentId}/edit`);
         }
 
         // Check for duplicate roll number within the target class (exclude current student)
@@ -699,11 +820,19 @@ router.put('/students/:id', upload.single('photo'), async (req, res) => {
         await User.findByIdAndUpdate(student.userId._id, updateData);
 
         // Update student info
+        const previousClassId = student.classId;
         await Student.findByIdAndUpdate(studentId, {
             classId: classDoc._id,
             rollNo,
             fatherName
         });
+
+        if (String(previousClassId || '') !== String(classDoc._id)) {
+            if (previousClassId) {
+                await Class.findByIdAndUpdate(previousClassId, { $pull: { students: studentId } });
+            }
+            await Class.findByIdAndUpdate(classDoc._id, { $addToSet: { students: studentId } });
+        }
 
         req.flash('success_msg', 'Student updated successfully');
         res.redirect('/admin/students');

@@ -58,21 +58,14 @@
                             </div>
 
                             <div class="col-12 col-md-6 mb-3">
-                                <label for="class" class="form-label">Class</label>
+                                <label for="classId" class="form-label">Class</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-white"><i class="fas fa-graduation-cap text-muted"></i></span>
-                                    <select class="form-select" id="class" name="class" required>
+                                    <select class="form-select" id="classId" name="classId" data-class-select required>
                                         <option value="">Select Class</option>
-                                        <option value="1">Class 1</option>
-                                        <option value="2">Class 2</option>
-                                        <option value="3">Class 3</option>
-                                        <option value="4">Class 4</option>
-                                        <option value="5">Class 5</option>
-                                        <option value="6">Class 6</option>
-                                        <option value="7">Class 7</option>
-                                        <option value="8">Class 8</option>
-                                        <option value="9">Class 9</option>
-                                        <option value="10">Class 10</option>
+                                        <% classes.forEach((classItem) => { %>
+                                            <option value="<%= classItem._id %>"><%= classItem.name %></option>
+                                        <% }) %>
                                     </select>
                                 </div>
                             </div>

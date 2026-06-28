@@ -7,6 +7,7 @@ const Class = require('../models/Class');
 const upload = require('../config/multer');
 const bcrypt = require('bcryptjs');
 const { sendOtpEmail } = require('../utils/email');
+const { findActiveClass, getActiveClasses } = require('../utils/classes');
 
 // Login page
 router.get('/login', (req, res) => {
@@ -17,11 +18,17 @@ router.get('/login', (req, res) => {
 });
 
 // Register page
-router.get('/register', (req, res) => {
+router.get('/register', async (req, res) => {
     if (req.session.user) {
         return res.redirect('/');
     }
-    res.render('auth/register', { title: 'Register' });
+    try {
+        const classes = await getActiveClasses();
+        res.render('auth/register', { title: 'Register', classes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
 });
 
 // Handle login
@@ -81,7 +88,13 @@ router.post('/login', async (req, res) => {
 // Use multer to handle profile photo upload from the registration form
 router.post('/register/student', upload.single('photo'), async (req, res) => {
     try {
-        const { username, password, name, email, phone, class: className, fatherName } = req.body;
+        const { username, password, name, email, phone, classId, fatherName } = req.body;
+
+        const classDoc = await findActiveClass(classId);
+        if (!classDoc) {
+            req.flash('error_msg', 'Please select an active class');
+            return res.redirect('/auth/register');
+        }
 
         // Check if username already exists globally
         const existingUsername = await User.findOne({ username });
@@ -100,12 +113,6 @@ router.post('/register/student', upload.single('photo'), async (req, res) => {
             photo: req.file ? req.file.filename : undefined,
             role: 'student'
         });
-
-        // Find or create class
-        let classDoc = await Class.findOne({ name: className });
-        if (!classDoc) {
-            classDoc = await Class.create({ name: className });
-        }
 
         // Create student profile
         const student = await Student.create({

@@ -20,6 +20,10 @@ const noticeSchema = new mongoose.Schema({
         type: String,
         default: 'all'
     },
+    classId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class'
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
