@@ -12,40 +12,119 @@
 
 <script src="/js/teacher-shift.js"></script>
 
-<div class="card mt-4">
-    <div class="card-header bg-white">
-        <h5 class="mb-0">Recent Shifts</h5>
+<!-- Check In / Out Status for Today -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-title text-muted mb-2">Check In Status</h6>
+                <% if (hasCheckedIn) { %>
+                    <div class="badge bg-success mb-2">
+                        <i class="fas fa-check-circle"></i> Checked In
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <%= todayShift?.checkInAt ? new Date(todayShift.checkInAt).toLocaleTimeString() : 'N/A' %>
+                    </p>
+                <% } else { %>
+                    <div class="badge bg-warning text-dark mb-2">
+                        <i class="fas fa-clock"></i> Not Checked In
+                    </div>
+                    <p class="small text-muted mb-2">Click Check In below to start</p>
+                    <a href="/teacher/check-shift" class="btn btn-sm btn-outline-primary">Check In Now</a>
+                <% } %>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <% if (recentShifts && recentShifts.length > 0) { %>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h6 class="card-title text-muted mb-2">Check Out Status</h6>
+                <% if (hasCheckedOut) { %>
+                    <div class="badge bg-secondary mb-2">
+                        <i class="fas fa-check-double"></i> Checked Out
+                    </div>
+                    <p class="small text-muted mb-0">
+                        <%= todayShift?.checkOutAt ? new Date(todayShift.checkOutAt).toLocaleTimeString() : 'N/A' %>
+                    </p>
+                <% } else if (hasCheckedIn) { %>
+                    <div class="badge bg-warning text-dark mb-2">
+                        <i class="fas fa-hourglass-end"></i> Pending
+                    </div>
+                    <p class="small text-muted mb-2">Click Check Out to end shift</p>
+                    <a href="/teacher/check-shift" class="btn btn-sm btn-outline-danger">Check Out Now</a>
+                <% } else { %>
+                    <div class="badge bg-secondary mb-2">
+                        <i class="fas fa-ban"></i> Unavailable
+                    </div>
+                    <p class="small text-muted mb-0">Check in first</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">Today's Classes</small>
+                <h4 class="mb-0"><%= todayTimetable?.length || 0 %></h4>
+                <small class="d-block mt-2"><%= todayDayName %></small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <small class="text-white-50 d-block mb-1">View Full Schedule</small>
+                <a href="/teacher/timetable" class="btn btn-sm btn-light mt-2">
+                    <i class="fas fa-clock"></i> My Timetable
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Timetable -->
+<% if (todayTimetable && todayTimetable.length > 0) { %>
+    <div class="card mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">
+                <i class="fas fa-calendar-alt"></i> Today's Classes - <%= todayDayName %>
+            </h5>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-striped mb-0">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Check In</th>
-                            <th>Check Out</th>
-                            <th>Duration (mins)</th>
+                            <th>Period</th>
+                            <th>Time</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Room</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% recentShifts.forEach((s) => { %>
+                        <% todayTimetable.forEach((slot) => { %>
                             <tr>
-                                <td><%= moment(s.date).format('DD MMM, YYYY') %></td>
-                                <td><%= s.checkInAt ? moment(s.checkInAt).format('HH:mm') : '-' %></td>
-                                <td><%= s.checkOutAt ? moment(s.checkOutAt).format('HH:mm') : '-' %></td>
-                                <td><%= s.durationMinutes || '-' %></td>
+                                <td>
+                                    <span class="badge bg-info">Period <%= slot.period %></span>
+                                </td>
+                                <td><strong><%= slot.time || '-' %></strong></td>
+                                <td><strong><%= slot.classId?.name || '-' %></strong></td>
+                                <td><%= slot.subject || '-' %></td>
+                                <td><%= slot.room || '-' %></td>
                             </tr>
                         <% }) %>
                     </tbody>
                 </table>
             </div>
-        <% } else { %>
-            <div class="p-3 text-muted">No shift records found.</div>
-        <% } %>
+        </div>
     </div>
-</div>
+<% } %>
 
+<!-- Stats Cards -->
 <div class="row g-3 mb-4">
     <div class="col-md-6 col-lg-3">
         <div class="card bg-primary text-white h-100">
@@ -81,6 +160,7 @@
     </div>
 </div>
 
+<!-- Quick Actions -->
 <div class="row g-4 mb-4">
     <div class="col-lg-7">
         <div class="card h-100">
@@ -90,38 +170,34 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/attendance" class="btn btn-outline-primary w-100">Mark Attendance</a>
+                        <a href="/teacher/timetable" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-clock"></i> My Timetable
+                        </a>
                     </div>
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/marks" class="btn btn-outline-success w-100">Enter Marks</a>
+                        <a href="/teacher/my-classes" class="btn btn-outline-info w-100">
+                            <i class="fas fa-book"></i> My Classes
+                        </a>
                     </div>
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/students" class="btn btn-outline-secondary w-100">My Students</a>
+                        <a href="/teacher/students" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-user-graduate"></i> Students
+                        </a>
                     </div>
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/salary" class="btn btn-outline-dark w-100">My Salary</a>
+                        <a href="/teacher/marks" class="btn btn-outline-success w-100">
+                            <i class="fas fa-pen"></i> Enter Marks
+                        </a>
                     </div>
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/assignments" class="btn btn-outline-info w-100">Assignments</a>
+                        <a href="/teacher/salary" class="btn btn-outline-dark w-100">
+                            <i class="fas fa-wallet"></i> My Salary
+                        </a>
                     </div>
                     <div class="col-6 col-md-4">
-                        <a href="/teacher/blogs" class="btn btn-outline-warning w-100">My Blogs</a>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <form id="checkInForm" action="/teacher/check-in" method="POST">
-                            <input type="hidden" name="lat" id="checkin-lat">
-                            <input type="hidden" name="lng" id="checkin-lng">
-                            <button id="checkInBtn" class="btn btn-outline-primary w-100" type="submit">Check In</button>
-                        </form>
-                    </div>
-
-                    <div class="col-6 col-md-4">
-                        <form id="checkOutForm" action="/teacher/check-out" method="POST">
-                            <input type="hidden" name="lat" id="checkout-lat">
-                            <input type="hidden" name="lng" id="checkout-lng">
-                            <button id="checkOutBtn" class="btn btn-outline-danger w-100" type="submit">Check Out</button>
-                        </form>
+                        <a href="/teacher/profile" class="btn btn-outline-purple w-100">
+                            <i class="fas fa-user-circle"></i> Profile
+                        </a>
                     </div>
                 </div>
             </div>
@@ -135,18 +211,54 @@
             </div>
             <div class="card-body">
                 <div class="mb-2">Month: <strong><%= currentSalary.month %></strong></div>
-                <div class="mb-2">Base: <strong><%= Number(currentSalary.baseSalary || 0).toFixed(2) %></strong></div>
-                <div class="mb-2 text-success">Paid: <strong><%= Number(currentSalary.paidAmount || 0).toFixed(2) %></strong></div>
-                <div class="mb-3 text-danger">Remaining: <strong><%= Number(currentSalary.remainingAmount || 0).toFixed(2) %></strong></div>
+                <div class="mb-2">Base: <strong>₹ <%= Number(currentSalary.baseSalary || 0).toFixed(2) %></strong></div>
+                <div class="mb-2 text-success">Paid: <strong>₹ <%= Number(currentSalary.paidAmount || 0).toFixed(2) %></strong></div>
+                <div class="mb-3 text-danger">Remaining: <strong>₹ <%= Number(currentSalary.remainingAmount || 0).toFixed(2) %></strong></div>
                 <a href="/teacher/salary?month=<%= currentSalary.month %>" class="btn btn-sm btn-primary">View Salary Details</a>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Recent Shifts -->
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Recent Shifts (Last 5 Days)</h5>
+    </div>
+    <div class="card-body p-0">
+        <% if (recentShifts && recentShifts.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentShifts.forEach((s) => { %>
+                            <tr>
+                                <td><%= moment(s.date).format('DD MMM, YYYY') %></td>
+                                <td><%= s.checkInAt ? moment(s.checkInAt).format('HH:mm') : '-' %></td>
+                                <td><%= s.checkOutAt ? moment(s.checkOutAt).format('HH:mm') : '-' %></td>
+                                <td><%= s.durationMinutes ? Math.floor(s.durationMinutes / 60) + 'h ' + (s.durationMinutes % 60) + 'm' : '-' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="p-3 text-muted">No shift records found.</div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Recent Attendance Records -->
 <div class="card">
     <div class="card-header bg-white">
-        <h5 class="mb-0">Recent Attendance Records</h5>
+        <h5 class="mb-0">Recent Attendance Records (Last 5)</h5>
     </div>
     <div class="card-body p-0">
         <% if (recentAttendance && recentAttendance.length > 0) { %>
@@ -158,17 +270,20 @@
                             <th>Class</th>
                             <th>Total Students</th>
                             <th>Present</th>
+                            <th>Absent</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% recentAttendance.forEach((record) => { %>
                             <% const total = record.entries.length; %>
                             <% const present = record.entries.filter((entry) => entry.status === 'present').length; %>
+                            <% const absent = total - present; %>
                             <tr>
                                 <td><%= moment(record.date).format('DD MMM, YYYY') %></td>
                                 <td><%= record.classId?.name || '-' %></td>
                                 <td><%= total %></td>
-                                <td><%= present %></td>
+                                <td><span class="badge bg-success"><%= present %></span></td>
+                                <td><span class="badge bg-danger"><%= absent %></span></td>
                             </tr>
                         <% }) %>
                     </tbody>

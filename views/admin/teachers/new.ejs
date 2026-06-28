@@ -40,12 +40,7 @@
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label">Assigned Classes</label>
-            <select name="classIds" class="form-select" multiple size="4">
-                <% if (classes && classes.length > 0) { %>
-                    <% classes.forEach((classItem) => { %>
-                        <option value="<%= classItem._id %>"><%= classItem.name %></option>
-                    <% }) %>
-                <% } %>
+            <select name="classIds" class="form-select" multiple size="4" data-class-loader data-class-loader-active="true">
             </select>
             <small class="text-muted">Use Ctrl/Cmd to select multiple classes.</small>
         </div>

@@ -1,0 +1,188 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">Check In / Check Out</h3>
+        <p class="text-muted mb-0">Track your daily attendance and working hours.</p>
+    </div>
+    <div id="currentTime" class="text-end">
+        <div id="timeDisplay" class="display-6 text-primary" style="font-weight: 600;"></div>
+        <small class="text-muted">Current Time</small>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Check In Status</h5>
+                <% if (hasCheckedIn) { %>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <p class="mb-1 mt-2"><strong>Checked In</strong></p>
+                        <small><%= shift?.checkInAt ? new Date(shift.checkInAt).toLocaleTimeString() : 'N/A' %></small>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-warning text-dark">
+                        <i class="fas fa-clock"></i>
+                        <p class="mb-1 mt-2"><strong>Not Checked In</strong></p>
+                        <small>Click the button below to check in</small>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Check Out Status</h5>
+                <% if (hasCheckedOut) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-check-double"></i>
+                        <p class="mb-1 mt-2"><strong>Checked Out</strong></p>
+                        <small><%= shift?.checkOutAt ? new Date(shift.checkOutAt).toLocaleTimeString() : 'N/A' %></small>
+                    </div>
+                <% } else if (hasCheckedIn) { %>
+                    <div class="alert alert-warning text-dark">
+                        <i class="fas fa-hourglass-end"></i>
+                        <p class="mb-1 mt-2"><strong>Not Checked Out</strong></p>
+                        <small>Click the button below to check out</small>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-secondary">
+                        <i class="fas fa-ban"></i>
+                        <p class="mb-1 mt-2"><strong>Unavailable</strong></p>
+                        <small>Check in first to enable check out</small>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <% if (!hasCheckedIn) { %>
+            <form method="POST" action="/teacher/check-in" class="mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Check In</h5>
+                        <p class="text-muted">You are about to check in for today. This will record your arrival time.</p>
+                        <input type="hidden" name="lat" id="checkInLat">
+                        <input type="hidden" name="lng" id="checkInLng">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Check In Now
+                        </button>
+                    </div>
+                </div>
+            </form>
+        <% } else if (!hasCheckedOut) { %>
+            <form method="POST" action="/teacher/check-out" class="mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Check Out</h5>
+                        <p class="text-muted">You are about to check out for today. This will record your departure time and calculate working hours.</p>
+                        <% if (shift?.checkInAt && shift?.checkOutAt === null) { %>
+                            <div class="alert alert-info small mb-3">
+                                <i class="fas fa-info-circle"></i>
+                                Checked in at: <strong><%= new Date(shift.checkInAt).toLocaleTimeString() %></strong>
+                            </div>
+                        <% } %>
+                        <input type="hidden" name="lat" id="checkOutLat">
+                        <input type="hidden" name="lng" id="checkOutLng">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-sign-out-alt"></i> Check Out Now
+                        </button>
+                    </div>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Today's Shift Completed</h5>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Check In Time</small>
+                            <strong class="text-success d-block mt-1">
+                                <%= shift?.checkInAt ? new Date(shift.checkInAt).toLocaleTimeString() : 'N/A' %>
+                            </strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Check Out Time</small>
+                            <strong class="text-danger d-block mt-1">
+                                <%= shift?.checkOutAt ? new Date(shift.checkOutAt).toLocaleTimeString() : 'N/A' %>
+                            </strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Duration</small>
+                            <strong class="text-primary d-block mt-1">
+                                <%= shift?.durationMinutes ? Math.floor(shift.durationMinutes / 60) + 'h ' + (shift.durationMinutes % 60) + 'm' : 'N/A' %>
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Recent Shifts (Last 10 Days)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Check In</th>
+                                <th>Check Out</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (shift) { %>
+                                <tr class="table-active">
+                                    <td><strong>Today</strong></td>
+                                    <td><%= shift.checkInAt ? new Date(shift.checkInAt).toLocaleTimeString() : '-' %></td>
+                                    <td><%= shift.checkOutAt ? new Date(shift.checkOutAt).toLocaleTimeString() : '-' %></td>
+                                    <td><%= shift.durationMinutes ? Math.floor(shift.durationMinutes / 60) + 'h ' + (shift.durationMinutes % 60) + 'm' : '-' %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted text-center py-3 mb-0">
+                    <small>View complete shift history in Dashboard</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Update current time
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('timeDisplay').textContent = now.toLocaleTimeString();
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Try to get geolocation if available
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                document.getElementById('checkInLat').value = position.coords.latitude;
+                document.getElementById('checkInLng').value = position.coords.longitude;
+                document.getElementById('checkOutLat').value = position.coords.latitude;
+                document.getElementById('checkOutLng').value = position.coords.longitude;
+            },
+            function(error) {
+                console.log('Geolocation not available');
+            }
+        );
+    }
+</script>

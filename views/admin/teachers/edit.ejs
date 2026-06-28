@@ -31,17 +31,35 @@
         </div>
         <div class="col-md-6 mb-3">
             <label class="form-label">Assigned Classes</label>
-            <select name="classIds" class="form-select" multiple size="5">
-                <% const selectedClassIds = (teacher.classIds || []).map(c => String(c._id)); %>
-                <% classes.forEach((classItem) => { %>
-                    <option value="<%= classItem._id %>" <%= selectedClassIds.includes(String(classItem._id)) ? 'selected' : '' %>>
-                        <%= classItem.name %>
-                    </option>
-                <% }) %>
+            <select name="classIds" class="form-select" multiple size="5" data-class-loader data-class-loader-active="true" id="classIdsSelect">
             </select>
             <small class="text-muted">Use Ctrl/Cmd to select multiple classes.</small>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const select = document.getElementById('classIdsSelect');
+            const selectedClassIds = [<%= (teacher.classIds || []).map(c => `'${c._id}'`).join(',') %>];
+            
+            if (window.classLoader) {
+                // Load all active classes
+                const classes = await window.classLoader.fetchClasses(true);
+                
+                // Populate select
+                classes.forEach(cls => {
+                    const option = document.createElement('option');
+                    option.value = cls._id;
+                    option.textContent = cls.name;
+                    option.dataset.classId = cls._id;
+                    if (selectedClassIds.includes(cls._id)) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        });
+    </script>
 
     <div class="mb-3">
         <label class="form-label">Profile Photo (optional)</label>

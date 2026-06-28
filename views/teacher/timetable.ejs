@@ -1,0 +1,86 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">My Timetable</h3>
+        <p class="text-muted mb-0">Today's schedule - <strong><%= todayDayName %></strong></p>
+    </div>
+    <div>
+        <% if (hasCheckedIn && !hasCheckedOut) { %>
+            <span class="badge bg-success">
+                <i class="fas fa-check-circle"></i> Checked In
+            </span>
+        <% } else if (hasCheckedIn && hasCheckedOut) { %>
+            <span class="badge bg-secondary">
+                <i class="fas fa-check-double"></i> Checked Out
+            </span>
+        <% } else { %>
+            <span class="badge bg-warning text-dark">
+                <i class="fas fa-clock"></i> Not Checked In
+            </span>
+        <% } %>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <a href="/teacher/check-shift" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i> 
+            <% if (hasCheckedIn && !hasCheckedOut) { %>
+                Check Out
+            <% } else if (hasCheckedOut) { %>
+                View Shift
+            <% } else { %>
+                Check In
+            <% } %>
+        </a>
+    </div>
+</div>
+
+<% if (timetableSlots && timetableSlots.length > 0) { %>
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Today's Classes</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Time</th>
+                            <th>Class</th>
+                            <th>Subject</th>
+                            <th>Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% timetableSlots.forEach((slot) => { %>
+                            <tr>
+                                <td>
+                                    <span class="badge bg-info">Period <%= slot.period %></span>
+                                </td>
+                                <td>
+                                    <strong><%= slot.time || '-' %></strong>
+                                </td>
+                                <td>
+                                    <strong><%= slot.classId?.name || '-' %></strong>
+                                </td>
+                                <td>
+                                    <%= slot.subject || '-' %>
+                                </td>
+                                <td>
+                                    <%= slot.room || '-' %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<% } else { %>
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle"></i>
+        <strong>No Classes Today</strong>
+        <p class="mb-0 mt-2">You don't have any scheduled classes for <%= todayDayName %>.</p>
+    </div>
+<% } %>

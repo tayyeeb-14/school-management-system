@@ -9,6 +9,8 @@ const Class = require('../models/Class');
 const Blog = require('../models/Blog');
 const Attendance = require('../models/Attendance');
 const Salary = require('../models/Salary');
+const User = require('../models/User');
+const TimetableSlot = require('../models/Timetable');
 const upload = require('../config/multer');
 const { EXAM_BY_KEY, EXAM_CONFIG, isMarksheetComplete, calculateFinalResult } = require('../utils/marks');
 
@@ -23,6 +25,12 @@ function toMonthKey(dateInput = new Date()) {
     const date = new Date(dateInput);
     if (Number.isNaN(date.getTime())) return '';
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function getDayName(dateInput = new Date()) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const date = new Date(dateInput);
+    return days[date.getDay()];
 }
 
 async function getTeacherContext(userId) {
@@ -74,6 +82,21 @@ router.get('/dashboard', async (req, res) => {
             marksPendingStudents
         };
 
+        // Get today's timetable
+        const todayDayName = getDayName(new Date());
+        const todayTimetable = await TimetableSlot.find({
+            teacherId: teacher._id,
+            day: todayDayName
+        })
+            .populate('classId', 'name')
+            .sort({ period: 1 });
+
+        // Get today's check-in/check-out status
+        const todayShift = await TeacherShift.findOne({
+            teacherId: teacher._id,
+            date: { $gte: startOfToday, $lte: endOfToday }
+        });
+
         const recentAttendance = await Attendance.find({ markedBy: teacher._id })
             .populate('classId', 'name')
             .sort({ date: -1 })
@@ -97,6 +120,11 @@ router.get('/dashboard', async (req, res) => {
             title: 'Teacher Dashboard',
             teacher,
             stats,
+            todayDayName,
+            todayTimetable,
+            todayShift,
+            hasCheckedIn: !!todayShift?.checkInAt,
+            hasCheckedOut: !!todayShift?.checkOutAt,
             recentAttendance,
             recentShifts,
             currentSalary,
@@ -786,6 +814,217 @@ router.post('/blogs', upload.single('image'), async (req, res) => {
         console.error(error);
         req.flash('error_msg', 'Error creating blog post');
         res.redirect('/teacher/blogs/new');
+    }
+});
+
+// My Timetable (Today's Schedule)
+router.get('/timetable', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const teacherId = teacher._id;
+        const todayDayName = getDayName(new Date());
+
+        // Get today's timetable slots for this teacher
+        const timetableSlots = await TimetableSlot.find({
+            teacherId,
+            day: todayDayName
+        })
+            .populate('classId', 'name')
+            .populate('subject')
+            .sort({ period: 1 });
+
+        // Get check-in/out status for today
+        const startOfToday = toStartOfDay(new Date());
+        const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1);
+        const todayShift = await TeacherShift.findOne({
+            teacherId,
+            date: { $gte: startOfToday, $lte: endOfToday }
+        });
+
+        const hasCheckedIn = !!todayShift?.checkInAt;
+        const hasCheckedOut = !!todayShift?.checkOutAt;
+
+        res.render('teacher/timetable', {
+            title: 'My Timetable',
+            teacher,
+            todayDayName,
+            timetableSlots,
+            hasCheckedIn,
+            hasCheckedOut,
+            shift: todayShift
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// My Classes (Classes assigned to this teacher)
+router.get('/my-classes', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        // Get unique classes from timetable slots
+        const timetableSlots = await TimetableSlot.find({ teacherId: teacher._id })
+            .populate('classId', 'name section totalStudents')
+            .distinct('classId');
+
+        const classIds = Array.isArray(timetableSlots) ? timetableSlots : [];
+
+        // Fetch full class documents with student counts
+        const classes = await Class.find({ _id: { $in: classIds } });
+        const classesWithStudents = await Promise.all(
+            classes.map(async (cls) => {
+                const studentCount = await Student.countDocuments({
+                    classId: cls._id,
+                    status: 'approved'
+                });
+                return {
+                    ...cls.toObject(),
+                    studentCount
+                };
+            })
+        );
+
+        res.render('teacher/my-classes', {
+            title: 'My Classes',
+            teacher,
+            classes: classesWithStudents
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Teacher Profile
+router.get('/profile', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        res.render('teacher/profile', {
+            title: 'My Profile',
+            teacher
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
+    }
+});
+
+// Update Teacher Profile
+router.post('/profile', async (req, res) => {
+    try {
+        const { phone, address, qualifications } = req.body;
+        const teacher = await Teacher.findOne({ userId: req.session.user.id });
+
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/profile');
+        }
+
+        if (phone) teacher.phone = phone;
+        if (address) teacher.address = address;
+        if (qualifications) teacher.qualifications = qualifications;
+
+        await teacher.save();
+        req.flash('success_msg', 'Profile updated successfully');
+        res.redirect('/teacher/profile');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error updating profile');
+        res.redirect('/teacher/profile');
+    }
+});
+
+// Change Password Page
+router.get('/change-password', (req, res) => {
+    res.render('teacher/change-password', { title: 'Change Password' });
+});
+
+// Update Password
+router.post('/change-password', async (req, res) => {
+    try {
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        if (newPassword !== confirmPassword) {
+            req.flash('error_msg', 'New passwords do not match');
+            return res.redirect('/teacher/change-password');
+        }
+
+        if (newPassword.length < 6) {
+            req.flash('error_msg', 'Password must be at least 6 characters');
+            return res.redirect('/teacher/change-password');
+        }
+
+        const user = await User.findById(req.session.user.id);
+        if (!user) {
+            req.flash('error_msg', 'User not found');
+            return res.redirect('/teacher/change-password');
+        }
+
+        const isMatch = await user.matchPassword(currentPassword);
+        if (!isMatch) {
+            req.flash('error_msg', 'Current password is incorrect');
+            return res.redirect('/teacher/change-password');
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        req.flash('success_msg', 'Password changed successfully');
+        res.redirect('/teacher/profile');
+    } catch (error) {
+        console.error(error);
+        req.flash('error_msg', 'Error changing password');
+        res.redirect('/teacher/change-password');
+    }
+});
+
+// Check In/Out Form
+router.get('/check-shift', async (req, res) => {
+    try {
+        const teacher = await getTeacherContext(req.session.user.id);
+        if (!teacher) {
+            req.flash('error_msg', 'Teacher profile not found');
+            return res.redirect('/teacher/dashboard');
+        }
+
+        const startOfToday = toStartOfDay(new Date());
+        const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1);
+
+        const shift = await TeacherShift.findOne({
+            teacherId: teacher._id,
+            date: { $gte: startOfToday, $lte: endOfToday }
+        });
+
+        const hasCheckedIn = !!shift?.checkInAt;
+        const hasCheckedOut = !!shift?.checkOutAt;
+
+        res.render('teacher/check-shift', {
+            title: 'Check In / Check Out',
+            teacher,
+            hasCheckedIn,
+            hasCheckedOut,
+            shift,
+            currentTime: new Date()
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).render('error', { error: 'Server Error' });
     }
 });
 

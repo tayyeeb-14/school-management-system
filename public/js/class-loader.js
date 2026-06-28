@@ -66,6 +66,11 @@ class ClassLoader {
             return;
         }
 
+        // Use provided selectedValue or check element attributes
+        if (!selectedValue) {
+            selectedValue = selectElement.dataset.selectedValue || selectElement.value;
+        }
+
         const classes = await this.fetchClasses(activeOnly);
 
         // Preserve existing options (like "Select Class", "All Classes", etc.)
@@ -89,6 +94,9 @@ class ClassLoader {
             }
             selectElement.appendChild(option);
         });
+
+        // Trigger change event for any listeners
+        selectElement.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     /**
@@ -100,7 +108,8 @@ class ClassLoader {
         
         for (const selector of selectors) {
             const activeOnlyAttr = selector.dataset.classLoaderActive === 'true';
-            await this.populateSelect(selector, activeOnlyAttr || activeOnly);
+            const selectedValue = selector.dataset.selectedValue || null;
+            await this.populateSelect(selector, activeOnlyAttr || activeOnly, selectedValue);
         }
     }
 

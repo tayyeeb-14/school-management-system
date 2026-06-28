@@ -1,0 +1,117 @@
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">My Profile</h3>
+        <p class="text-muted mb-0">Manage your personal information and settings.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/teacher/profile">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" value="<%= teacher?.userId?.name || '' %>" disabled>
+                        <small class="text-muted">Name cannot be changed here</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="<%= teacher?.userId?.email || '' %>" disabled>
+                        <small class="text-muted">Email cannot be changed here</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="<%= teacher?.phone || '' %>" placeholder="Enter your phone number">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" placeholder="Enter your address"><%= teacher?.address || '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="qualifications" class="form-label">Qualifications</label>
+                        <textarea class="form-control" id="qualifications" name="qualifications" rows="3" placeholder="e.g., B.Sc., M.Sc., B.Ed."><%= teacher?.qualifications || '' %></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Subjects</label>
+                        <div class="form-control" style="background: #f8f9fa;">
+                            <% if (teacher?.subjects && teacher.subjects.length > 0) { %>
+                                <% teacher.subjects.forEach((subject) => { %>
+                                    <span class="badge bg-primary me-1 mb-1"><%= subject %></span>
+                                <% }) %>
+                            <% } else { %>
+                                <span class="text-muted">No subjects assigned</span>
+                            <% } %>
+                        </div>
+                        <small class="text-muted">Subjects are managed by admin</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Monthly Salary</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="text" class="form-control" value="<%= teacher?.monthlySalary || '0' %>" disabled>
+                        </div>
+                        <small class="text-muted">Salary is managed by admin</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Experience</label>
+                        <input type="text" class="form-control" value="<%= teacher?.experience || '0' %> years" disabled>
+                        <small class="text-muted">Experience is managed by admin</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Security</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="text-muted small mb-3">Manage your account security and password.</p>
+                    <a href="/teacher/change-password" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Profile Summary</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <small class="text-muted">Assigned Classes</small>
+                        <div class="text-primary"><strong><%= teacher?.classIds?.length || 0 %></strong></div>
+                    </li>
+                    <li class="mb-2">
+                        <small class="text-muted">Subjects</small>
+                        <div class="text-primary"><strong><%= teacher?.subjects?.length || 0 %></strong></div>
+                    </li>
+                    <li>
+                        <small class="text-muted">Member Since</small>
+                        <div class="text-primary"><strong><%= new Date(teacher?.createdAt).toLocaleDateString() %></strong></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
